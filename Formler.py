@@ -2,6 +2,7 @@ import numpy as np
 
 g0 = 9.18
 rho_SL = 1
+t_R = 3
 
 
 class Master_eqn():
@@ -146,7 +147,13 @@ class Case5(Master_eqn):
                 (self.k_TO ** 2 / (self.s_G * self.rho * g0 * self.C_Lmax)) *
                 (self.W_TO / self.S))
 
-    
+    def evaluate_s_TO(self):
+        """
+        Equation (2.E1)
+        """
+        return ((self.k_TO ** 2 * self.beta ** 2) /
+                (self.rho * self.C_Lmax * self.alpha * (self.T_SL / self.W_TO))) * (self.W_TO / self.S) + (
+                t_R * self.k_TO) * np.sqrt((2 * self.beta) / (self.rho * self.C_Lmax)) * np.sqrt(self.W_TO / self.S)
 
 
 class Case6(Case5):
