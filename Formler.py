@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 g0 = 9.18
 rho_SL = 1.225
@@ -42,6 +43,10 @@ class Case1(Master_eqn):
 
     Extra:
     Known: dh_dt=0, dV_dt=0, n=1
+
+    Page 44: Supercruise: C_DR = K2 = 0
+    Page 51: Mission phases 6-7 and 8-9: Supersonic penetration and escape dash: C_DR = K2 = 0
+    Page 54: Maximum Mach number: C_DR = K2 = 0
     """
 
     def __init__(self, T_SL, W_TO, beta, alpha, q, S, C_D0, C_DR, V, K1, K2,
@@ -103,11 +108,14 @@ class Case4(Master_eqn):
     Horizontal Acceleration [P_s = (V/g0)(dV/dt)]
     Given: dh/dt=0, n=1, h, V_initial, V_final, delta_t_allowable
 
+    Extra: V_inital, V_final, delta_t_allowable
     Known: dh_dt=0, n=1
+
+    Page 52: Mission phase 7-8: Horizontal acceleration: C_DR = K2 = 0
     """
 
-    def __init__(self, T_SL, W_TO, beta, alpha, q, S, C_D0, C_DR, V, K1, K2,
-                 V_inital, V_final, delta_t_allowable, dV_dt,
+    def __init__(self, T_SL, W_TO, beta, alpha, q, S, C_D0, C_DR, V, K1, K2, dV_dt,
+                 V_inital, V_final, delta_t_allowable,
                  dh_dt=0, n=1
                  ):
         Master_eqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
@@ -177,6 +185,8 @@ class Case6(Case5):
     Known: dh_dt=0
 
     thrust_to_weight same as Case5
+
+    Page 50: Mission phase 1-2: Takeoff, no obstacle: s_TO = s_G + s_R
     """
 
     def __init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dV_dt,
@@ -210,6 +220,8 @@ class Case7(Master_eqn):
 
     Extra: C_D, rho, s_G, k_TO, V_STALL, mu_TO
     Known: dh_dt=0
+
+    Page 53: Mission phase 13-14: Landing, no reverse thrust: s_L = s_FR + s_B
     """
 
     def __init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dV_dt,
