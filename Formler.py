@@ -1,8 +1,9 @@
 import numpy as np
 
 g0 = 9.18
-rho_SL = 1
+rho_SL = 1.225
 t_R = 3
+s_TO = 500
 
 
 class Master_eqn():
@@ -148,12 +149,22 @@ class Case5(Master_eqn):
                 (self.W_TO / self.S))
 
     def evaluate_s_TO(self):
+        # """
+        # Equation (2.E1)
+        # """
+        # return ((self.k_TO ** 2 * self.beta ** 2) /
+        #         (self.rho * self.C_Lmax * self.alpha * (self.T_SL / self.W_TO))) * (self.W_TO / self.S) + (
+        #         t_R * self.k_TO) * np.sqrt((2 * self.beta) / (self.rho * self.C_Lmax)) * np.sqrt(self.W_TO / self.S)
+        pass
+
+    def wing_loading(self):
         """
-        Equation (2.E1)
+        Equation (2.E2)
         """
-        return ((self.k_TO ** 2 * self.beta ** 2) /
-                (self.rho * self.C_Lmax * self.alpha * (self.T_SL / self.W_TO))) * (self.W_TO / self.S) + (
-                t_R * self.k_TO) * np.sqrt((2 * self.beta) / (self.rho * self.C_Lmax)) * np.sqrt(self.W_TO / self.S)
+        a = (self.k_TO ** 2 * self.beta ** 2) / (self.rho * self.C_Lmax * self.alpha * (self.T_SL / self.W_TO))
+        b = (t_R * self.k_TO) * np.sqrt((2 * self.beta) / (self.rho * self.C_Lmax))
+        c = s_TO
+        return (-b * np.sqrt(b ** 2 * (4 * a * c) / (2 * a))) ** 2
 
 
 class Case6(Case5):
@@ -289,9 +300,7 @@ class Case9(Master_eqn):
 
 # Example
 # Case1_in1 = Case1(...in1 parameters...) - "in" for instance
-# result_in1 = Case1_in1.thrust_to_weight() - call thrust_to_weight from Case1
+# result_in1 = Case1_in1.thrust_to_weight() - call thrust_to_weight from Case1 onto Case1_in1
 # Case1_in2 = Case1(...in2 parameters...)
 # result_i2 = Case1_in2.thrust_to_weight()
 # then plot result_in1 vs result_in2
-
-
