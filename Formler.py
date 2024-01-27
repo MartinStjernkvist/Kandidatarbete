@@ -1,5 +1,7 @@
 import numpy as np
+
 g0 = 9.18
+rho_SL = 1
 
 
 class Master_eqn():
@@ -23,6 +25,8 @@ class Master_eqn():
         self.dh_dt = dh_dt
         self.dV_dt = dV_dt
         self.P_s = dh_dt + (V / g0) * dV_dt
+
+
 
     def master_thrust_to_weight(self):
         return (self.beta / self.alpha) * ((self.q * self.S) / (self.beta * self.W_TO) * (
@@ -61,7 +65,7 @@ class Case2(Master_eqn, Case1):
     Extra:
     Known: dV_dt=0, n=1
 
-    same wing_loading_min, thrust_to_weight_min as case1
+    same wing_loading_min, thrust_to_weight_min as Case1
     """
 
     def __init__(self, T_SL, W_TO, beta, alpha, q, S, C_D0, C_DR, V, K1, K2, dh_dt,
@@ -79,9 +83,10 @@ class Case3(Master_eqn, Case1):
     Constant Altitude / Speed Turn (P_s = 0)
     Given: dh/dt=0, dV/dt=0, h, V, q, n>1
 
+    Extra: R
     Known: dh_dt=0, dV_dt=0
 
-    same wing_loading_min, thrust_to_weight_min as case1
+    same wing_loading_min, thrust_to_weight_min as Case1
     """
 
     def __init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2,
@@ -267,4 +272,14 @@ class Case9(Master_eqn):
         return ((self.beta / self.alpha) *
                 ((self.K1 * self.C_Lmax / self.k_TO ** 2) + self.K2 +
                  ((self.C_D0 + self.C_DR) / (self.C_Lmax / self.k_TO ** 2)) + np.sin(self.theta)))
+
+    def evaluate_V(self):
+        """
+        Equation (2.44)
+        """
+        return np.sqrt(((2 * self.beta * self.k_TO ** 2) / (self.sigma * rho_SL * self.C_Lmax)) * (self.W_TO / self.S))
+
+
+
+# Example
 
