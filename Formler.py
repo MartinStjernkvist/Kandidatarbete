@@ -288,3 +288,10 @@ class Case9(Master_eqn):
         return np.sqrt(((2 * self.beta * self.k_TO ** 2) / (self.sigma * rho_SL * self.C_Lmax)) * (self.W_TO / self.S))
 
 # Example
+# Case1_in1 = Case1(...in1 parameters...) - "in" for instance
+# result_in1 = Case1_in1.thrust_to_weight() - call thrust_to_weight from Case1
+# Case1_in2 = Case1(...in2 parameters...)
+# result_i2 = Case1_in2.thrust_to_weight()
+# then plot result_in1 vs result_in2
+
+
