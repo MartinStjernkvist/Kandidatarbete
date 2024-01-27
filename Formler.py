@@ -26,8 +26,6 @@ class Master_eqn():
         self.dV_dt = dV_dt
         self.P_s = dh_dt + (V / g0) * dV_dt
 
-
-
     def master_thrust_to_weight(self):
         return (self.beta / self.alpha) * ((self.q * self.S) / (self.beta * self.W_TO) * (
                 self.K1 * ((self.n * self.beta * self.W_TO) / (self.q * self.S)) ** 2
@@ -148,6 +146,8 @@ class Case5(Master_eqn):
                 (self.k_TO ** 2 / (self.s_G * self.rho * g0 * self.C_Lmax)) *
                 (self.W_TO / self.S))
 
+    
+
 
 class Case6(Case5):
     """
@@ -215,6 +215,7 @@ class Case7(Master_eqn):
     def thrust_to_weight(self):
         """
         Equation (2.34)
+        Reverse thrust
         """
         return ((self.beta ** 2 / (- self.alpha)) *
                 (self.k_TD ** 2 / (self.s_B * self.rho * g0 * self.C_Lmax)) *
@@ -279,7 +280,4 @@ class Case9(Master_eqn):
         """
         return np.sqrt(((2 * self.beta * self.k_TO ** 2) / (self.sigma * rho_SL * self.C_Lmax)) * (self.W_TO / self.S))
 
-
-
 # Example
-
