@@ -6,10 +6,12 @@ rho_SL = 1.225
 t_R = 3
 s_TO = 500
 
+
 class CommonFunctionality:
     """
     Common functionality for both Master_eqn and Case1
     """
+
     def calculate_P_s(self, V, dh_dt, dV_dt):
         return dh_dt + (V / g0) * dV_dt
 
@@ -43,7 +45,7 @@ class Master_eqn(CommonFunctionality):
                 + self.C_D0 + self.C_DR) + (self.P_s / self.V))
 
 
-class Case1(Master_eqn, CommonFunctionality):
+class Case1(Master_eqn):
     """
     Constant Altitude / Speed Cruise (P_s = 0)
     Given: dh/dt=0, dV/dt=0, n=1, h, V, q
@@ -316,10 +318,3 @@ class Case9(Master_eqn):
         Equation (2.44)
         """
         return np.sqrt(((2 * self.beta * self.k_TO ** 2) / (self.sigma * rho_SL * self.C_Lmax)) * (self.W_TO / self.S))
-
-# Example
-# Case1_in1 = Case1(...in1 parameters...) - "in" for instance
-# result_in1 = Case1_in1.thrust_to_weight() - call thrust_to_weight from Case1 onto Case1_in1
-# Case1_in2 = Case1(...in2 parameters...)
-# result_i2 = Case1_in2.thrust_to_weight()
-# then plot result_in1 vs result_in2
