@@ -6,8 +6,15 @@ rho_SL = 1.225
 t_R = 3
 s_TO = 500
 
+class CommonFunctionality:
+    """
+    Common functionality for both Master_eqn and Case1
+    """
+    def calculate_P_s(self, V, dh_dt, dV_dt):
+        return dh_dt + (V / g0) * dV_dt
 
-class Master_eqn():
+
+class Master_eqn(CommonFunctionality):
     """
     Equation (2.11)
     """
@@ -27,7 +34,7 @@ class Master_eqn():
         self.K2 = K2
         self.dh_dt = dh_dt
         self.dV_dt = dV_dt
-        self.P_s = dh_dt + (V / g0) * dV_dt
+        self.P_s = self.calculate_P_s(V, dh_dt, dV_dt)
 
     def master_thrust_to_weight(self):
         return (self.beta / self.alpha) * ((self.q * self.S) / (self.beta * self.W_TO) * (
@@ -36,7 +43,7 @@ class Master_eqn():
                 + self.C_D0 + self.C_DR) + (self.P_s / self.V))
 
 
-class Case1(Master_eqn):
+class Case1(Master_eqn, CommonFunctionality):
     """
     Constant Altitude / Speed Cruise (P_s = 0)
     Given: dh/dt=0, dV/dt=0, n=1, h, V, q
@@ -52,7 +59,7 @@ class Case1(Master_eqn):
     def __init__(self, T_SL, W_TO, beta, alpha, q, S, C_D0, C_DR, V, K1, K2,
                  dh_dt=0, dV_dt=0, n=1
                  ):
-        Master_eqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
+        super().__init__(T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
 
     def wing_loading_min(self):
         return (self.q / self.beta) * np.sqrt((self.C_D0 + self.C_DR) / self.K1)
@@ -62,7 +69,7 @@ class Case1(Master_eqn):
                 2 * np.sqrt((self.C_D0 + self.C_DR) * self.K1) + self.K2)
 
 
-class Case2(Master_eqn, Case1):
+class Case2(Case1):
     """
     Constant Speed Climb (P_s = dh/dt)
     Given: dV/dt=0, n=1, h, dh/dt>0, V, q
@@ -83,7 +90,7 @@ class Case2(Master_eqn, Case1):
                 2 * np.sqrt((self.C_D0 + self.C_DR) * self.K1) + self.K2 + (self.P_s / self.V))
 
 
-class Case3(Master_eqn, Case1):
+class Case3(Case1):
     """
     Constant Altitude / Speed Turn (P_s = 0)
     Given: dh/dt=0, dV/dt=0, h, V, q, n>1
