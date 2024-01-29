@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-g0 = 9.18
+g0 = 9.81
 rho_SL = 1.225
 t_R = 3
 s_TO = 500
