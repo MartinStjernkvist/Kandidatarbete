@@ -19,7 +19,7 @@ def plot_case1_instances(parameter_range, T_SL, alpha, q, S, V, dh_dt=0, dV_dt=0
     plt.plot(ratios_W_S, ratios_T_W, label=f'Parameter Value = {param_value}')
 
 
-def plot_Mach_vs_ThrustLapse(parameter_range, h, TR):
+def plot_Mach_vs_ThrustLapse(parameter_range, h, TR, symbol):
     ThrustLapse_max = []
     ThrustLapse_military = []
 
@@ -27,9 +27,8 @@ def plot_Mach_vs_ThrustLapse(parameter_range, h, TR):
         instance = Mach_vs_ThrustLapse(h=h, M_0=param_value, TR=TR)
         maximum_alpha = instance.maximum_alpha()
         military_alpha = instance.military_alpha()
-        print(f'max alpha: {maximum_alpha}, mil alpha: {military_alpha}')
         ThrustLapse_max.append(maximum_alpha)
         ThrustLapse_military.append(military_alpha)
 
-    plt.plot(parameter_range, ThrustLapse_max, label=f'Max, {TR}, h: {h}')
-    plt.plot(parameter_range, ThrustLapse_military, label=f'Mil, {TR}, h: {h}')
+    plt.plot(parameter_range, ThrustLapse_max, linestyle=symbol, linewidth=3, label=f'Max, {TR}, h: {h}')
+    plt.plot(parameter_range, ThrustLapse_military, linestyle=symbol, linewidth=3, label=f'Mil, {TR}, h: {h}')

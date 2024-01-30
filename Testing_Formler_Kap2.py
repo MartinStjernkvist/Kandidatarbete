@@ -56,7 +56,7 @@ plt.legend()
 plt.show()
 '''
 
-plt.figure(figsize=(10, 6))
+plt.figure(figsize=(10, 8))
 
 # Parameters for Mach_vs_ThrustLapse
 parameter_range = np.linspace(0, 2, 100)
@@ -64,27 +64,33 @@ parameter_range = np.linspace(0, 2, 100)
 
 TR = 1
 h = 12192
-plot_Mach_vs_ThrustLapse(parameter_range, h, TR)
+symbol = '-'
+plot_Mach_vs_ThrustLapse(parameter_range, h, TR, symbol)
 
 TR = 1.05
 h = 12192
-plot_Mach_vs_ThrustLapse(parameter_range, h, TR)
+symbol = '--'
+plot_Mach_vs_ThrustLapse(parameter_range, h, TR, symbol)
 
 TR = 1.08
 h = 12192
-plot_Mach_vs_ThrustLapse(parameter_range, h, TR)
+symbol = ':'
+plot_Mach_vs_ThrustLapse(parameter_range, h, TR, symbol)
 
 TR = 1
 h = 0
-plot_Mach_vs_ThrustLapse(parameter_range, h, TR)
+symbol = '-'
+plot_Mach_vs_ThrustLapse(parameter_range, h, TR, symbol)
 
 TR = 1.05
 h = 0
-plot_Mach_vs_ThrustLapse(parameter_range, h, TR)
+symbol = '--'
+plot_Mach_vs_ThrustLapse(parameter_range, h, TR, symbol)
 
 TR = 1.08
 h = 0
-plot_Mach_vs_ThrustLapse(parameter_range, h, TR)
+symbol = ':'
+plot_Mach_vs_ThrustLapse(parameter_range, h, TR, symbol)
 
 
 plt.xlabel('Mach Number')
