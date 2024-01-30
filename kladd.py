@@ -23,7 +23,7 @@ def calculate_delta_0(P, M_0):
     """
     Equation (2.52b)
     """
-    return (P / P_std) * ((1 + (gamma - 1) / 2) * M_0 ** 2) ** (gamma / (gamma - 1))
+    return (P / P_std) * (1 + ((gamma - 1) / 2) * M_0 ** 2) ** (gamma / (gamma - 1))
 
 
 def calculate_temperature(h):
@@ -42,7 +42,9 @@ def calculate_pressure(h):
     else:
         return P_std * ((T_std - (6.5 * 10 ** (-3) * 11000)) / T_std) ** (g_0 / (6.5 * 10 ** (-3) * R))
 
-T = calculate_temperature(0)
-print(T)
+T = calculate_temperature(12192)
+print(f'temperature: {T}')
 theta0 = calculate_theta_0(T, 0)
-print(theta0)
+print(f'theta0: {theta0}')
+delta0 = calculate_delta_0(T, 0)
+print(f'delta0: {theta0}')

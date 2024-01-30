@@ -66,10 +66,12 @@ TR = 1
 h = 12192
 plot_Mach_vs_ThrustLapse(parameter_range, h, TR)
 
+
 TR = 1.08
 h = 12192
 plot_Mach_vs_ThrustLapse(parameter_range, h, TR)
 
+'''
 TR = 1
 h = 0
 plot_Mach_vs_ThrustLapse(parameter_range, h, TR)
@@ -78,9 +80,11 @@ plot_Mach_vs_ThrustLapse(parameter_range, h, TR)
 TR = 1.08
 h = 0
 plot_Mach_vs_ThrustLapse(parameter_range, h, TR)
+'''
 
 plt.xlabel('Mach Number')
 plt.ylabel('Thrust Lapse')
 plt.legend()
+plt.ylim((0, 1.5))
 
 plt.show()
