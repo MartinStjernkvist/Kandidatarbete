@@ -41,7 +41,7 @@ class CommonFunctionality():
     def calculate_temperature(self, h):
         return T_SL - (6.5 * 10 ** (-3) * h)
 
-    def calculate_pressure(self, h, M_0):
+    def calculate_pressure(self, h):
         """
         Introduktionskompendium: Equation (1.29)
         """
@@ -357,13 +357,13 @@ class Mach_vs_ThurstLapse(CommonFunctionality):
     Functionality to create plot on page 42
     """
 
-    def __init__(self, T, P, M_0, TR):
-        self.T = T
-        self.P = P
+    def __init__(self, h, M_0, TR):
+        self.T = self.calculate_temperature(h)
+        self.P = self.calculate_pressure(h)
         self.M_0 = M_0
         self.TR = TR
-        self.theta_0 = self.calculate_theta_0(T, M_0)
-        self.delta_0 = self.calculate_delta_0(P, M_0)
+        self.theta_0 = self.calculate_theta_0(self.T, M_0)
+        self.delta_0 = self.calculate_delta_0(self.P, M_0)
 
     def maximum_alpha(self):
         """

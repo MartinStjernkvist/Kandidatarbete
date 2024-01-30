@@ -57,14 +57,17 @@ plt.legend()
 plt.show()
 '''
 
-# Parameters for Mach_vs_ThrustLapse
-TR = 1
-P = 22632 # altitude at 11km
-T = 216.65 # temperature at 11km
-parameter_range = np.linspace(0, 2, 100)
 
 plt.figure(figsize=(10, 6))
-plot_Mach_vs_ThrustLapse(parameter_range, T, P, TR)
+
+# Parameters for Mach_vs_ThrustLapse
+TR = 1
+h = 11000
+parameter_range = np.linspace(0, 2, 100)
+plot_Mach_vs_ThrustLapse(parameter_range, h, TR)
+
+TR = 1.08
+plot_Mach_vs_ThrustLapse(parameter_range, h, TR)
 
 plt.xlabel('Mach Number')
 plt.ylabel('Thrust Lapse')
