@@ -1,6 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+"""
+Constants
+"""
 g0 = 9.81
 rho_SL = 1.225
 t_R = 3
@@ -351,7 +354,7 @@ class Mach_vs_ThurstLapse(CommonFunctionality):
         self.theta_0 = self.calculate_theta_0(T, M_0)
         self.delta_0 = self.calculate_delta_0(P, M_0)
 
-    def maximum_power_alpha(self):
+    def maximum_alpha(self):
         """
         Equation (2.54a)
         """
@@ -360,7 +363,7 @@ class Mach_vs_ThurstLapse(CommonFunctionality):
         else:
             return self.delta_0 * (1 - ((3.5 * (self.theta_0 - self.TR)) / self.theta_0))
 
-    def military_power_alpha(self):
+    def military_alpha(self):
         """
         Equation (2.54b)
         """
