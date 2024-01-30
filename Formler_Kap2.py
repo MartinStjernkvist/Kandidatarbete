@@ -376,9 +376,7 @@ class Mach_vs_ThrustLapse(CommonFunctionality):
         """
         if self.theta_0 <= self.TR:
             return self.delta_0
-            print(f'theta0: {self.theta_0}, delta0: {self.delta_0}')
         else:
-            print(f'theta0: {self.theta_0}, delta0: {self.delta_0}')
             return self.delta_0 * (1 - ((3.5 * (self.theta_0 - self.TR)) / self.theta_0))
 
     def military_alpha(self):
