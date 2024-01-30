@@ -10,9 +10,6 @@ from Formler_Kap2 import Master_eqn, Case1, Case2, Case3, Case4, Case5, Case6, C
 # then plot result_in1 vs result_in2
 
 
-import numpy as np
-
-
 
 g0 = 9.81
 rho_SL = 1.225
