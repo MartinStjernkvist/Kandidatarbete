@@ -42,9 +42,19 @@ def calculate_pressure(h):
     else:
         return P_std * ((T_std - (6.5 * 10 ** (-3) * 11000)) / T_std) ** (g_0 / (6.5 * 10 ** (-3) * R))
 
-T = calculate_temperature(12192)
-print(f'temperature: {T}')
-theta0 = calculate_theta_0(T, 0)
+
+h = 12192
+M_0 = 0
+TR = 1
+
+T = calculate_temperature(h)
+P = calculate_pressure(h)
+
+print(f'temperature: {T} at height: {h}')
+theta0 = calculate_theta_0(T, M_0)
 print(f'theta0: {theta0}')
-delta0 = calculate_delta_0(T, 0)
+delta0 = calculate_delta_0(P, M_0)
 print(f'delta0: {theta0}')
+
+alpha = delta0 * (1 - 3.5 * (theta0 - TR) / theta0)
+print(alpha)

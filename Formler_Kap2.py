@@ -3,14 +3,14 @@ import numpy as np
 """
 Constants
 """
-g_0 = 9.81          #
-rho_SL = 1.225      #
-t_R = 3             # runtime on takeoff
-s_TO = 500          #
-T_std = 288.15      #
-P_std = 101325      #
-gamma = 1.4         #
-R = 8.314           # J/mol*K
+g_0 = 9.81  #
+rho_SL = 1.225  #
+t_R = 3  # runtime on takeoff
+s_TO = 500  #
+T_std = 288.15  #
+P_std = 101325  #
+gamma = 1.4  #
+R = 8.314  # J/mol*K
 
 
 class CommonFunctionality:
@@ -24,6 +24,21 @@ class CommonFunctionality:
         """
         return dh_dt + (V / g_0) * dV_dt
 
+    def calculate_temperature(self, h):
+        """
+        Introkompendium: Equation (1.29a)
+        """
+        return T_std - (6.5 * 10 ** (-3) * h)
+
+    def calculate_pressure(self, h):
+        """
+        Introkompendium: Equation (1.29b)
+        """
+        if h <= 11000:
+            return P_std * ((T_std - (6.5 * 10 ** (-3) * h)) / T_std) ** (g_0 / (6.5 * 10 ** (-3) * R))
+        else:
+            return P_std * ((T_std - (6.5 * 10 ** (-3) * 11000)) / T_std) ** (g_0 / (6.5 * 10 ** (-3) * R))
+
     def calculate_theta_0(self, T, M_0):
         """
         Equation (2.52a)
@@ -35,21 +50,6 @@ class CommonFunctionality:
         Equation (2.52b)
         """
         return (P / P_std) * (1 + ((gamma - 1) / 2) * M_0 ** 2) ** (gamma / (gamma - 1))
-
-    def calculate_temperature(self, h):
-        """
-        Introduktionskompendium: Equation (1.29a)
-        """
-        return T_std - (6.5 * 10 ** (-3) * h)
-
-    def calculate_pressure(self, h):
-        """
-        Introduktionskompendium: Equation (1.29b)
-        """
-        if h <= 11000:
-            return P_std * ((T_std - (6.5 * 10 ** (-3) * h)) / T_std) ** (g_0 / (6.5 * 10 ** (-3) * R))
-        else:
-            return P_std * ((T_std - (6.5 * 10 ** (-3) * 11000)) / T_std) ** (g_0 / (6.5 * 10 ** (-3) * R))
 
 
 class MasterEqn(CommonFunctionality):
@@ -376,9 +376,9 @@ class Mach_vs_ThrustLapse(CommonFunctionality):
         """
         if self.theta_0 <= self.TR:
             return self.delta_0
-            # print(f'theta0: {self.theta_0}, delta0: {self.delta_0}')
+            print(f'theta0: {self.theta_0}, delta0: {self.delta_0}')
         else:
-            # print(f'theta0: {self.theta_0}, delta0: {self.delta_0}')
+            print(f'theta0: {self.theta_0}, delta0: {self.delta_0}')
             return self.delta_0 * (1 - ((3.5 * (self.theta_0 - self.TR)) / self.theta_0))
 
     def military_alpha(self):
