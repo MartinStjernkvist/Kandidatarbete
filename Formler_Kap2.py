@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 
 """
 Constants
@@ -9,13 +8,12 @@ rho_SL = 1.225
 t_R = 3
 s_TO = 500
 T_std = 288.15
-T_SL = T_std
 P_std = 101325
-P_SL = P_std
 gamma = 1.4
-R = 8.314 # J/mol*K
+R = 8.314  # J/mol*K
 
-class CommonFunctionality():
+
+class CommonFunctionality:
     """
     Common functionality for MasterEqn and other classes
     """
@@ -39,14 +37,17 @@ class CommonFunctionality():
         return (P / P_std) * ((1 + (gamma - 1) / 2) * M_0 ** 2) ** (gamma / (gamma - 1))
 
     def calculate_temperature(self, h):
-        return T_SL - (6.5 * 10 ** (-3) * h)
+        return T_std - (6.5 * 10 ** (-3) * h)
 
     def calculate_pressure(self, h):
         """
         Introduktionskompendium: Equation (1.29)
         """
         if h <= 11000:
-            return P_SL * ((T_SL - (6.5 * 10 ** (-3) * h)) / T_SL) ** (g_0 / (6.5 * 10 ** (-3) * R))
+            return P_std * ((T_std - (6.5 * 10 ** (-3) * h)) / T_std) ** (g_0 / (6.5 * 10 ** (-3) * R))
+        else:
+            return P_std * ((T_std - (6.5 * 10 ** (-3) * 11000)) / T_std) ** (g_0 / (6.5 * 10 ** (-3) * R))
+
 
 class MasterEqn(CommonFunctionality):
     """
@@ -352,7 +353,7 @@ class Case9(MasterEqn):
         return np.sqrt(((2 * self.beta * self.k_TO ** 2) / (self.sigma * rho_SL * self.C_Lmax)) * (self.W_TO / self.S))
 
 
-class Mach_vs_ThurstLapse(CommonFunctionality):
+class Mach_vs_ThrustLapse(CommonFunctionality):
     """
     Functionality to create plot on page 42
     """
@@ -362,8 +363,8 @@ class Mach_vs_ThurstLapse(CommonFunctionality):
         self.P = self.calculate_pressure(h)
         self.M_0 = M_0
         self.TR = TR
-        self.theta_0 = self.calculate_theta_0(self.T, M_0)
-        self.delta_0 = self.calculate_delta_0(self.P, M_0)
+        self.theta_0 = self.calculate_theta_0(self.T, self.M_0)
+        self.delta_0 = self.calculate_delta_0(self.P, self.M_0)
 
     def maximum_alpha(self):
         """
