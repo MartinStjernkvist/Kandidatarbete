@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from Formler_Kap2 import Master_eqn, Case1, Case2, Case3, Case4, Case5, Case6, Case7, Case8, Case9
+from Formler_Kap2 import MasterEqn, Case1, Case2, Case3, Case4, Case5, Case6, Case7, Case8, Case9
 # Example
 # Case1_in1 = Case1(...in1 parameters...) - "in" for instance
 # result_in1 = Case1_in1.thrust_to_weight() - call thrust_to_weight from Case1 onto Case1_in1

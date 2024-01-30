@@ -5,18 +5,36 @@ g0 = 9.81
 rho_SL = 1.225
 t_R = 3
 s_TO = 500
+T_std = 288.15
+P_std = 101325
+gamma = 1.4
 
 
 class CommonFunctionality:
     """
-    Common functionality for both Master_eqn and Case1
+    Common functionality for MasterEqn and other classes
     """
 
     def calculate_P_s(self, V, dh_dt, dV_dt):
+        """
+        Equation (2.2b)
+        """
         return dh_dt + (V / g0) * dV_dt
 
+    def calculate_theta_0(self, T, M_0):
+        """
+        Equation (2.52a)
+        """
+        return (T / T_std) * ((1 + (gamma - 1) / 2) * M_0 ** 2)
 
-class Master_eqn(CommonFunctionality):
+    def calculate_delta_0(self, P, M_0):
+        """
+        Equation (2.52b)
+        """
+        return (P / P_std) * ((1 + (gamma - 1) / 2) * M_0 ** 2) ** (gamma / (gamma - 1))
+
+
+class MasterEqn(CommonFunctionality):
     """
     Equation (2.11)
     """
@@ -45,7 +63,7 @@ class Master_eqn(CommonFunctionality):
                 + self.C_D0 + self.C_DR) + (self.P_s / self.V))
 
 
-class Case1(Master_eqn):
+class Case1(MasterEqn):
     """
     Constant Altitude / Speed Cruise (P_s = 0)
     Given: dh/dt=0, dV/dt=0, n=1, h, V, q
@@ -85,7 +103,7 @@ class Case2(Case1):
     def __init__(self, T_SL, W_TO, beta, alpha, q, S, C_D0, C_DR, V, K1, K2, dh_dt,
                  dV_dt=0, n=1
                  ):
-        Master_eqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
+        MasterEqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
 
     def thrust_to_weight_min(self):
         return (self.beta / self.alpha) * (
@@ -107,12 +125,12 @@ class Case3(Case1):
                  R,
                  dh_dt=0, dV_dt=0
                  ):
-        Master_eqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
+        MasterEqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
         self.R_C = R
         self.n = np.sqrt(1 + (self.V ** 2 / (g0 ** 2 * self.R_C)) ** 2)
 
 
-class Case4(Master_eqn):
+class Case4(MasterEqn):
     """
     Horizontal Acceleration [P_s = (V/g0)(dV/dt)]
     Given: dh/dt=0, n=1, h, V_initial, V_final, delta_t_allowable
@@ -127,7 +145,7 @@ class Case4(Master_eqn):
                  V_inital, V_final, delta_t_allowable,
                  dh_dt=0, n=1
                  ):
-        Master_eqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
+        MasterEqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
         self.V_initial = V_inital
         self.V_final = V_final
         self.delta_t_allowable = delta_t_allowable
@@ -136,7 +154,7 @@ class Case4(Master_eqn):
     # ????????????????
 
 
-class Case5(Master_eqn):
+class Case5(MasterEqn):
     """
     Takeoff Ground Roll (s_G), when T_SL >> (D + R)
     Given: dh/dt=0, s_G, rho, C_Lmax, V_TO = k_TO V_STALL
@@ -149,7 +167,7 @@ class Case5(Master_eqn):
                  C_Lmax, rho, s_G, k_TO, V_STALL,
                  dh_dt=0
                  ):
-        Master_eqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
+        MasterEqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
         self.C_Lmax = C_Lmax
         self.s_G = s_G
         self.rho = rho
@@ -221,7 +239,7 @@ class Case6(Case5):
         pass
 
 
-class Case7(Master_eqn):
+class Case7(MasterEqn):
     """
     Breaking Roll (s_B)
     Given: alpha =< 0 (reverse thrust), dh/dt=0, rho, V_TD = k_TD V_STALL, D = q C_D S
@@ -237,7 +255,7 @@ class Case7(Master_eqn):
                  C_Lmax, C_D, C_L, rho, k_TD, V_STALL, mu_TO,
                  dh_dt=0
                  ):
-        Master_eqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
+        MasterEqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
         self.C_Lmax = C_Lmax
         self.C_D = C_D
         self.C_L = C_L
@@ -264,7 +282,7 @@ class Case7(Master_eqn):
     # ????????????????
 
 
-class Case8(Master_eqn):
+class Case8(MasterEqn):
     """
     Service Ceiling (P_s = dh/dt)
     Given: dV/dt=0, n=1, h, dh/dt>0, C_L
@@ -277,7 +295,7 @@ class Case8(Master_eqn):
                  C_L,
                  dV_dt=0, n=1
                  ):
-        Master_eqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
+        MasterEqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
         self.C_L = C_L
 
     def thrust_to_weight(self):
@@ -286,7 +304,7 @@ class Case8(Master_eqn):
                  (1 / self.V) * self.dh_dt))
 
 
-class Case9(Master_eqn):
+class Case9(MasterEqn):
     """
     Takeoff Climb Angle
     Given: theta, n=1, dV/dt=0, C_DR, C_Lmax, k_TO, h, sigma
@@ -299,7 +317,7 @@ class Case9(Master_eqn):
                  theta, C_Lmax, k_TO, sigma,
                  n=1, dV_dt=0
                  ):
-        Master_eqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
+        MasterEqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
         self.theta = theta
         self.C_Lmax = C_Lmax
         self.k_TO = k_TO
@@ -318,3 +336,37 @@ class Case9(Master_eqn):
         Equation (2.44)
         """
         return np.sqrt(((2 * self.beta * self.k_TO ** 2) / (self.sigma * rho_SL * self.C_Lmax)) * (self.W_TO / self.S))
+
+
+class Mach_vs_ThurstLapse(CommonFunctionality):
+    """
+    Functionality to create plot on page 42
+    """
+
+    def __init__(self, T, P, M_0, TR):
+        self.T = T
+        self.P = P
+        self.M_0 = M_0
+        self.TR = TR
+        self.theta_0 = self.calculate_theta_0(T, M_0)
+        self.delta_0 = self.calculate_delta_0(P, M_0)
+
+    def maximum_power_alpha(self):
+        """
+        Equation (2.54a)
+        """
+        if self.theta_0 <= self.TR:
+            return self.delta_0
+        else:
+            return self.delta_0 * (1 - ((3.5 * (self.theta_0 - self.TR)) / self.theta_0))
+
+    def military_power_alpha(self):
+        """
+        Equation (2.54b)
+        """
+        if self.theta_0 <= self.TR:
+            return 0.6 * self.delta_0
+        else:
+            return 0.6 * self.delta_0 * (1 - ((3.8 * (self.theta_0 - self.TR)) / self.theta_0))
+
+
