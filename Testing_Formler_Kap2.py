@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from Plotting_Funktioner import plot_case1_instances, plot_Mach_vs_ThrustLapse
 from Formler_Kap2 import MasterEqn, Case1, Case2, Case3, Case4, Case5, Case6, Case7, Case8, Case9
 from Formler_Kap2 import Mach_vs_ThurstLapse
+
 # Example
 # Case1_in1 = Case1(...in1 parameters...) - "in" for instance
 # result_in1 = Case1_in1.thrust_to_weight() - call thrust_to_weight from Case1 onto Case1_in1
@@ -15,12 +16,14 @@ from Formler_Kap2 import Mach_vs_ThurstLapse
 """
 Constants (keep track)
 """
-g0 = 9.81
+g_0 = 9.81
 rho_SL = 1.225
 t_R = 3
 s_TO = 500
 T_std = 288.15
+T_SL = T_std
 P_std = 101325
+P_SL = P_std
 gamma = 1.4
 
 
@@ -32,6 +35,7 @@ def C_D(K1, K2, C_L, C_D0):
 # result_in1 = Case1_in1.thrust_to_weight_min()
 # print(result_in1)
 
+'''
 # Parameters for Case1
 T_SL = 1
 alpha = 1
@@ -42,41 +46,28 @@ V = 300
 # Create a range of parameter values (C_D0, C_DR, K1, etc.)
 parameter_range = np.linspace(1, 10, 100)
 
-# Plotting
 plt.figure(figsize=(10, 6))
 plot_case1_instances(parameter_range, T_SL, alpha, q, S, V)
 
-# Add labels and legend
 plt.xlabel('W_TO/S')
 plt.ylabel('T_SL/W_TO')
 plt.title('Thrust-to-Weight Ratio vs. Wing Loading Ratio for Case1')
 plt.legend()
 
-# Show the plot
 plt.show()
 '''
 
-def plot_Mach_vs_ThrustLapse(parameter_range, T, P, M_0, TR):
-    ThrustLapse_max = []
-    ThrustLapse_military = []
+# Parameters for Mach_vs_ThrustLapse
+TR = 1
+P = 22632 # altitude at 11km
+T = 216.65 # temperature at 11km
+parameter_range = np.linspace(0, 2, 100)
 
-    for param_value in parameter_range:
-        instance = Mach_vs_ThurstLapse(T, P, M_0, TR)
-        ThrustLapse_max.append(instance.maximum_alpha())
-        ThrustLapse_military.append(instance.military_alpha())
+plt.figure(figsize=(10, 6))
+plot_Mach_vs_ThrustLapse(parameter_range, T, P, TR)
 
-    plt.plot(M_0, ThrustLapse_max)
-    plt.plot(M_0, ThrustLapse_military)
+plt.xlabel('Mach Number')
+plt.ylabel('Thrust Lapse')
+plt.legend()
 
-# Parameters for Case1
-T_SL = 1
-alpha = 1
-q = 1
-S = 20
-V = 300
-'''
-
-
-
-
-
+plt.show()

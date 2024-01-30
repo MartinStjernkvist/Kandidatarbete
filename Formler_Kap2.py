@@ -4,16 +4,18 @@ import matplotlib.pyplot as plt
 """
 Constants
 """
-g0 = 9.81
+g_0 = 9.81
 rho_SL = 1.225
 t_R = 3
 s_TO = 500
 T_std = 288.15
+T_SL = T_std
 P_std = 101325
+P_SL = P_std
 gamma = 1.4
+R = 8.314 # J/mol*K
 
-
-class CommonFunctionality:
+class CommonFunctionality():
     """
     Common functionality for MasterEqn and other classes
     """
@@ -22,7 +24,7 @@ class CommonFunctionality:
         """
         Equation (2.2b)
         """
-        return dh_dt + (V / g0) * dV_dt
+        return dh_dt + (V / g_0) * dV_dt
 
     def calculate_theta_0(self, T, M_0):
         """
@@ -36,6 +38,15 @@ class CommonFunctionality:
         """
         return (P / P_std) * ((1 + (gamma - 1) / 2) * M_0 ** 2) ** (gamma / (gamma - 1))
 
+    def calculate_temperature(self, h):
+        return T_SL - (6.5 * 10 ** (-3) * h)
+
+    def calculate_pressure(self, h, M_0):
+        """
+        Introduktionskompendium: Equation (1.29)
+        """
+        if h <= 11000:
+            return P_SL * ((T_SL - (6.5 * 10 ** (-3) * h)) / T_SL) ** (g_0 / (6.5 * 10 ** (-3) * R))
 
 class MasterEqn(CommonFunctionality):
     """
@@ -371,5 +382,3 @@ class Mach_vs_ThurstLapse(CommonFunctionality):
             return 0.6 * self.delta_0
         else:
             return 0.6 * self.delta_0 * (1 - ((3.8 * (self.theta_0 - self.TR)) / self.theta_0))
-
-
