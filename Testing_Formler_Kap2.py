@@ -16,14 +16,14 @@ from Formler_Kap2 import Mach_vs_ThrustLapse
 """
 Constants (keep track)
 """
-g_0 = 9.81
-rho_SL = 1.225
-t_R = 3
-s_TO = 500
-T_std = 288.15
-P_std = 101325
-gamma = 1.4
-R = 8.314  # J/mol*K
+g_0 = 9.81          #
+rho_SL = 1.225      #
+t_R = 3             # runtime on takeoff
+s_TO = 500          #
+T_std = 288.15      #
+P_std = 101325      #
+gamma = 1.4         #
+R = 8.314           # J/mol*K
 
 
 def C_D(K1, K2, C_L, C_D0):
@@ -56,22 +56,24 @@ plt.legend()
 plt.show()
 '''
 
-
 plt.figure(figsize=(10, 6))
 
 # Parameters for Mach_vs_ThrustLapse
-TR = 1
-h = 11000
 parameter_range = np.linspace(0, 2, 100)
+
+
+TR = 1
+h = 12192
 plot_Mach_vs_ThrustLapse(parameter_range, h, TR)
 
 TR = 1.08
-h = 11000
+h = 12192
 plot_Mach_vs_ThrustLapse(parameter_range, h, TR)
 
 TR = 1
 h = 0
 plot_Mach_vs_ThrustLapse(parameter_range, h, TR)
+
 
 TR = 1.08
 h = 0

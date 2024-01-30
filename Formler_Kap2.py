@@ -3,14 +3,14 @@ import numpy as np
 """
 Constants
 """
-g_0 = 9.81
-rho_SL = 1.225
-t_R = 3
-s_TO = 500
-T_std = 288.15
-P_std = 101325
-gamma = 1.4
-R = 8.314  # J/mol*K
+g_0 = 9.81          #
+rho_SL = 1.225      #
+t_R = 3             # runtime on takeoff
+s_TO = 500          #
+T_std = 288.15      #
+P_std = 101325      #
+gamma = 1.4         #
+R = 8.314           # J/mol*K
 
 
 class CommonFunctionality:
@@ -28,20 +28,23 @@ class CommonFunctionality:
         """
         Equation (2.52a)
         """
-        return (T / T_std) * ((1 + (gamma - 1) / 2) * M_0 ** 2)
+        return (T / T_std) * (1 + ((gamma - 1) / 2) * M_0 ** 2)
 
     def calculate_delta_0(self, P, M_0):
         """
         Equation (2.52b)
         """
-        return (P / P_std) * ((1 + (gamma - 1) / 2) * M_0 ** 2) ** (gamma / (gamma - 1))
+        return (P / P_std) * (1 + ((gamma - 1) / 2) * M_0 ** 2) ** (gamma / (gamma - 1))
 
     def calculate_temperature(self, h):
+        """
+        Introduktionskompendium: Equation (1.29a)
+        """
         return T_std - (6.5 * 10 ** (-3) * h)
 
     def calculate_pressure(self, h):
         """
-        Introduktionskompendium: Equation (1.29)
+        Introduktionskompendium: Equation (1.29b)
         """
         if h <= 11000:
             return P_std * ((T_std - (6.5 * 10 ** (-3) * h)) / T_std) ** (g_0 / (6.5 * 10 ** (-3) * R))
@@ -142,7 +145,7 @@ class Case3(Case1):
                  ):
         MasterEqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
         self.R_C = R
-        self.n = np.sqrt(1 + (self.V ** 2 / (g0 ** 2 * self.R_C)) ** 2)
+        self.n = np.sqrt(1 + (self.V ** 2 / (g_0 ** 2 * self.R_C)) ** 2)
 
 
 class Case4(MasterEqn):
@@ -195,7 +198,7 @@ class Case5(MasterEqn):
         Equation (2.22)
         """
         return ((self.beta ** 2 / self.alpha) *
-                (self.k_TO ** 2 / (self.s_G * self.rho * g0 * self.C_Lmax)) *
+                (self.k_TO ** 2 / (self.s_G * self.rho * g_0 * self.C_Lmax)) *
                 (self.W_TO / self.S))
 
     def evaluate_s_TO(self):
@@ -290,7 +293,7 @@ class Case7(MasterEqn):
         Reverse thrust
         """
         return ((self.beta ** 2 / (- self.alpha)) *
-                (self.k_TD ** 2 / (self.s_B * self.rho * g0 * self.C_Lmax)) *
+                (self.k_TD ** 2 / (self.s_B * self.rho * g_0 * self.C_Lmax)) *
                 (self.W_TO / self.S))
     # ????????????????
     # ????????????????
@@ -359,6 +362,7 @@ class Mach_vs_ThrustLapse(CommonFunctionality):
     """
 
     def __init__(self, h, M_0, TR):
+        self.h = h
         self.T = self.calculate_temperature(h)
         self.P = self.calculate_pressure(h)
         self.M_0 = M_0
@@ -372,7 +376,9 @@ class Mach_vs_ThrustLapse(CommonFunctionality):
         """
         if self.theta_0 <= self.TR:
             return self.delta_0
+            # print(f'theta0: {self.theta_0}, delta0: {self.delta_0}')
         else:
+            # print(f'theta0: {self.theta_0}, delta0: {self.delta_0}')
             return self.delta_0 * (1 - ((3.5 * (self.theta_0 - self.TR)) / self.theta_0))
 
     def military_alpha(self):

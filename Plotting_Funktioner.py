@@ -24,9 +24,12 @@ def plot_Mach_vs_ThrustLapse(parameter_range, h, TR):
     ThrustLapse_military = []
 
     for param_value in parameter_range:
-        instance = Mach_vs_ThrustLapse(h, param_value, TR)
-        ThrustLapse_max.append(instance.maximum_alpha())
-        ThrustLapse_military.append(instance.military_alpha())
+        instance = Mach_vs_ThrustLapse(h=h, M_0=param_value, TR=TR)
+        maximum_alpha = instance.maximum_alpha()
+        military_alpha = instance.military_alpha()
+        print(f'max alpha: {maximum_alpha}, mil alpha: {military_alpha}')
+        ThrustLapse_max.append(maximum_alpha)
+        ThrustLapse_military.append(military_alpha)
 
-    plt.plot(parameter_range, ThrustLapse_max, label=f'Max, {TR}')
-    plt.plot(parameter_range, ThrustLapse_military, label=f'Mil, {TR}')
+    plt.plot(parameter_range, ThrustLapse_max, label=f'Max, {TR}, h: {h}')
+    plt.plot(parameter_range, ThrustLapse_military, label=f'Mil, {TR}, h: {h}')
