@@ -23,7 +23,7 @@ s_TO = 500          #
 T_std = 288.15      #
 P_std = 101325      #
 gamma = 1.4         #
-R = 8.314           # J/mol*K
+R = 287             # J/kg*K
 
 
 def C_D(K1, K2, C_L, C_D0):
@@ -66,21 +66,26 @@ TR = 1
 h = 12192
 plot_Mach_vs_ThrustLapse(parameter_range, h, TR)
 
+TR = 1.05
+h = 12192
+plot_Mach_vs_ThrustLapse(parameter_range, h, TR)
 
 TR = 1.08
 h = 12192
 plot_Mach_vs_ThrustLapse(parameter_range, h, TR)
 
-'''
 TR = 1
 h = 0
 plot_Mach_vs_ThrustLapse(parameter_range, h, TR)
 
+TR = 1.05
+h = 0
+plot_Mach_vs_ThrustLapse(parameter_range, h, TR)
 
 TR = 1.08
 h = 0
 plot_Mach_vs_ThrustLapse(parameter_range, h, TR)
-'''
+
 
 plt.xlabel('Mach Number')
 plt.ylabel('Thrust Lapse')
