@@ -35,7 +35,7 @@ class AppendixD():
         self.tau_c = tau_c
         self.M_0_break = M_0_break
 
-    def calc_theta_0_break(self, T_t_4_max, T_t_SLS):
+    def theta_0_break(self, T_t_4_max, T_t_SLS):
         return T_t_4_max / T_t_SLS
 
     def theta_0(self, T_0, gamma_c, M_0):
@@ -46,8 +46,9 @@ class AppendixD():
         theta_tau_r = (T_0 / T_std) * (1 + ((gamma_c - 1) / 2) * M_0 ** 2)
         return theta_tau_r
 
-    def CompressorTotalTemperatureRatioToYield(self, eta_m, beta, f, c_pt, T_t_4, c_pc, theta_0):
+    def tau_c(self, eta_m, beta, f, c_pt, T_t_4, c_pc, theta_0):
         """
+        Compressor total temperature ratio
         Equation (D.2)
 
         Depends only on:
@@ -80,10 +81,13 @@ class AppendixD_dup(AppendixD):
                  M_0_break):
         super().__init__(T_t_4_max, T_t_SLS, gamma_c, eta_c, eta_m, beta, c_pt, c_pc, T_0, M_0, T_t_4, f, tau_c,
                          M_0_break)
-        self.theta_0_break = self.calc_theta_0_break(T_t_4_max, T_t_SLS)
+        self.theta_0_break = self.theta_0_break(T_t_4_max, T_t_SLS)
         self.M_0_break = self.MachBreak(gamma_c, self.theta_0_break)
         self.theta_0 = self.theta_0(T_0, gamma_c, M_0)
-        self.tau_c = self.CompressorTotalTemperatureRatioToYield(eta_m, beta, f, c_pt, T_t_4, c_pc, self.theta_0)
+        self.tau_c = self.tau_c(eta_m, beta, f, c_pt, T_t_4, c_pc, self.theta_0)
+
+
+
 
     # def calc_theta_0_break_dup(self, T_t_4_max, T_t_SLS):
     # def calc_theta_0_break_dup(self, T_t_4_max, T_t_SLS):
