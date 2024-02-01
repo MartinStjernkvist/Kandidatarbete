@@ -24,6 +24,8 @@ T_std = 288.15      #
 P_std = 101325      #
 gamma = 1.4         #
 R = 287             # J/kg*K
+placeholder = 10 ** 20  # use as placeholder when creating instances of classes,
+                        # not used in calculations of the instance
 
 
 def C_D(K1, K2, C_L, C_D0):
