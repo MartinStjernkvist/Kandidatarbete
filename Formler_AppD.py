@@ -35,7 +35,6 @@ class AppendixD():
     def calc_theta_0_break(self, T_t_4_max, T_t_SLS):
         return T_t_4_max / T_t_SLS
 
-
     def theta_0(self, T_0, gamma_c, M_0):
         """
         Equation (D.1)
@@ -58,18 +57,18 @@ class AppendixD():
                 ((c_pt * T_t_4) / (c_pc * theta_0))))
         return tau_c
 
-    def ThrottleRatio(self):
+    def ThrottleRatio(self, T_t_4_max, T_t_SLS):
         """
         Equation (D.6)
         """
-        theta_0_break = self.T_t_4_max / self.T_t_SLS
+        theta_0_break = T_t_4_max / T_t_SLS
         return theta_0_break
 
-    def MachBreak(self):
+    def MachBreak(self, gamma_c, theta_0_break):
         """
         Equation (D.7)
         """
-        M_0_break = np.sqrt((2 / (self.gamma_c - 1)) * (self.theta_0_break - 1))
+        M_0_break = np.sqrt((2 / (gamma_c - 1)) * (theta_0_break - 1))
         return M_0_break
 
 
@@ -77,6 +76,7 @@ class AppendixD_dup(AppendixD):
     def __init__(self, T_t_4_max, T_t_SLS, gamma_c, eta_c, eta_m, beta, c_pt, c_pc, T_0, M_0, T_t_4, f):
         super().__init__(T_t_4_max, T_t_SLS, gamma_c, eta_c, eta_m, beta, c_pt, c_pc, T_0, M_0, T_t_4, f)
         self.theta_0_break = self.calc_theta_0_break(T_t_4_max, T_t_SLS)
+        self.M_0_break = self.MachBreak(gamma_c, self.theta_0_break)
         self.theta_0 = self.theta_0(T_0, gamma_c, M_0)
         self.tau_c = self.CompressorTotalTemperatureRatioToYield(eta_m, beta, f, c_pt, T_t_4, c_pc, self.theta_0)
 
@@ -89,6 +89,9 @@ class AppendixD_dup(AppendixD):
 
     def get_tau_c(self):
         return self.tau_c
+
+    def get_M_0_break(self):
+        return self.M_0_break
 
     def theta_0_dup(self):
         """
@@ -127,10 +130,12 @@ class AppendixD_dup(AppendixD):
         return M_0_break
 
 
-inst = AppendixD_dup(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+inst = AppendixD_dup(2, 1, 1.1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
 theta_0 = inst.get_theta_0_dup()
 tau_c = inst.get_tau_c()
-print(theta_0, tau_c)
+M_0_break = inst.get_M_0_break()
+
 
 new_tau_c = inst.CompressorTotalTemperatureRatioToYield_dup()
-print(new_tau_c)
+
+print(f'M_0_break: {M_0_break}, theta_0, tau_c')
