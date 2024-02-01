@@ -16,14 +16,14 @@ placeholder = 10 ** 20  # use as placeholder when creating instances of classes,
 
 class CommonFunctionalityAppD:
 
-    def calc_theta_0break(self, T_t4max, T_tSLS):
-        return T_t4max / T_tSLS
+    def calc_theta_0_break(self, T_t_4_max, T_t_SLS):
+        return T_t_4_max / T_t_SLS
 
 
 class AppendixD(CommonFunctionalityAppD):
-    def __init__(self, T_t4max, T_tSLS, gamma_c, eta_c, eta_m, c_pt, c_pc, T_0, M_0):
-        self.T_t4max = T_t4max
-        self.T_tSLS = T_tSLS
+    def __init__(self, T_t_4_max, T_t_SLS, gamma_c, eta_c, eta_m, beta, c_pt, c_pc, T_0, M_0):
+        self.T_t_4_max = T_t_4_max
+        self.T_t_SLS = T_t_SLS
         self.gamma_c = gamma_c
         self.eta_c = eta_c
         self.eta_m = eta_m
@@ -31,7 +31,8 @@ class AppendixD(CommonFunctionalityAppD):
         self.c_pc = c_pc
         self.M_0 = M_0
         self.T_0 = T_0
-        self.theta_0_break = self.calc_theta_0break(T_t4max, T_tSLS)
+        self.beta = beta
+        self.theta_0_break = self.calc_theta_0break(T_t_4_max, T_t_SLS)
 
     def theta_0(self):
         """
@@ -42,8 +43,14 @@ class AppendixD(CommonFunctionalityAppD):
         return theta_tau_r
 
 
-    def CompressorRatio(self):
-        return (1 + )
+    def CompressorTotalTemperatureRatioToYield(self):
+        """
+        Equation (D.2)
+
+        Depends only on: turbine total temperature ratio tau_t, throttle setting: T_t_4
+        """
+        tau_c = 1 + self.eta_m * (1 - self.beta) * (1 + f)
+        return tau_c
 
     def ThrottleRatio(self):
         """
