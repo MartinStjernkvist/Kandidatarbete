@@ -1,4 +1,5 @@
 import numpy as np
+from scipy import integrate
 
 """
 Constants (keep track)
@@ -69,6 +70,8 @@ class CommonFunctionality:
 
     def centripetal_force(self, V, R_C):
         """
+        = n
+
         Equation (2.17)
 
         :param V:   velocity
@@ -77,13 +80,37 @@ class CommonFunctionality:
         n = np.sqrt(1 + (V ** 2 / (g_0 ** 2 * R_C)) ** 2)
         return n
 
+    def dV_dt(self, V_final, V_initial, delta_t_allowable):
+        return ((V_final - V_initial)/delta_t_allowable)
+    
+    def s_G(self, ksi_TO, beta, W_TO, S, rho, alpha, C_Lmax, k_TO):
+        """
+        ground roll distance
+
+        Equation (2.25)
+
+        Look at "note" page 30-31
+        """
+        pass
+
+    def s_TO(self):
+        # """
+        # takeoff distance
+        #
+        # Equation (2.E1)
+        # """
+        # return ((self.k_TO ** 2 * self.beta ** 2) /
+        #         (self.rho * self.C_Lmax * self.alpha * (self.T_SL / self.W_TO))) * (self.W_TO / self.S) + (
+        #         t_R * self.k_TO) * np.sqrt((2 * self.beta) / (self.rho * self.C_Lmax)) * np.sqrt(self.W_TO / self.S)
+        pass
+
 
 class MasterEqn(CommonFunctionality):
     def __init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt):
         """
         :param T_SL:    thrust loading at sea level
         :param W_TO:    weight at takeoff
-        :param beta:
+        :param beta:    depends on how much fuel has been consumed
         :param alpha:   installed full throttle thrust lapse
         :param q:
         :param S:       surface of
@@ -114,7 +141,7 @@ class MasterEqn(CommonFunctionality):
 
     def installed_thrust(self):
         """
-        T
+        = T
 
         Equation (2.3)
         """
@@ -122,7 +149,7 @@ class MasterEqn(CommonFunctionality):
 
     def instantaneous_weight(self):
         """
-        W
+        = W
 
         Equation (2.4)
         """
@@ -130,6 +157,8 @@ class MasterEqn(CommonFunctionality):
 
     def master_thrust_to_weight(self):
         """
+        = T_SL / W_TO
+
         Equation (2.11)
         """
         return (self.beta / self.alpha) * ((self.q * self.S) / (self.beta * self.W_TO) * (
@@ -223,18 +252,28 @@ class Case4(MasterEqn):
     """
 
     def __init__(self, T_SL, W_TO, beta, alpha, q, S, C_D0, C_DR, V, K1, K2, dV_dt,
-                 V_inital, V_final, delta_t_allowable,
+                 V_initial, V_final, delta_t_allowable,
                  dh_dt=0, n=1
                  ):
         """
         :param V_inital:            initial velocity
         :param V_final:             final velocity
-        :param delta_t_allowable:   allowable time difference
+        :param delta_t_allowable:   allowable time to accelerate
         """
         MasterEqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
-        self.V_initial = V_inital
+        self.V_initial = V_initial
         self.V_final = V_final
         self.delta_t_allowable = delta_t_allowable
+        self.dV_dt = self.dV_dt(V_final, V_initial, delta_t_allowable)
+
+    # def delta_t_function(self, V):
+    #     return (1 / (2 * g_0)) * (V / self.P_s)
+    #
+    # def delta_t(self,):
+    #     result, error = integrate.quad(delta_t_function, self.V_initial, self.V_final)
+    #     delta_t_allowable = result
+    #     return delta_t_allowable
+
     # ????????????????
     # ????????????????
     # ????????????????
@@ -248,7 +287,6 @@ class Case5(MasterEqn):
     Extra (parameters not in Master_eqn): C_Lmax, rho, s_G, k_TO, V_STALL
     Known: dh_dt=0
     """
-
     def __init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dV_dt,
                  C_Lmax, rho, s_G, k_TO, V_STALL,
                  dh_dt=0
@@ -256,9 +294,9 @@ class Case5(MasterEqn):
         """
         :param C_Lmax:
         :param rho:
-        :param s_G:
+        :param s_G:     ground roll distance
         :param k_TO:
-        :param V_STALL:
+        :param V_STALL: stall velocity
         """
         MasterEqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
         self.C_Lmax = C_Lmax
@@ -267,6 +305,7 @@ class Case5(MasterEqn):
         self.k_TO = k_TO
         self.V_STALL = V_STALL
         self.V_TO = k_TO * V_STALL
+        self.s_TO = self.s_TO()
 
     def thrust_to_weight(self):
         """
@@ -276,14 +315,6 @@ class Case5(MasterEqn):
                 (self.k_TO ** 2 / (self.s_G * self.rho * g_0 * self.C_Lmax)) *
                 (self.W_TO / self.S))
 
-    def evaluate_s_TO(self):
-        # """
-        # Equation (2.E1)
-        # """
-        # return ((self.k_TO ** 2 * self.beta ** 2) /
-        #         (self.rho * self.C_Lmax * self.alpha * (self.T_SL / self.W_TO))) * (self.W_TO / self.S) + (
-        #         t_R * self.k_TO) * np.sqrt((2 * self.beta) / (self.rho * self.C_Lmax)) * np.sqrt(self.W_TO / self.S)
-        pass
 
     def wing_loading(self):
         """
@@ -318,9 +349,9 @@ class Case6(Case5):
         :param C_L:     lift coefficient
         :param C_Lmax:
         :param rho:     density
-        :param s_G:
+        :param s_G:     ground roll distance
         :param k_TO:
-        :param V_STALL:
+        :param V_STALL: stall velocity
         :param mu_TO:
         """
         Case5.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt,
@@ -334,12 +365,11 @@ class Case6(Case5):
         self.V_STALL = V_STALL
         self.V_TO = k_TO * V_STALL
         self.R = q * C_DR * S + mu_TO * (beta * W_TO - q * C_L * S)
+        self.ksi_TO = C_D + C_DR - mu_TO * C_L
+        self.s_G = self.s_G(self.ksi_TO, beta, W_TO, S, rho, alpha, C_Lmax, k_TO)
 
-    def s_G(self):
-        """
-        Look at "note" page 30-31
-        """
-        pass
+    def thrust_to_weight(self):
+        return
 
 
 class Case7(MasterEqn):
@@ -377,9 +407,7 @@ class Case7(MasterEqn):
         self.rho = rho
         self.k_TD = k_TD
         self.V_TD = k_TD * V_STALL
-
-    def s_B(self):
-        pass
+        self.s_B = self.s_B()
 
     def thrust_to_weight(self):
         """
