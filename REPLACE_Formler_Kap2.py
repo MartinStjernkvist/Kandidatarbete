@@ -472,6 +472,14 @@ class Case9(MasterEqn):
         return np.sqrt(((2 * self.beta * self.k_TO ** 2) / (self.sigma * rho_SL * self.C_Lmax)) * (self.W_TO / self.S))
 
 
+class Takeoff():
+    pass
+
+
+class Supercruise():
+    pass
+
+
 class Mach_vs_ThrustLapse(CommonFunctionality):
     """
     Functionality to create plot on page 42
