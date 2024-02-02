@@ -74,8 +74,8 @@ class MasterEqn(CommonFunctionality):
         :param T_SL:
         :param W_TO:
         :param beta:
-        :param alpha:
-        :param q:
+        :param alpha: installed full throttle thrust lapse
+        :param q: 
         :param S:
         :param n:
         :param C_D0:
@@ -102,6 +102,9 @@ class MasterEqn(CommonFunctionality):
         self.dh_dt = dh_dt
         self.dV_dt = dV_dt
         self.P_s = self.calculate_P_s(V, dh_dt, dV_dt)
+
+    def thrust(self):
+        return self.alpha * self.T_SL
 
     def master_thrust_to_weight(self):
         return (self.beta / self.alpha) * ((self.q * self.S) / (self.beta * self.W_TO) * (
@@ -267,6 +270,18 @@ class Case6(Case5):
                  C_D, C_L, C_Lmax, rho, s_G, k_TO, V_STALL, mu_TO,  # s_G Not known
                  dh_dt=0
                  ):
+        """
+        :param C_D:
+        :param C_L:
+        :param C_Lmax:
+        :param rho:
+        :param s_G:
+        :param k_TO:
+        :param V_STALL:
+        :param mu_TO:
+        :param dh_dt:
+        """
+
         Case5.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt,
                        C_Lmax, rho, s_G, k_TO, V_STALL)
         self.C_D = C_D

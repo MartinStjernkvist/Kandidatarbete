@@ -3,17 +3,15 @@ import numpy as np
 """
 Constants (keep track)
 """
-g_0 = 9.81          #
-rho_SL = 1.225      #
-t_R = 3             # runtime on takeoff
-s_TO = 500          #
-T_std = 288.15      #
-P_std = 101325      #
-gamma = 1.4         #
-R = 287             # J/kg*K
+g_0 = 9.81  #
+rho_SL = 1.225  #
+t_R = 3  # runtime on takeoff
+s_TO = 500  #
+T_std = 288.15  #
+P_std = 101325  #
+gamma = 1.4  #
+R = 287  # J/kg*K
 
-
-# not used in calculations of the instance
 
 class AppendixD:
 
@@ -22,10 +20,12 @@ class AppendixD:
         Dimensionless ratio of freestream total temperature to
         sea level static temperature of the standard atmosphere
 
+        = theta_tau_r
+
         Equation (D.1)
         Same as (2.52a), but with gamma_c
 
-        :param T_0:
+        :param T_0: freestream temperature
         :param gamma_c:
         :param M_0:
         :return:
@@ -44,7 +44,7 @@ class AppendixD:
         - throttle setting: T_t_4
         - flight conditions theta_0
 
-        :param eta_m: 
+        :param eta_m:
         :param beta:
         :param f:
         :param c_pt:
@@ -54,8 +54,8 @@ class AppendixD:
         :return:
         """
         return (1 + eta_m * (1 - beta) *
-                 ((1 + f) * (1 / T_std) *
-                  ((c_pt * T_t_4) / (c_pc * theta_0))))
+                ((1 + f) * (1 / T_std) *
+                 ((c_pt * T_t_4) / (c_pc * theta_0))))
 
     def theta_0_break(self, T_t_4_max, T_t_SLS):
         """
@@ -69,7 +69,6 @@ class AppendixD:
         """
         return T_t_4_max / T_t_SLS
 
-
     def M_0_break(self, gamma_c, theta_0_break):
         """
         Mach Break
@@ -81,9 +80,6 @@ class AppendixD:
         :return:
         """
         return np.sqrt((2 / (gamma_c - 1)) * (theta_0_break - 1))
-
-
-
 
 
 T_t_4_max = 1
@@ -101,9 +97,8 @@ f = 1
 tau_c = 1
 M_0_break = 1
 
-theta_0_break = AppendixD().theta_0_break(1,1)
+theta_0_break = AppendixD().theta_0_break(1, 1)
 print(theta_0_break)
-
 
 # print(
 #     f'\nT_t_4_max {T_t_4_max}, \nT_t_SLS {T_t_SLS}, \ngamma_c {gamma_c}, \neta_c {eta_c}, \neta_m {eta_m}, \nbeta {beta}, \nc_pt {c_pt}, \nc_pc {c_pc}, \nT_0 {T_0}, \nM_0 {M_0}, \nT_t_4 {T_t_4}, \nf {f}, \ntau_c {tau_c}, \nM_0_break {M_0_break}')
