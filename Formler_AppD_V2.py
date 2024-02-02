@@ -11,6 +11,8 @@ T_std = 288.15  #
 P_std = 101325  #
 gamma = 1.4  #
 R = 287  # J/kg*K
+
+
 # s_G = ? # ground roll distance
 # s_B = ? # breaking distance
 # s_TO = ? # takeoff distance
@@ -19,7 +21,7 @@ class AppendixD:
 
     def theta_0(self, T_0, gamma_c, M_0):
         """
-        Dimensionless ratio of freestream total temperature to
+        dimensionless ratio of freestream total temperature to
         sea level static temperature of the standard atmosphere
 
         = theta_tau_r
@@ -36,7 +38,7 @@ class AppendixD:
 
     def tau_c(self, eta_m, beta, f, c_pt, T_t_4, c_pc, theta_0):
         """
-        Compressor total temperature ratio
+        compressor total temperature ratio
 
         Equation (D.2)
 
@@ -52,7 +54,6 @@ class AppendixD:
         :param T_t_4:
         :param c_pc:
         :param theta_0:
-        :return:
         """
         return (1 + eta_m * (1 - beta) *
                 ((1 + f) * (1 / T_std) *
@@ -60,43 +61,42 @@ class AppendixD:
 
     def theta_0_break(self, T_t_4_max, T_t_SLS):
         """
-        Throttle Ratio
+        throttle ratio
 
         Equation (D.6)
 
         :param T_t_4_max:
         :param T_t_SLS:
-        :return:
         """
         return T_t_4_max / T_t_SLS
 
     def M_0_break(self, gamma_c, theta_0_break):
         """
-        Mach Break
+        mach break
 
         Equation (D.7)
 
         :param gamma_c:
         :param theta_0_break:
-        :return:
         """
         return np.sqrt((2 / (gamma_c - 1)) * (theta_0_break - 1))
 
-
-T_t_4_max = 1
-T_t_SLS = 1
-gamma_c = 1.5
-eta_c = 1
-eta_m = 1
-beta = 1
-c_pt = 1
-c_pc = 1
-T_0 = 1
-M_0 = 1
-T_t_4 = 1
-f = 1
-tau_c = 1
-M_0_break = 1
+"""
+T_t_4_max = 
+T_t_SLS = 
+gamma_c = 
+eta_c = 
+eta_m = 
+beta = 
+c_pt = 
+c_pc = 
+T_0 = 
+M_0 = 
+T_t_4 = 
+f = 
+tau_c = 
+M_0_break = 
+"""
 
 theta_0_break = AppendixD().theta_0_break(1, 1)
 print(theta_0_break)

@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from Plotting_Funktioner import plot_case1_instances, plot_Mach_vs_ThrustLapse
-from Formler_Kap2 import MasterEqn, Case1, Case2, Case3, Case4, Case5, Case6, Case7, Case8, Case9
+from REPLACE_Formler_Kap2 import MasterEqn, Case1, Case2, Case3, Case4, Case5, Case6, Case7, Case8, Case9
 from Formler_Kap2 import Mach_vs_ThrustLapse
 from Formler_AppD_V2 import AppendixD
 

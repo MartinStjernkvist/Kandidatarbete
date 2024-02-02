@@ -12,6 +12,8 @@ T_std = 288.15  #
 P_std = 101325  #
 gamma = 1.4  #
 R = 287  # J/kg*K
+
+
 # s_G = ? # ground roll distance
 # s_B = ? # breaking distance
 # s_TO = ? # takeoff distance
@@ -58,6 +60,9 @@ class CommonFunctionality:
 
     def theta_0(self, T, M_0):
         """
+        dimensionless ratio of freestream total temperature to
+        sea level static temperature of the standard atmosphere
+
         Equation (2.52a)
 
         :param T:       thrust
@@ -349,11 +354,6 @@ class Case6(Case5):
         """
         :param C_D:     drag coefficient
         :param C_L:     lift coefficient
-        :param C_Lmax:  maximum coefficient of lift
-        :param rho:     density
-        :param s_G:     ground roll distance
-        :param k_TO:
-        :param V_STALL: stall velocity
         :param mu_TO:
         """
         Case5.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt,
@@ -389,15 +389,6 @@ class Case7(MasterEqn):
                  C_Lmax, C_D, C_L, rho, k_TD, V_STALL, mu_TO,
                  dh_dt=0
                  ):
-        """
-        :param C_Lmax:  maximum coefficient of lift
-        :param C_D:
-        :param C_L:
-        :param rho:
-        :param k_TD:
-        :param V_STALL:
-        :param mu_TO:
-        """
         MasterEqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
         self.C_Lmax = C_Lmax
         self.C_D = C_D
@@ -457,6 +448,9 @@ class Case9(MasterEqn):
                  theta, C_Lmax, k_TO, sigma,
                  n=1, dV_dt=0
                  ):
+        """
+        :param sigma:
+        """
         MasterEqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
         self.theta = theta
         self.C_Lmax = C_Lmax
@@ -484,6 +478,11 @@ class Mach_vs_ThrustLapse(CommonFunctionality):
     """
 
     def __init__(self, h, M_0, TR):
+        """
+        :param h:   altitude
+        :param M_0: mach number
+        :param TR:  throttle ratio
+        """
         self.h = h
         self.T = self.temperature(h)
         self.P = self.pressure(h)
