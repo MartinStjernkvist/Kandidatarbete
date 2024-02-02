@@ -18,9 +18,12 @@ class CommonFunctionality:
     Common functionality for MasterEqn and other classes
     """
 
-    def calculate_P_s(self, V, dh_dt, dV_dt):
+    def P_s(self, V, dh_dt, dV_dt):
         """
+        Weight specific excess power
+
         Equation (2.2b)
+
         :param V:
         :param dh_dt:
         :param dV_dt:
@@ -28,18 +31,20 @@ class CommonFunctionality:
         """
         return dh_dt + (V / g_0) * dV_dt
 
-    def calculate_temperature(self, h):
+    def temperature(self, h):
         """
         Introkompendium: Equation (1.29a)
+
         :param h:
         :return:
         """
 
         return T_std - (6.5 * 10 ** (-3) * h)
 
-    def calculate_pressure(self, h):
+    def pressure(self, h):
         """
         Introkompendium: Equation (1.29b)
+
         :param h:
         :return:
         """
@@ -48,16 +53,17 @@ class CommonFunctionality:
         else:
             return P_std * ((T_std - (6.5 * 10 ** (-3) * 11000)) / T_std) ** (g_0 / (6.5 * 10 ** (-3) * R))
 
-    def calculate_theta_0(self, T, M_0):
+    def theta_0(self, T, M_0):
         """
         Equation (2.52a)
+
         :param T:
         :param M_0:
         :return:
         """
         return (T / T_std) * (1 + ((gamma - 1) / 2) * M_0 ** 2)
 
-    def calculate_delta_0(self, P, M_0):
+    def delta_0(self, P, M_0):
         """
         Equation (2.52b)
         """
@@ -71,16 +77,16 @@ class MasterEqn(CommonFunctionality):
 
     def __init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt):
         """
-        :param T_SL:
-        :param W_TO:
+        :param T_SL: thrust loading at sea level
+        :param W_TO: weight at takeoff
         :param beta:
         :param alpha: installed full throttle thrust lapse
-        :param q: 
-        :param S:
-        :param n:
+        :param q:
+        :param S: surface of
+        :param n: load factor
         :param C_D0:
         :param C_DR:
-        :param V:
+        :param V: velocity
         :param K1:
         :param K2:
         :param dh_dt:
@@ -101,12 +107,28 @@ class MasterEqn(CommonFunctionality):
         self.K2 = K2
         self.dh_dt = dh_dt
         self.dV_dt = dV_dt
-        self.P_s = self.calculate_P_s(V, dh_dt, dV_dt)
+        self.P_s = self.P_s(V, dh_dt, dV_dt)
 
-    def thrust(self):
+    def installed_thrust(self):
+        """
+        T
+
+        Equation (2.3)
+        """
         return self.alpha * self.T_SL
 
+    def instantateous_weight(self):
+        """
+        W
+
+        Equation (2.4)
+        """
+        return self.beta * self.W_TO
+
     def master_thrust_to_weight(self):
+        """
+        Equation (2.11)
+        """
         return (self.beta / self.alpha) * ((self.q * self.S) / (self.beta * self.W_TO) * (
                 self.K1 * ((self.n * self.beta * self.W_TO) / (self.q * self.S)) ** 2
                 + self.K2 * ((self.n * self.beta * self.W_TO) / (self.q * self.S))
@@ -294,7 +316,7 @@ class Case6(Case5):
         self.V_TO = k_TO * V_STALL
         self.R = q * C_DR * S + mu_TO * (beta * W_TO - q * C_L * S)
 
-    def evaluate_s_G(self):
+    def s_G(self):
         """
         Look at "note" page 30-31
         """
@@ -328,7 +350,7 @@ class Case7(MasterEqn):
         self.k_TD = k_TD
         self.V_TD = k_TD * V_STALL
 
-    def evaluate_s_B(self):
+    def s_B(self):
         pass
 
     def thrust_to_weight(self):
@@ -393,7 +415,7 @@ class Case9(MasterEqn):
                 ((self.K1 * self.C_Lmax / self.k_TO ** 2) + self.K2 +
                  ((self.C_D0 + self.C_DR) / (self.C_Lmax / self.k_TO ** 2)) + np.sin(self.theta)))
 
-    def evaluate_V(self):
+    def V(self):
         """
         Equation (2.44)
         """
@@ -407,14 +429,14 @@ class Mach_vs_ThrustLapse(CommonFunctionality):
 
     def __init__(self, h, M_0, TR):
         self.h = h
-        self.T = self.calculate_temperature(h)
-        self.P = self.calculate_pressure(h)
+        self.T = self.temperature(h)
+        self.P = self.pressure(h)
         self.M_0 = M_0
         self.TR = TR
-        self.theta_0 = self.calculate_theta_0(self.T, self.M_0)
-        self.delta_0 = self.calculate_delta_0(self.P, self.M_0)
+        self.theta_0 = self.theta_0(self.T, self.M_0)
+        self.delta_0 = self.delta_0(self.P, self.M_0)
 
-    def maximum_alpha(self):
+    def alpha_max(self):
         """
         Equation (2.54a)
         """
@@ -423,7 +445,7 @@ class Mach_vs_ThrustLapse(CommonFunctionality):
         else:
             return self.delta_0 * (1 - ((3.5 * (self.theta_0 - self.TR)) / self.theta_0))
 
-    def military_alpha(self):
+    def alpha_military(self):
         """
         Equation (2.54b)
         """
