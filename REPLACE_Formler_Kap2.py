@@ -29,18 +29,12 @@ class CommonFunctionality:
         Weight specific excess power
 
         Equation (2.2b)
-
-        :param V:       velocity
-        :param dh_dt:   altitude derivative
-        :param dV_dt:   acceleration
         """
         return dh_dt + (V / g_0) * dV_dt
 
     def temperature(self, h):
         """
         Introkompendium: Equation (1.29a)
-
-        :param h:   altitude
         """
         T_0 = T_std - (6.5 * 10 ** (-3) * h)
         return T_0
@@ -48,8 +42,6 @@ class CommonFunctionality:
     def pressure(self, h):
         """
         Introkompendium: Equation (1.29b)
-
-        :param h:   altitude
         """
         if h <= 11000:
             P_0 = P_std * ((T_std - (6.5 * 10 ** (-3) * h)) / T_std) ** (g_0 / (6.5 * 10 ** (-3) * R))
@@ -64,9 +56,6 @@ class CommonFunctionality:
         sea level static temperature of the standard atmosphere
 
         Equation (2.52a)
-
-        :param T:       thrust
-        :param M_0:     mach number
         """
         return (T / T_std) * (1 + ((gamma - 1) / 2) * M_0 ** 2)
 
@@ -76,16 +65,13 @@ class CommonFunctionality:
         """
         return (P / P_std) * (1 + ((gamma - 1) / 2) * M_0 ** 2) ** (gamma / (gamma - 1))
 
-    def centripetal_force(self, V, R_C):
+    def centripetal_force(self, V, R):
         """
         = n
 
         Equation (2.17)
-
-        :param V:   velocity
-        :param R_C: radius
         """
-        n = np.sqrt(1 + (V ** 2 / (g_0 ** 2 * R_C)) ** 2)
+        n = np.sqrt(1 + (V ** 2 / (g_0 ** 2 * R)) ** 2)
         return n
 
     def dV_dt(self, V_final, V_initial, delta_t_allowable):
@@ -128,7 +114,7 @@ class MasterEqn(CommonFunctionality):
         :param V:       velocity
         :param K1:
         :param K2:
-        :param dh_dt:   altitude derivative
+        :param dh_dt:   rise / descent
         :param dV_dt:   acceleration
         """
         self.T_SL = T_SL
