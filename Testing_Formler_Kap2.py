@@ -17,15 +17,17 @@ from Formler_AppD_V2 import AppendixD
 """
 Constants (keep track)
 """
-g_0 = 9.81          #
-rho_SL = 1.225      #
-t_R = 3             # runtime on takeoff
-s_TO = 500          #
-T_std = 288.15      #
-P_std = 101325      #
-gamma = 1.4         #
-R = 287             # J/kg*K
-
+g_0 = 9.81  #
+rho_SL = 1.225  #
+t_R = 3  # runtime on takeoff
+s_TO = 500  #
+T_std = 288.15  #
+P_std = 101325  #
+gamma = 1.4  #
+R = 287  # J/kg*K
+# s_G = ? # ground roll distance
+# s_B = ? # breaking distance
+# s_TO = ? # takeoff distance
 
 def C_D(K1, K2, C_L, C_D0):
     return K1 * C_L ** 2 + K2 + C_D0
@@ -62,7 +64,6 @@ plt.figure(figsize=(10, 8))
 # Parameters for Mach_vs_ThrustLapse
 parameter_range = np.linspace(0, 2, 100)
 
-
 TR = 1
 h = 12192
 symbol = '-'
@@ -92,7 +93,6 @@ TR = 1.08
 h = 0
 symbol = ':'
 plot_Mach_vs_ThrustLapse(parameter_range, h, TR, symbol)
-
 
 plt.xlabel('Mach Number')
 plt.ylabel('Thrust Lapse')

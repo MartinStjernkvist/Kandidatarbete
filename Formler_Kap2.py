@@ -12,6 +12,9 @@ T_std = 288.15  #
 P_std = 101325  #
 gamma = 1.4  #
 R = 287  # J/kg*K
+# s_G = ? # ground roll distance
+# s_B = ? # breaking distance
+# s_TO = ? # takeoff distance
 
 
 class CommonFunctionality:
@@ -81,8 +84,8 @@ class CommonFunctionality:
         return n
 
     def dV_dt(self, V_final, V_initial, delta_t_allowable):
-        return ((V_final - V_initial)/delta_t_allowable)
-    
+        return ((V_final - V_initial) / delta_t_allowable)
+
     def s_G(self, ksi_TO, beta, W_TO, S, rho, alpha, C_Lmax, k_TO):
         """
         ground roll distance
@@ -110,7 +113,7 @@ class MasterEqn(CommonFunctionality):
         """
         :param T_SL:    thrust loading at sea level
         :param W_TO:    weight at takeoff
-        :param beta:    depends on how much fuel has been consumed
+        :param beta:    instantaneous weight fraction
         :param alpha:   installed full throttle thrust lapse
         :param q:
         :param S:       surface of
@@ -287,12 +290,13 @@ class Case5(MasterEqn):
     Extra (parameters not in Master_eqn): C_Lmax, rho, s_G, k_TO, V_STALL
     Known: dh_dt=0
     """
+
     def __init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dV_dt,
                  C_Lmax, rho, s_G, k_TO, V_STALL,
                  dh_dt=0
                  ):
         """
-        :param C_Lmax:
+        :param C_Lmax:  maximum coefficient of lift
         :param rho:
         :param s_G:     ground roll distance
         :param k_TO:
@@ -305,7 +309,6 @@ class Case5(MasterEqn):
         self.k_TO = k_TO
         self.V_STALL = V_STALL
         self.V_TO = k_TO * V_STALL
-        self.s_TO = self.s_TO()
 
     def thrust_to_weight(self):
         """
@@ -314,7 +317,6 @@ class Case5(MasterEqn):
         return ((self.beta ** 2 / self.alpha) *
                 (self.k_TO ** 2 / (self.s_G * self.rho * g_0 * self.C_Lmax)) *
                 (self.W_TO / self.S))
-
 
     def wing_loading(self):
         """
@@ -347,7 +349,7 @@ class Case6(Case5):
         """
         :param C_D:     drag coefficient
         :param C_L:     lift coefficient
-        :param C_Lmax:
+        :param C_Lmax:  maximum coefficient of lift
         :param rho:     density
         :param s_G:     ground roll distance
         :param k_TO:
@@ -366,7 +368,6 @@ class Case6(Case5):
         self.V_TO = k_TO * V_STALL
         self.R = q * C_DR * S + mu_TO * (beta * W_TO - q * C_L * S)
         self.ksi_TO = C_D + C_DR - mu_TO * C_L
-        self.s_G = self.s_G(self.ksi_TO, beta, W_TO, S, rho, alpha, C_Lmax, k_TO)
 
     def thrust_to_weight(self):
         return
@@ -389,7 +390,7 @@ class Case7(MasterEqn):
                  dh_dt=0
                  ):
         """
-        :param C_Lmax:
+        :param C_Lmax:  maximum coefficient of lift
         :param C_D:
         :param C_L:
         :param rho:
@@ -407,7 +408,6 @@ class Case7(MasterEqn):
         self.rho = rho
         self.k_TD = k_TD
         self.V_TD = k_TD * V_STALL
-        self.s_B = self.s_B()
 
     def thrust_to_weight(self):
         """

@@ -11,7 +11,9 @@ T_std = 288.15  #
 P_std = 101325  #
 gamma = 1.4  #
 R = 287  # J/kg*K
-
+# s_G = ? # ground roll distance
+# s_B = ? # breaking distance
+# s_TO = ? # takeoff distance
 
 class AppendixD:
 
