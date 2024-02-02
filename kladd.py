@@ -18,7 +18,8 @@ C_D0 = 0.028
 C_DR = 0
 V = 984
 
-plot_case1_thrust_loading_vs_wing_loading(wing_loading, beta, alpha, q, K1, K2, C_D0, C_DR, V)
+
+plot_case1_thrust_loading_vs_wing_loading(alpha, beta, q, K1, K2, C_D0, C_DR, V, wing_loading)
 
 plt.xlabel('Wing loading')
 plt.ylabel('Thrust loading')
