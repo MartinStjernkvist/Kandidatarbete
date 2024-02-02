@@ -1,6 +1,8 @@
 import numpy as np
 from scipy import integrate
 
+# alpha, beta, q, n, K1, K2, C_D0, C_DR, V, dV_dt, dh_dt, C_D, C_L, C_Lmax, rho, s_G, s_B, k_TO, k_TD, mu_TO, V_STALL, sigma, theta, T_SL, W_TO, S, wing_loading
+
 """
 Constants (keep track)
 """
@@ -77,7 +79,7 @@ class CommonFunctionality:
     def dV_dt(self, V_final, V_initial, delta_t_allowable):
         return ((V_final - V_initial) / delta_t_allowable)
 
-    def s_G(self, ksi_TO, beta, W_TO, S, rho, alpha, C_Lmax, k_TO):
+    def s_G(self, alpha, beta, C_Lmax, rho, k_TO, W_TO, S, ksi_TO):
         """
         ground roll distance
 
@@ -100,30 +102,12 @@ class CommonFunctionality:
 
 
 class MasterEqn(CommonFunctionality):
-    # def __init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt):
-    #     """
-    #     :param T_SL:    thrust loading at sea level
-    #     :param W_TO:    weight at takeoff
-    #     :param beta:    instantaneous weight fraction
-    #     :param alpha:   installed full throttle thrust lapse
-    #     :param q:
-    #     :param S:       surface of
-    #     :param n:       load factor, number of g's
-    #     :param C_D0:    drag coefficient at zero lift
-    #     :param C_DR:    drag coefficient from external sources
-    #     :param V:       velocity
-    #     :param K1:
-    #     :param K2:
-    #     :param dh_dt:   rise / descent
-    #     :param dV_dt:   acceleration
-    #     """
 
     def installed_thrust(self, alpha, T_SL):
         """
         = T
 
         Equation (2.3)
-
         :param alpha:   installed full throttle thrust lapse
         :param T_SL:    thrust loading at sea level
         """
@@ -134,31 +118,28 @@ class MasterEqn(CommonFunctionality):
         = W
 
         Equation (2.4)
-
         :param beta:    instantaneous weight fraction
         :param W_TO:    weight at takeoff
         """
         return beta * W_TO
 
-    def master_thrust_to_weight_v1(self, alpha, beta, q, n, K1, K2, C_D0, C_DR, dh_dt, dV_dt, V, S, W_TO):
+    def master_thrust_to_weight_v1(self, alpha, beta, q, n, K1, K2, C_D0, C_DR, V, dV_dt, dh_dt, W_TO, S):
         """
         = T_SL / W_TO
 
         Equation (2.11)
-
-        :param beta:
-        :param alpha:
         :param q:
-        :param S:
-        :param W_TO:
+        :param n:       load factor, number of g's
         :param K1:
-        :param n:
         :param K2:
-        :param C_D0:
-        :param C_DR:
-        :param dh_dt:
-        :param dV_dt:
-        :param V:
+        :param C_D0:    drag coefficient at zero lift
+        :param C_DR:    drag coefficient from external sources
+        :param V:       velocity
+        :param dV_dt:   acceleration
+        :param dh_dt:   rise / descent
+        :param W_TO:    weight at takeoff
+        :param S:       surface of wing?
+        :return:
         """
         P_s = self.P_s(V, dh_dt, dV_dt)
         return (beta / alpha) * ((q * S) / (beta * W_TO) * (
@@ -166,24 +147,12 @@ class MasterEqn(CommonFunctionality):
                 + K2 * ((n * beta * W_TO) / (q * S))
                 + C_D0 + C_DR) + (P_s / V))
 
-    def master_thrust_to_weight_v2(self, alpha, beta, q, n, K1, K2, C_D0, C_DR, dh_dt, dV_dt, V, wing_loading):
+    def master_thrust_to_weight_v2(self, alpha, beta, q, n, K1, K2, C_D0, C_DR, V, dV_dt, dh_dt, wing_loading):
         """
         = T_SL / W_TO
 
         Equation (2.11)
-
-        :param alpha:
-        :param beta:
-        :param q:
-        :param n:
-        :param K1:
-        :param K2:
-        :param C_D0:
-        :param C_DR:
-        :param dh_dt:
-        :param dV_dt:
-        :param V:
-        :param wing_loading: 
+        :param wing_loading:    W_TO / S
         """
         P_s = self.P_s(V, dh_dt, dV_dt)
         return (beta / alpha) * (q / (beta * wing_loading) * (
@@ -197,23 +166,15 @@ class Case1(MasterEqn):
     Constant Altitude / Speed Cruise (P_s = 0)
     Given: dh/dt=0, dV/dt=0, n=1, h, V, q
 
-    Extra:
-    Known: dh_dt=0, dV_dt=0, n=1
-
     Page 44: Supercruise: C_DR = K2 = 0
     Page 51: Mission phases 6-7 and 8-9: Supersonic penetration and escape dash: C_DR = K2 = 0
     Page 54: Maximum Mach number: C_DR = K2 = 0
     """
 
-    # def __init__(self, T_SL, W_TO, beta, alpha, q, S, C_D0, C_DR, V, K1, K2,
-    #              dh_dt=0, dV_dt=0, n=1
-    #              ):
-    #     super().__init__(T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
-
-    def wing_loading_min(self, beta, q, C_D0, C_DR, K1):
+    def wing_loading_min(self, beta, q, K1, C_D0, C_DR):
         return (q / beta) * np.sqrt((C_D0 + C_DR) / K1)
 
-    def thrust_to_weight_min(self, n, beta, alpha, C_D0, C_DR, K1, K2):
+    def thrust_to_weight_min(self, alpha, beta, n, K1, K2, C_D0, C_DR):
         """
         Corresponds to maximum range
         """
@@ -221,38 +182,36 @@ class Case1(MasterEqn):
                 2 * np.sqrt((C_D0 + C_DR) * K1) + K2)
 
     def thrust_to_weight(self, alpha, beta, q, K1, K2, C_D0, C_DR, V, wing_loading):
-
         dh_dt = 0
         dV_dt = 0
         n = 1
-        return self.master_thrust_to_weight_v2(alpha, beta, q, n, K1, K2, C_D0, C_DR, dh_dt, dV_dt, V, wing_loading)
+        return self.master_thrust_to_weight_v2(alpha, beta, q, n, K1, K2, C_D0, C_DR, V, dV_dt, dh_dt, wing_loading)
 
 
-class Case2(Case1):
+class Case2(MasterEqn):
     """
     Constant Speed Climb (P_s = dh/dt)
     Given: dV/dt=0, n=1, h, dh/dt>0, V, q
 
-    Extra:
-    Known: dV_dt=0, n=1
-
     same wing_loading_min, thrust_to_weight_min as Case1
     """
 
-    def thrust_to_weight_min(self, beta, alpha, C_D0, C_DR, K1, K2, V, dh_dt):
+    def thrust_to_weight_min(self, alpha, beta, K1, K2, C_D0, C_DR, V, dh_dt):
         dV_dt = 0
         P_s = self.P_s(V, dh_dt, dV_dt)
         return (beta / alpha) * (
                 2 * np.sqrt((C_D0 + C_DR) * K1) + K2 + (P_s / V))
 
+    def thrust_to_weight(self, alpha, beta, q, K1, K2, C_D0, C_DR, V, dh_dt, wing_loading):
+        dV_dt = 0
+        n = 1
+        return self.master_thrust_to_weight_v2(alpha, beta, q, n, K1, K2, C_D0, C_DR, V, dV_dt, dh_dt, wing_loading)
 
-class Case3(Case1):
+
+class Case3(MasterEqn):
     """
     Constant Altitude / Speed Turn (P_s = 0)
     Given: dh/dt=0, dV/dt=0, h, V, q, n>1
-
-    Extra: R
-    Known: dh_dt=0, dV_dt=0
 
     same wing_loading_min, thrust_to_weight_min as Case1
     """
@@ -263,6 +222,10 @@ class Case3(Case1):
         """
         return self.centripetal_force()
 
+    def thrust_to_weight(self, alpha, beta, q, n, K1, K2, C_D0, C_DR, V, wing_loading):
+        dV_dt = 0
+        dh_dt = 0
+        return self.master_thrust_to_weight_v2(alpha, beta, q, n, K1, K2, C_D0, C_DR, V, dV_dt, dh_dt, wing_loading)
 
 class Case4(MasterEqn):
     """
@@ -275,21 +238,6 @@ class Case4(MasterEqn):
     Page 52: Mission phase 7-8: Horizontal acceleration: C_DR = K2 = 0
     """
 
-    def __init__(self, T_SL, W_TO, beta, alpha, q, S, C_D0, C_DR, V, K1, K2, dV_dt,
-                 V_initial, V_final, delta_t_allowable,
-                 dh_dt=0, n=1
-                 ):
-        """
-        :param V_inital:            initial velocity
-        :param V_final:             final velocity
-        :param delta_t_allowable:   allowable time to accelerate
-        """
-        MasterEqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
-        self.V_initial = V_initial
-        self.V_final = V_final
-        self.delta_t_allowable = delta_t_allowable
-        self.dV_dt = self.dV_dt(V_final, V_initial, delta_t_allowable)
-
     # def delta_t_function(self, V):
     #     return (1 / (2 * g_0)) * (V / self.P_s)
     #
@@ -297,6 +245,9 @@ class Case4(MasterEqn):
     #     result, error = integrate.quad(delta_t_function, self.V_initial, self.V_final)
     #     delta_t_allowable = result
     #     return delta_t_allowable
+
+    def dV_dt(self, V_final, V_initial, delta_t_allowable):
+        return self.dV_dt(V_final, V_initial, delta_t_allowable)
 
     # ????????????????
     # ????????????????
@@ -312,39 +263,20 @@ class Case5(MasterEqn):
     Known: dh_dt=0
     """
 
-    def __init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dV_dt,
-                 C_Lmax, rho, s_G, k_TO, V_STALL,
-                 dh_dt=0
-                 ):
-        """
-        :param C_Lmax:  maximum coefficient of lift
-        :param rho:
-        :param s_G:     ground roll distance
-        :param k_TO:
-        :param V_STALL: stall velocity
-        """
-        MasterEqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
-        self.C_Lmax = C_Lmax
-        self.s_G = s_G
-        self.rho = rho
-        self.k_TO = k_TO
-        self.V_STALL = V_STALL
-        self.V_TO = k_TO * V_STALL
-
-    def thrust_to_weight(self):
+    def thrust_to_weight(self, alpha, beta, C_Lmax, rho, s_G, k_TO, W_TO, S):
         """
         Equation (2.22)
         """
-        return ((self.beta ** 2 / self.alpha) *
-                (self.k_TO ** 2 / (self.s_G * self.rho * g_0 * self.C_Lmax)) *
-                (self.W_TO / self.S))
+        return ((beta ** 2 / alpha) *
+                (k_TO ** 2 / (s_G * rho * g_0 * C_Lmax)) *
+                (W_TO / S))
 
-    def wing_loading(self):
+    def wing_loading(self, alpha, beta, C_Lmax, rho, k_TO, T_SL, W_TO):
         """
         Equation (2.E2)
         """
-        a = (self.k_TO ** 2 * self.beta ** 2) / (self.rho * self.C_Lmax * self.alpha * (self.T_SL / self.W_TO))
-        b = (t_R * self.k_TO) * np.sqrt((2 * self.beta) / (self.rho * self.C_Lmax))
+        a = (k_TO ** 2 * beta ** 2) / (rho * C_Lmax * alpha * (T_SL / W_TO))
+        b = (t_R * k_TO) * np.sqrt((2 * beta) / (rho * C_Lmax))
         c = s_TO
         return (-b * np.sqrt(b ** 2 * (4 * a * c) / (2 * a))) ** 2
 
@@ -363,25 +295,12 @@ class Case6(Case5):
     Page 50: Mission phase 1-2: Takeoff, no obstacle: s_TO = s_G + s_R
     """
 
-    def __init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dV_dt,
-                 C_D, C_L, C_Lmax, rho, s_G, k_TO, V_STALL, mu_TO,  # s_G Not known
-                 dh_dt=0
-                 ):
         """
         :param C_D:     drag coefficient
         :param C_L:     lift coefficient
         :param mu_TO:
         """
-        Case5.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt,
-                       C_Lmax, rho, s_G, k_TO, V_STALL)
-        self.C_D = C_D
-        self.C_L = C_L
-        self.D = q * C_D
-        self.rho = rho
-        self.mu_TO = mu_TO
-        self.k_TO = k_TO
-        self.V_STALL = V_STALL
-        self.V_TO = k_TO * V_STALL
+
         self.R = q * C_DR * S + mu_TO * (beta * W_TO - q * C_L * S)
         self.ksi_TO = C_D + C_DR - mu_TO * C_L
 
@@ -401,29 +320,19 @@ class Case7(MasterEqn):
     Page 53: Mission phase 13-14: Landing, no reverse thrust: s_L = s_FR + s_B
     """
 
-    def __init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dV_dt,
-                 C_Lmax, C_D, C_L, rho, k_TD, V_STALL, mu_TO,
-                 dh_dt=0
-                 ):
-        MasterEqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
-        self.C_Lmax = C_Lmax
-        self.C_D = C_D
-        self.C_L = C_L
         self.D = q * C_D
-        self.mu_TO = mu_TO
         self.R = q * C_DR * S + mu_TO * (beta * W_TO - q * C_L * S)
-        self.rho = rho
-        self.k_TD = k_TD
         self.V_TD = k_TD * V_STALL
 
-    def thrust_to_weight(self):
+    def case7_thrust_to_weight(self, alpha, beta, C_Lmax, rho, s_B, k_TD, W_TO, S):
+
         """
         Equation (2.34)
         Reverse thrust
         """
-        return ((self.beta ** 2 / (- self.alpha)) *
-                (self.k_TD ** 2 / (self.s_B * self.rho * g_0 * self.C_Lmax)) *
-                (self.W_TO / self.S))
+        return ((beta ** 2 / (- alpha)) *
+                (k_TD ** 2 / (s_B * rho * g_0 * C_Lmax)) *
+                (W_TO / S))
     # ????????????????
     # ????????????????
     # ????????????????
@@ -438,17 +347,10 @@ class Case8(MasterEqn):
     Known: dV_dt=0, n=1
     """
 
-    def __init__(self, T_SL, W_TO, beta, alpha, q, S, C_D0, C_DR, V, K1, K2, dh_dt,
-                 C_L,
-                 dV_dt=0, n=1
-                 ):
-        MasterEqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
-        self.C_L = C_L
-
-    def thrust_to_weight(self):
-        return ((self.beta / self.alpha) *
-                (self.K1 * self.C_L + self.K2 + ((self.C_D0 + self.C_DR) / self.C_L) +
-                 (1 / self.V) * self.dh_dt))
+    def thrust_to_weight(self, alpha, beta, K1, K2, C_D0, C_DR, V, dh_dt, C_L):
+        return ((beta / alpha) *
+                (K1 * C_L + K2 + ((C_D0 + C_DR) / C_L) +
+                 (1 / V) * dh_dt))
 
 
 class Case9(MasterEqn):
@@ -460,32 +362,19 @@ class Case9(MasterEqn):
     Known: n=1, dV_dt=0
     """
 
-    def __init__(self, T_SL, W_TO, beta, alpha, q, S, C_D0, C_DR, V, K1, K2, dh_dt,
-                 theta, C_Lmax, k_TO, sigma,
-                 n=1, dV_dt=0
-                 ):
-        """
-        :param sigma:
-        """
-        MasterEqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
-        self.theta = theta
-        self.C_Lmax = C_Lmax
-        self.k_TO = k_TO
-        self.sigma = sigma
-
-    def thrust_to_weight(self):
+    def thrust_to_weight(self, alpha, beta, K1, K2, C_D0, C_DR, C_Lmax, k_TO, theta):
         """
         Equation (2.43)
         """
-        return ((self.beta / self.alpha) *
-                ((self.K1 * self.C_Lmax / self.k_TO ** 2) + self.K2 +
-                 ((self.C_D0 + self.C_DR) / (self.C_Lmax / self.k_TO ** 2)) + np.sin(self.theta)))
+        return ((beta / alpha) *
+                ((K1 * C_Lmax / k_TO ** 2) + K2 +
+                 ((C_D0 + C_DR) / (C_Lmax / k_TO ** 2)) + np.sin(theta)))
 
-    def V(self):
+    def V(self, beta, C_Lmax, k_TO, sigma, W_TO, S):
         """
         Equation (2.44)
         """
-        return np.sqrt(((2 * self.beta * self.k_TO ** 2) / (self.sigma * rho_SL * self.C_Lmax)) * (self.W_TO / self.S))
+        return np.sqrt(((2 * beta * k_TO ** 2) / (sigma * rho_SL * C_Lmax)) * (W_TO / S))
 
 
 class Takeoff():
