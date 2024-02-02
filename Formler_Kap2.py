@@ -36,7 +36,8 @@ class CommonFunctionality:
 
         :param h:   altitude
         """
-        return T_std - (6.5 * 10 ** (-3) * h)
+        T_0 = T_std - (6.5 * 10 ** (-3) * h)
+        return T_0
 
     def pressure(self, h):
         """
@@ -45,9 +46,11 @@ class CommonFunctionality:
         :param h:   altitude
         """
         if h <= 11000:
-            return P_std * ((T_std - (6.5 * 10 ** (-3) * h)) / T_std) ** (g_0 / (6.5 * 10 ** (-3) * R))
+            P_0 = P_std * ((T_std - (6.5 * 10 ** (-3) * h)) / T_std) ** (g_0 / (6.5 * 10 ** (-3) * R))
+            return P_0
         else:
-            return P_std * ((T_std - (6.5 * 10 ** (-3) * 11000)) / T_std) ** (g_0 / (6.5 * 10 ** (-3) * R))
+            P_0 = P_std * ((T_std - (6.5 * 10 ** (-3) * 11000)) / T_std) ** (g_0 / (6.5 * 10 ** (-3) * R))
+            return P_0
 
     def theta_0(self, T, M_0):
         """
@@ -63,6 +66,16 @@ class CommonFunctionality:
         Equation (2.52b)
         """
         return (P / P_std) * (1 + ((gamma - 1) / 2) * M_0 ** 2) ** (gamma / (gamma - 1))
+
+    def centripetal_force(self, V, R_C):
+        """
+        Equation (2.17)
+
+        :param V:   velocity
+        :param R_C: radius
+        """
+        n = np.sqrt(1 + (V ** 2 / (g_0 ** 2 * R_C)) ** 2)
+        return n
 
 
 class MasterEqn(CommonFunctionality):
@@ -107,7 +120,7 @@ class MasterEqn(CommonFunctionality):
         """
         return self.alpha * self.T_SL
 
-    def instantateous_weight(self):
+    def instantaneous_weight(self):
         """
         W
 
@@ -137,6 +150,7 @@ class Case1(MasterEqn):
     Page 51: Mission phases 6-7 and 8-9: Supersonic penetration and escape dash: C_DR = K2 = 0
     Page 54: Maximum Mach number: C_DR = K2 = 0
     """
+
     def __init__(self, T_SL, W_TO, beta, alpha, q, S, C_D0, C_DR, V, K1, K2,
                  dh_dt=0, dV_dt=0, n=1
                  ):
@@ -163,6 +177,7 @@ class Case2(Case1):
 
     same wing_loading_min, thrust_to_weight_min as Case1
     """
+
     def __init__(self, T_SL, W_TO, beta, alpha, q, S, C_D0, C_DR, V, K1, K2, dh_dt,
                  dV_dt=0, n=1
                  ):
@@ -183,6 +198,7 @@ class Case3(Case1):
 
     same wing_loading_min, thrust_to_weight_min as Case1
     """
+
     def __init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2,
                  R,
                  dh_dt=0, dV_dt=0
@@ -192,7 +208,7 @@ class Case3(Case1):
         """
         MasterEqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
         self.R_C = R
-        self.n = np.sqrt(1 + (self.V ** 2 / (g_0 ** 2 * self.R_C)) ** 2)
+        self.n = self.centripetal_force(V, self.R_C)
 
 
 class Case4(MasterEqn):
@@ -211,9 +227,9 @@ class Case4(MasterEqn):
                  dh_dt=0, n=1
                  ):
         """
-        :param V_inital:
-        :param V_final:
-        :param delta_t_allowable:
+        :param V_inital:            initial velocity
+        :param V_final:             final velocity
+        :param delta_t_allowable:   allowable time difference
         """
         MasterEqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
         self.V_initial = V_inital
