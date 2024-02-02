@@ -17,13 +17,18 @@ R = 287             # J/kg*K
 
 class AppendixD:
 
-    def theta_0_break(self, T_t_4_max, T_t_SLS):
-        return T_t_4_max / T_t_SLS
-
     def theta_0(self, T_0, gamma_c, M_0):
         """
+        Dimensionless ratio of freestream total temperature to
+        sea level static temperature of the standard atmosphere
+
         Equation (D.1)
         Same as (2.52a), but with gamma_c
+
+        :param T_0:
+        :param gamma_c:
+        :param M_0:
+        :return:
         """
         theta_tau_r = (T_0 / T_std) * (1 + ((gamma_c - 1) / 2) * M_0 ** 2)
         return theta_tau_r
@@ -31,34 +36,53 @@ class AppendixD:
     def tau_c(self, eta_m, beta, f, c_pt, T_t_4, c_pc, theta_0):
         """
         Compressor total temperature ratio
+
         Equation (D.2)
 
         Depends only on:
         - turbine total temperature ratio tau_t
         - throttle setting: T_t_4
         - flight conditions theta_0
+
+        :param eta_m: 
+        :param beta:
+        :param f:
+        :param c_pt:
+        :param T_t_4:
+        :param c_pc:
+        :param theta_0:
+        :return:
         """
-        tau_c = (1 + eta_m * (1 - beta) *
+        return (1 + eta_m * (1 - beta) *
                  ((1 + f) * (1 / T_std) *
                   ((c_pt * T_t_4) / (c_pc * theta_0))))
-        return tau_c
 
-    def ThrottleRatio(self, T_t_4_max, T_t_SLS):
+    def theta_0_break(self, T_t_4_max, T_t_SLS):
         """
+        Throttle Ratio
+
         Equation (D.6)
-        """
-        theta_0_break = T_t_4_max / T_t_SLS
-        return theta_0_break
 
-    def MachBreak(self, gamma_c, theta_0_break):
+        :param T_t_4_max:
+        :param T_t_SLS:
+        :return:
         """
+        return T_t_4_max / T_t_SLS
+
+
+    def M_0_break(self, gamma_c, theta_0_break):
+        """
+        Mach Break
+
         Equation (D.7)
+
         :param gamma_c:
         :param theta_0_break:
         :return:
         """
-        M_0_break = np.sqrt((2 / (gamma_c - 1)) * (theta_0_break - 1))
-        return M_0_break
+        return np.sqrt((2 / (gamma_c - 1)) * (theta_0_break - 1))
+
+
 
 
 

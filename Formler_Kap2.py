@@ -70,6 +70,23 @@ class MasterEqn(CommonFunctionality):
     """
 
     def __init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt):
+        """
+        :param T_SL:
+        :param W_TO:
+        :param beta:
+        :param alpha:
+        :param q:
+        :param S:
+        :param n:
+        :param C_D0:
+        :param C_DR:
+        :param V:
+        :param K1:
+        :param K2:
+        :param dh_dt:
+        :param dV_dt:
+        """
+
         self.T_SL = T_SL
         self.W_TO = W_TO
         self.beta = beta
