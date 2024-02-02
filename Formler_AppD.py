@@ -71,6 +71,9 @@ class AppendixD():
     def MachBreak(self, gamma_c, theta_0_break):
         """
         Equation (D.7)
+        :param gamma_c:
+        :param theta_0_break:
+        :return:
         """
         M_0_break = np.sqrt((2 / (gamma_c - 1)) * (theta_0_break - 1))
         return M_0_break
@@ -92,6 +95,8 @@ class AppendixD_dup(AppendixD):
     # def calc_theta_0_break_dup(self, T_t_4_max, T_t_SLS):
     # def calc_theta_0_break_dup(self, T_t_4_max, T_t_SLS):
     #     return T_t_4_max / T_t_SLS
+
+
     def get_T_t_4_max(self):
         return self.T_t_4_max
 

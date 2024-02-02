@@ -1,7 +1,7 @@
 import numpy as np
 
 """
-Constants
+Constants (keep track)
 """
 g_0 = 9.81          #
 rho_SL = 1.225      #
@@ -21,18 +21,27 @@ class CommonFunctionality:
     def calculate_P_s(self, V, dh_dt, dV_dt):
         """
         Equation (2.2b)
+        :param V:
+        :param dh_dt:
+        :param dV_dt:
+        :return:
         """
         return dh_dt + (V / g_0) * dV_dt
 
     def calculate_temperature(self, h):
         """
         Introkompendium: Equation (1.29a)
+        :param h:
+        :return:
         """
+
         return T_std - (6.5 * 10 ** (-3) * h)
 
     def calculate_pressure(self, h):
         """
         Introkompendium: Equation (1.29b)
+        :param h:
+        :return:
         """
         if h <= 11000:
             return P_std * ((T_std - (6.5 * 10 ** (-3) * h)) / T_std) ** (g_0 / (6.5 * 10 ** (-3) * R))
@@ -42,6 +51,9 @@ class CommonFunctionality:
     def calculate_theta_0(self, T, M_0):
         """
         Equation (2.52a)
+        :param T:
+        :param M_0:
+        :return:
         """
         return (T / T_std) * (1 + ((gamma - 1) / 2) * M_0 ** 2)
 

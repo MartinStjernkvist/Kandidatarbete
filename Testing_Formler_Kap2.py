@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from Plotting_Funktioner import plot_case1_instances, plot_Mach_vs_ThrustLapse
 from Formler_Kap2 import MasterEqn, Case1, Case2, Case3, Case4, Case5, Case6, Case7, Case8, Case9
 from Formler_Kap2 import Mach_vs_ThrustLapse
+from Formler_AppD_V2 import AppendixD
 
 # Example
 # Case1_in1 = Case1(...in1 parameters...) - "in" for instance
@@ -24,8 +25,6 @@ T_std = 288.15      #
 P_std = 101325      #
 gamma = 1.4         #
 R = 287             # J/kg*K
-placeholder = 10 ** 20  # use as placeholder when creating instances of classes,
-                        # not used in calculations of the instance
 
 
 def C_D(K1, K2, C_L, C_D0):
