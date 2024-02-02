@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from Formler_Kap2 import MasterEqn, Case1, Case2, Case3, Case4, Case5, Case6, Case7, Case8, Case9
-from Formler_Kap2 import Mach_vs_ThrustLapse
+from Formler_Kap2_V2 import MasterEqn, Case1, Case2, Case3, Case4, Case5, Case6, Case7, Case8, Case9
+from Formler_Kap2_V2 import Mach_vs_ThrustLapse
 
 
 def plot_case1_instances(parameter_range, T_SL, alpha, q, S, V, dh_dt=0, dV_dt=0, n=1):
@@ -34,11 +34,11 @@ def plot_Mach_vs_ThrustLapse(parameter_range, h, TR, symbol):
     plt.plot(parameter_range, ThrustLapse_military, linestyle=symbol, linewidth=3, label=f'Mil, {TR}, h: {h}')
 
 
-def plot_thrust_loading_vs_wing_loading(wing_loading, thrust_to_weight_function):
+def plot_case1_thrust_loading_vs_wing_loading(wing_loading, beta, alpha, q, K1, K2, C_D0, C_DR, V):
     thrust_loading = []
 
     for param_value in wing_loading:
-        thrust_to_weight = thrust_to_weight_function()
+        thrust_to_weight = Case3().thrust_to_weight(beta, alpha, q, param_value, K1, K2, C_D0, C_DR, V)
         thrust_loading.append(thrust_to_weight)
 
     plt.plot(wing_loading, thrust_loading)
