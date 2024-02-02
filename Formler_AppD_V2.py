@@ -25,10 +25,9 @@ class AppendixD:
         Equation (D.1)
         Same as (2.52a), but with gamma_c
 
-        :param T_0: freestream temperature
+        :param T_0:         freestream temperature
         :param gamma_c:
         :param M_0:
-        :return:
         """
         theta_tau_r = (T_0 / T_std) * (1 + ((gamma_c - 1) / 2) * M_0 ** 2)
         return theta_tau_r

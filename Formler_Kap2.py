@@ -3,14 +3,14 @@ import numpy as np
 """
 Constants (keep track)
 """
-g_0 = 9.81          #
-rho_SL = 1.225      #
-t_R = 3             # runtime on takeoff
-s_TO = 500          #
-T_std = 288.15      #
-P_std = 101325      #
-gamma = 1.4         #
-R = 287             # J/kg*K
+g_0 = 9.81  #
+rho_SL = 1.225  #
+t_R = 3  # runtime on takeoff
+s_TO = 500  #
+T_std = 288.15  #
+P_std = 101325  #
+gamma = 1.4  #
+R = 287  # J/kg*K
 
 
 class CommonFunctionality:
@@ -24,10 +24,9 @@ class CommonFunctionality:
 
         Equation (2.2b)
 
-        :param V:
-        :param dh_dt:
-        :param dV_dt:
-        :return:
+        :param V:       velocity
+        :param dh_dt:   altitude derivative
+        :param dV_dt:   acceleration
         """
         return dh_dt + (V / g_0) * dV_dt
 
@@ -35,18 +34,15 @@ class CommonFunctionality:
         """
         Introkompendium: Equation (1.29a)
 
-        :param h:
-        :return:
+        :param h:   altitude
         """
-
         return T_std - (6.5 * 10 ** (-3) * h)
 
     def pressure(self, h):
         """
         Introkompendium: Equation (1.29b)
 
-        :param h:
-        :return:
+        :param h:   altitude
         """
         if h <= 11000:
             return P_std * ((T_std - (6.5 * 10 ** (-3) * h)) / T_std) ** (g_0 / (6.5 * 10 ** (-3) * R))
@@ -57,9 +53,8 @@ class CommonFunctionality:
         """
         Equation (2.52a)
 
-        :param T:
-        :param M_0:
-        :return:
+        :param T:       thrust
+        :param M_0:     mach number
         """
         return (T / T_std) * (1 + ((gamma - 1) / 2) * M_0 ** 2)
 
@@ -71,28 +66,23 @@ class CommonFunctionality:
 
 
 class MasterEqn(CommonFunctionality):
-    """
-    Equation (2.11)
-    """
-
     def __init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt):
         """
-        :param T_SL: thrust loading at sea level
-        :param W_TO: weight at takeoff
+        :param T_SL:    thrust loading at sea level
+        :param W_TO:    weight at takeoff
         :param beta:
-        :param alpha: installed full throttle thrust lapse
+        :param alpha:   installed full throttle thrust lapse
         :param q:
-        :param S: surface of
-        :param n: load factor
-        :param C_D0:
-        :param C_DR:
-        :param V: velocity
+        :param S:       surface of
+        :param n:       load factor, number of g's
+        :param C_D0:    drag coefficient at zero lift
+        :param C_DR:    drag coefficient from external sources
+        :param V:       velocity
         :param K1:
         :param K2:
-        :param dh_dt:
-        :param dV_dt:
+        :param dh_dt:   altitude derivative
+        :param dV_dt:   acceleration
         """
-
         self.T_SL = T_SL
         self.W_TO = W_TO
         self.beta = beta
@@ -147,7 +137,6 @@ class Case1(MasterEqn):
     Page 51: Mission phases 6-7 and 8-9: Supersonic penetration and escape dash: C_DR = K2 = 0
     Page 54: Maximum Mach number: C_DR = K2 = 0
     """
-
     def __init__(self, T_SL, W_TO, beta, alpha, q, S, C_D0, C_DR, V, K1, K2,
                  dh_dt=0, dV_dt=0, n=1
                  ):
@@ -157,6 +146,9 @@ class Case1(MasterEqn):
         return (self.q / self.beta) * np.sqrt((self.C_D0 + self.C_DR) / self.K1)
 
     def thrust_to_weight_min(self):
+        """
+        Corresponds to maximum range
+        """
         return ((self.n * self.beta) / self.alpha) * (
                 2 * np.sqrt((self.C_D0 + self.C_DR) * self.K1) + self.K2)
 
@@ -171,7 +163,6 @@ class Case2(Case1):
 
     same wing_loading_min, thrust_to_weight_min as Case1
     """
-
     def __init__(self, T_SL, W_TO, beta, alpha, q, S, C_D0, C_DR, V, K1, K2, dh_dt,
                  dV_dt=0, n=1
                  ):
@@ -192,11 +183,13 @@ class Case3(Case1):
 
     same wing_loading_min, thrust_to_weight_min as Case1
     """
-
     def __init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2,
                  R,
                  dh_dt=0, dV_dt=0
                  ):
+        """
+        :param R:   radius of turn
+        """
         MasterEqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
         self.R_C = R
         self.n = np.sqrt(1 + (self.V ** 2 / (g_0 ** 2 * self.R_C)) ** 2)
@@ -217,6 +210,11 @@ class Case4(MasterEqn):
                  V_inital, V_final, delta_t_allowable,
                  dh_dt=0, n=1
                  ):
+        """
+        :param V_inital:
+        :param V_final:
+        :param delta_t_allowable:
+        """
         MasterEqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
         self.V_initial = V_inital
         self.V_final = V_final
@@ -239,6 +237,13 @@ class Case5(MasterEqn):
                  C_Lmax, rho, s_G, k_TO, V_STALL,
                  dh_dt=0
                  ):
+        """
+        :param C_Lmax:
+        :param rho:
+        :param s_G:
+        :param k_TO:
+        :param V_STALL:
+        """
         MasterEqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
         self.C_Lmax = C_Lmax
         self.s_G = s_G
@@ -293,17 +298,15 @@ class Case6(Case5):
                  dh_dt=0
                  ):
         """
-        :param C_D:
-        :param C_L:
+        :param C_D:     drag coefficient
+        :param C_L:     lift coefficient
         :param C_Lmax:
-        :param rho:
+        :param rho:     density
         :param s_G:
         :param k_TO:
         :param V_STALL:
         :param mu_TO:
-        :param dh_dt:
         """
-
         Case5.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt,
                        C_Lmax, rho, s_G, k_TO, V_STALL)
         self.C_D = C_D
@@ -339,6 +342,15 @@ class Case7(MasterEqn):
                  C_Lmax, C_D, C_L, rho, k_TD, V_STALL, mu_TO,
                  dh_dt=0
                  ):
+        """
+        :param C_Lmax:
+        :param C_D:
+        :param C_L:
+        :param rho:
+        :param k_TD:
+        :param V_STALL:
+        :param mu_TO:
+        """
         MasterEqn.__init__(self, T_SL, W_TO, beta, alpha, q, S, n, C_D0, C_DR, V, K1, K2, dh_dt, dV_dt)
         self.C_Lmax = C_Lmax
         self.C_D = C_D
