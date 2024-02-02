@@ -32,3 +32,13 @@ def plot_Mach_vs_ThrustLapse(parameter_range, h, TR, symbol):
 
     plt.plot(parameter_range, ThrustLapse_max, linestyle=symbol, linewidth=3, label=f'Max, {TR}, h: {h}')
     plt.plot(parameter_range, ThrustLapse_military, linestyle=symbol, linewidth=3, label=f'Mil, {TR}, h: {h}')
+
+
+def plot_thrust_loading_vs_wing_loading(wing_loading, thrust_to_weight_function):
+    thrust_loading = []
+
+    for param_value in wing_loading:
+        thrust_to_weight = thrust_to_weight_function()
+        thrust_loading.append(thrust_to_weight)
+
+    plt.plot(wing_loading, thrust_loading)
