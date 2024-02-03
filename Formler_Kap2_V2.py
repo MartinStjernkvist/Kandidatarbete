@@ -303,17 +303,21 @@ class Case5(MasterEqn):
                 (k_TO ** 2 / (s_G * rho * g_0 * C_Lmax)) *
                 wing_loading)
 
-    def wing_loading(self, alpha_wet, beta, C_Lmax, rho, k_TO, wing_loading):
+    def wing_loading(self, alpha_wet, beta, C_Lmax, rho, k_TO, T_SL, W_TO):
         """
         Equation (2.E2)
         """
-        a = (k_TO ** 2 * beta ** 2) / (rho * C_Lmax * alpha_wet * (thrust_to_weight(wing_loading)))
+        # a = (k_TO ** 2 * beta ** 2) / (rho * C_Lmax * alpha_wet * (thrust_to_weight(wing_loading)))
+        # b = (t_R * k_TO) * np.sqrt((2 * beta) / (rho * C_Lmax))
+        # s_TO = ((k_TO ** 2 * beta ** 2) /
+        #         (rho * C_Lmax * alpha_wet * (thrust_to_weight(wing_loading)))) * (wing_loading) + (
+        #         t_R * k_TO) * np.sqrt((2 * beta) / (rho * C_Lmax)) * np.sqrt(wing_loading)
+        # c = s_TO
+        a = (k_TO ** 2 * beta ** 2) / (rho * C_Lmax * alpha_wet * (T_SL / W_TO))
         b = (t_R * k_TO) * np.sqrt((2 * beta) / (rho * C_Lmax))
-        s_TO = ((k_TO ** 2 * beta ** 2) /
-                (rho * C_Lmax * alpha_wet * (thrust_to_weight(wing_loading)))) * (wing_loading) + (
-                t_R * k_TO) * np.sqrt((2 * beta) / (rho * C_Lmax)) * np.sqrt(wing_loading)
         c = s_TO
         return (-b * np.sqrt(b ** 2 * (4 * a * c) / (2 * a))) ** 2
+
 
 class Case6(Case5):
     """
