@@ -89,16 +89,37 @@ class CommonFunctionality:
         """
         pass
 
-    def s_TO(self):
-        # """
-        # takeoff distance
-        #
-        # Equation (2.E1)
-        # """
-        # return ((self.k_TO ** 2 * self.beta ** 2) /
-        #         (self.rho * self.C_Lmax * self.alpha * (self.T_SL / self.W_TO))) * (self.W_TO / self.S) + (
-        #         t_R * self.k_TO) * np.sqrt((2 * self.beta) / (self.rho * self.C_Lmax)) * np.sqrt(self.W_TO / self.S)
-        pass
+    def s_TO(self, alpha_wet, beta, C_Lmax, rho, k_TO, T_SL, W_TO, S):
+        """
+        takeoff distance
+
+        Equation (2.E1)
+        :param alpha_wet:
+        :param beta:
+        :param C_Lmax:
+        :param rho:
+        :param k_TO:
+        :param T_SL:
+        :param W_TO:
+        :param S:
+        """
+        return ((k_TO ** 2 * beta ** 2) /
+                (rho * C_Lmax * alpha_wet * (T_SL / W_TO))) * (W_TO / S) + (
+                t_R * k_TO) * np.sqrt((2 * beta) / (rho * C_Lmax)) * np.sqrt(W_TO / S)
+
+    def s_R(self, beta, C_Lmax, rho, k_TO, W_TO, S):
+        return t_R * k_TO * np.sqrt((2 * beta) / (rho * C_Lmax)) * np.sqrt(W_TO / S)
+
+    def C_D(self, K1, K2, C_L, C_D0):
+        """
+        Equation (2
+        :param K1:
+        :param K2:
+        :param C_L:     lift coefficient
+        :param C_D0:    drag coefficient at zero lift
+        :return:
+        """
+        return K1 * C_L ** 2 + K2 * C_L + C_D0
 
 
 class MasterEqn(CommonFunctionality):
@@ -282,15 +303,17 @@ class Case5(MasterEqn):
                 (k_TO ** 2 / (s_G * rho * g_0 * C_Lmax)) *
                 wing_loading)
 
-    def wing_loading(self, alpha, beta, C_Lmax, rho, k_TO, T_SL, W_TO):
+    def wing_loading(self, alpha_wet, beta, C_Lmax, rho, k_TO, wing_loading):
         """
         Equation (2.E2)
         """
-        a = (k_TO ** 2 * beta ** 2) / (rho * C_Lmax * alpha * (T_SL / W_TO))
+        a = (k_TO ** 2 * beta ** 2) / (rho * C_Lmax * alpha_wet * (thrust_to_weight(wing_loading)))
         b = (t_R * k_TO) * np.sqrt((2 * beta) / (rho * C_Lmax))
+        s_TO = ((k_TO ** 2 * beta ** 2) /
+                (rho * C_Lmax * alpha_wet * (thrust_to_weight(wing_loading)))) * (wing_loading) + (
+                t_R * k_TO) * np.sqrt((2 * beta) / (rho * C_Lmax)) * np.sqrt(wing_loading)
         c = s_TO
         return (-b * np.sqrt(b ** 2 * (4 * a * c) / (2 * a))) ** 2
-
 
 class Case6(Case5):
     """
@@ -382,14 +405,6 @@ class Case9(MasterEqn):
         :param sigma:
         """
         return np.sqrt(((2 * beta * k_TO ** 2) / (sigma * rho_SL * C_Lmax)) * (W_TO / S))
-
-
-class Takeoff():
-    pass
-
-
-class Supercruise():
-    pass
 
 
 class Mach_vs_ThrustLapse(CommonFunctionality):

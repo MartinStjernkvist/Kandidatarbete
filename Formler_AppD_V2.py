@@ -81,6 +81,7 @@ class AppendixD:
         """
         return np.sqrt((2 / (gamma_c - 1)) * (theta_0_break - 1))
 
+
 """
 T_t_4_max = 
 T_t_SLS = 
