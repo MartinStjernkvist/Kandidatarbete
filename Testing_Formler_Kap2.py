@@ -20,11 +20,11 @@ Constants (keep track)
 g_0 = 9.81  #
 rho_SL = 1.225  #
 t_R = 3  # runtime on takeoff
-s_TO = 500  #
+s_TO = 1500  # takeoff distance in ft
 T_std = 288.15  #
 P_std = 101325  #
 gamma = 1.4  #
-R = 287  # J/kg*K
+R = 287.05  # J/kg*K
 # s_G = ? # ground roll distance
 # s_B = ? # breaking distance
 # s_TO = ? # takeoff distance

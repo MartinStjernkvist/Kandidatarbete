@@ -9,11 +9,11 @@ Constants (keep track)
 g_0 = 9.81  #
 rho_SL = 1.225  #
 t_R = 3  # runtime on takeoff
-s_TO = 500  #
+s_TO = 1500  # takeoff distance in ft
 T_std = 288.15  #
 P_std = 101325  #
 gamma = 1.4  #
-R = 287  # J/kg*K
+R = 287.05  # J/kg*K
 
 
 # s_G = ? # ground roll distance
@@ -52,7 +52,7 @@ class CommonFunctionality:
             P_0 = P_std * ((T_std - (6.5 * 10 ** (-3) * 11000)) / T_std) ** (g_0 / (6.5 * 10 ** (-3) * R))
             return P_0
 
-    def theta_0(self, T, M_0):
+    def theta_0(self, T, gamma, M_0):
         """
         dimensionless ratio of freestream total temperature to
         sea level static temperature of the standard atmosphere
@@ -61,7 +61,7 @@ class CommonFunctionality:
         """
         return (T / T_std) * (1 + ((gamma - 1) / 2) * M_0 ** 2)
 
-    def delta_0(self, P, M_0):
+    def delta_0(self, P, gamma, M_0):
         """
         Equation (2.52b)
         """
@@ -295,7 +295,7 @@ class Case5(MasterEqn):
         """
         Equation (2.22)
         :param C_Lmax:  maximum coefficient of lift
-        :param rho:
+        :param rho:     density?
         :param s_G:     ground roll distance
         :param k_TO:
         """
