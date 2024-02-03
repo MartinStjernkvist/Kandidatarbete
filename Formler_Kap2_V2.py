@@ -343,8 +343,8 @@ class Case6(Case5):
     # self.ksi_TO = C_D + C_DR - mu_TO * C_L
 
 
-def thrust_to_weight(self):
-    return
+    def thrust_to_weight(self):
+        return
 
 
 class Case7(MasterEqn):

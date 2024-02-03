@@ -28,15 +28,14 @@ class AppendixD:
 
         Equation (D.1)
         Same as (2.52a), but with gamma_c
-
         :param T_0:         freestream temperature
-        :param gamma_c:
-        :param M_0:
+        :param gamma_c:     specific heat ratio
+        :param M_0:         mach number
         """
         theta_tau_r = (T_0 / T_std) * (1 + ((gamma_c - 1) / 2) * M_0 ** 2)
         return theta_tau_r
 
-    def tau_c(self, eta_m, beta, f, c_pt, T_t_4, c_pc, theta_0):
+    def tau_c(self, eta_m, beta, f, c_pt, tau_t, T_t_4, c_pc, theta_0):
         """
         compressor total temperature ratio
 
@@ -46,25 +45,43 @@ class AppendixD:
         - turbine total temperature ratio tau_t
         - throttle setting: T_t_4
         - flight conditions theta_0
-
         :param eta_m:
         :param beta:
         :param f:
         :param c_pt:
-        :param T_t_4:
+        :param tau_t:   total temperature ratio
+        :param T_t_4:   throttle setting
         :param c_pc:
-        :param theta_0:
+        :param theta_0: flight conditions
         """
-        return (1 + eta_m * (1 - beta) *
-                ((1 + f) * (1 / T_std) *
-                 ((c_pt * T_t_4) / (c_pc * theta_0))))
+        return (1 + eta_m * (1 - beta) * (1 + f) * (1 - tau_t) *
+                 ((c_pt * T_t_4) / (c_pc * theta_0)))
+
+    def pi_c(self, eta_c, eta_m, beta, f, tau_t, c_pt, c_pc, T_t_4, theta_0, gamma_c):
+        """
+        compressor total pressure ratio
+
+        Equation (D.3)
+        :param eta_c:
+        :param eta_m:
+        :param beta:
+        :param f:
+        :param tau_t:
+        :param c_pt:
+        :param c_pc:
+        :param T_t_4:
+        :param theta_0:
+        :param gamma_c:
+        """
+        C1 = (eta_c * eta_m * (1 - beta) * (1 + f) * (1 - tau_t) *
+              ((c_pt * T_t_4) / (c_pc * theta_0)))
+        return (1 + C1 * (T_t_4 / theta_0)) ** (gamma_c / (gamma_c - 1))
 
     def theta_0_break(self, T_t_4_max, T_t_SLS):
         """
         throttle ratio
 
         Equation (D.6)
-
         :param T_t_4_max:
         :param T_t_SLS:
         """
@@ -75,12 +92,26 @@ class AppendixD:
         mach break
 
         Equation (D.7)
-
         :param gamma_c:
         :param theta_0_break:
         """
         return np.sqrt((2 / (gamma_c - 1)) * (theta_0_break - 1))
 
+    def mdot_c2(self, pi_b, A_4, MFP_M_4, beta, f, pi_c, theta_0, T_t_4):
+        """
+        mass flow at station 2
+
+        Equation (D.9)
+        :param pi_b:
+        :param A_4:
+        :param MFP_M_4:
+        :param beta:
+        :param f:
+        :param pi_c:
+        :return:
+        """
+        C2 = pi_b * P_std * A_4 * MFP_M_4 / ((1 - beta) * (1 + f))
+        return C2 * pi_c * np.sqrt(theta_0 / T_t_4)
 
 """
 T_t_4_max = 
