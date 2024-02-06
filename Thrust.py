@@ -113,41 +113,46 @@ def F(overall_PR, fan_PR, bypass_PR,
     p_018_p_18_PR = ((1 + gamma_a) / 2) ** (gamma_a / (gamma_a - 1))
     p_08_p8_PR = ((1 + gamma_a) / 2) ** (gamma_a / (gamma_a - 1))
 
-    if (p_021 / p_0) > p_018_p_18_PR and (p_05 / p_0) > p_08_p8_PR:
+    # if (p_021 / p_0) > p_018_p_18_PR and (p_05 / p_0) > p_08_p8_PR:
 
-        choked = True
-        print(f'choked: {choked}')
-        # bypass choked
-        M_18 = 1
-        p_018 = p_021  # approx
-        p_18 = p_018 / p_018_p_18_PR
-        T_18 = Ex().T(T_021, gamma_a, 1)
-        a_18 = Ex().a(gamma_a, R, T_18)
-        c_18 = M_18 * a_18
-        rho_18 = Ex().rho(p_18, R, T_18)
-        A_18 = mdot_bypass / (c_18 * rho_18)
+    choked = True
+    print(f'choked: {choked}')
+    # bypass choked
+    M_18 = 1
+    p_018 = p_021  # approx
+    p_18 = p_018 / p_018_p_18_PR
+    T_18 = Ex().T(T_021, gamma_a, 1)
+    a_18 = Ex().a(gamma_a, R, T_18)
+    c_18 = M_18 * a_18
+    rho_18 = Ex().rho(p_18, R, T_18)
+    A_18 = mdot_bypass / (c_18 * rho_18)
 
-        # core choked
-        M_8 = 1
-        p_08 = p_05  # approx
-        T_08 = T_05  # approx
-        p_8 = Ex().p(p_08, gamma_g, 1)
-        T_8 = Ex().T(T_08, gamma_g, 1)
-        a_8 = Ex().a(gamma_g, R, T_8)
-        c_8 = M_8 * a_8
-        rho_8 = Ex().rho(p_8, R, T_8)
-        A_8 = (mdot_core + mdot_fuel) / (c_8 * rho_8)
-        F = (mdot_core + mdot_fuel) * c_8 + (p_8 - p_08) + mdot_bypass * c_18 + A_18 * (p_18 - p_0) - mdot * c_0
-        SFC = mdot_fuel / F
+    # core choked
+    M_8 = 1
+    p_08 = p_05  # approx
+    T_08 = T_05  # approx
+    p_8 = Ex().p(p_08, gamma_g, 1)
+    T_8 = Ex().T(T_08, gamma_g, 1)
+    a_8 = Ex().a(gamma_g, R, T_8)
+    c_8 = M_8 * a_8
+    rho_8 = Ex().rho(p_8, R, T_8)
+    A_8 = (mdot_core + mdot_fuel) / (c_8 * rho_8)
+    F = (mdot_core + mdot_fuel) * c_8 + (p_8 - p_08) + mdot_bypass * c_18 + A_18 * (p_18 - p_0) - mdot * c_0
+    SFC = mdot_fuel / F
 
-        print()
+    my_list = [p_0, T_0, a_0, rho_0, c_0, A_0, p_02, T_02, p_021, T_021, IPC_PR, p_026, T_026, p_03, T_03, p_04, T_04, mdot, mdot_bypass, mdot_core, mdot_fuel, T_045, p_045, T_05, p_05, p_018_p_18_PR, p_08_p8_PR, p_18, T_18, a_18, c_18, rho_18, A_18, p_8, T_8, a_8, c_8, rho_8, A_8]
+    my_names_list = ['p_0', 'T_0', 'a_0', 'rho_0', 'c_0', 'A_0', 'p_02', 'T_02', 'p_021', 'T_021', 'IPC_PR', 'p_026', 'T_026', 'p_03', 'T_03', 'p_04', 'T_04', 'mdot', 'mdot_bypass', 'mdot_core', 'mdot_fuel', 'T_045', 'p_045', 'T_05', 'p_05', 'p_018_p_18_PR', 'p_08_p8_PR', 'p_18', 'T_18', 'a_18', 'c_18', 'rho_18', 'A_18', 'p_8', 'T_8', 'a_8', 'c_8', 'rho_8', 'A_8']
+    values = [(my_names_list[item], my_list[item]) for item in range(len(my_list))]
 
-        return F, SFC
+    for i in range(len(values)):
+        print(values[i])
 
-    else:
+    return F, SFC
 
-        choked = False
-        print(f'choked: {choked}')
+    # else:
+    #
+    #     choked = False
+    #     print(f'choked: {choked}')
 
 
 print(F(overall_PR, fan_PR, bypass_PR,
