@@ -14,7 +14,7 @@ gamma = 1.4  #
 R = 287.05  # J/kg*K
 
 
-class Exempel:
+class Ex:
 
     def F(self, mdot_0, mdot_f, p_0, p_8, c_0, c_8, A_8):
         """
@@ -55,7 +55,7 @@ class Exempel:
         """
         return c / a
 
-    def SPR(self, gamma, M):
+    def stagnation_PR(self, gamma, M):
         """
         stagnation pressure ratio
         Equation (1.28b)
@@ -63,14 +63,14 @@ class Exempel:
         p_0_p = (1 + ((gamma - 1) / 2) * M ** 2) ** (gamma / (gamma - 1))
         return p_0_p
 
-    def STR(self, gamma, M):
+    def stagnation_TR(self, gamma, M):
         """
         stagnation temperature ratio
         """
         T_0_T = 1 + ((gamma - 1) / 2) * M ** 2
         return T_0_T
 
-    def STR_compressor(self, gamma, M, eta_pc):
+    def stagnation_TR_compressor(self, gamma, M, eta_pc):
         """
         stagnation temperature ratio compressor
 
@@ -79,7 +79,7 @@ class Exempel:
         T_03_T_02 = self.SPR(gamma, M) ** ((gamma - 1) / (gamma * eta_pc))
         return T_03_T_02
 
-    def STR_turbine(self, gamma, M, eta_pt):
+    def stagnation_TR_turbine(self, gamma, M, eta_pt):
         """
         stagnation temperature ratio turbine
         Equation (1.35)
@@ -144,3 +144,21 @@ class Exempel:
         propulsive efficiency
         """
         return F * c_0 / Wdot_kin
+
+    def temperature(self, h):
+        """
+        Introkompendium: Equation (1.29a)
+        """
+        T_0 = T_std - (6.5 * 10 ** (-3) * h)
+        return T_0
+
+    def pressure(self, h):
+        """
+        Introkompendium: Equation (1.29b)
+        """
+        if h <= 11000:
+            P_0 = P_std * ((T_std - (6.5 * 10 ** (-3) * h)) / T_std) ** (g_0 / (6.5 * 10 ** (-3) * R))
+            return P_0
+        else:
+            P_0 = P_std * ((T_std - (6.5 * 10 ** (-3) * 11000)) / T_std) ** (g_0 / (6.5 * 10 ** (-3) * R))
+            return P_0

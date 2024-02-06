@@ -17,7 +17,7 @@ R = 287.05  # J/kg*K
 # s_B = ? # breaking distance
 # s_TO = ? # takeoff distance
 
-class AppendixD:
+class AppD:
 
     def theta_0(self, T_0, gamma_c, M_0):
         """
@@ -130,7 +130,7 @@ tau_c =
 M_0_break = 
 """
 
-theta_0_break = AppendixD().theta_0_break(1, 1)
+theta_0_break = AppD().theta_0_break(1, 1)
 print(theta_0_break)
 
 # print(
