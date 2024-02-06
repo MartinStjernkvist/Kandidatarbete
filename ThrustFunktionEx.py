@@ -57,16 +57,21 @@ def thrust(H=10668, M0=0.78, OPR=45, FPR=1.48, BPR=12.5, HPCPR=10, TtInlet=1650,
     mflow_bypass = TotAirMassFlow/(1+1/BPR)
     mflow_core = TotAirMassFlow - mflow_bypass
     mflow_fuel = mflow_core*FAR
-    cp_a = cp_a_sls * 1 # Temporär ska fixas och ändras med höjd etc
-    cp_f = 0 # specifik värmekapacitet för bränslet
-    cp_g = cp_a*1+cp_f*1 #Temporär värmekapacitet för gasen, måste fixas
-    gamma_g = gamma_a #Detta är temporärt, måste fixas så den är korrekt.
+
+    gamma_g = gamma_a # Detta är temporärt, måste fixas så den är korrekt.
+    cp_a = gamma_a*R/(gamma_a-1) # Obs! Detta gäller för ideala gaser
+    # cp_f = 0 # specifik värmekapacitet för bränslet
+    cp_g = gamma_g*R/(gamma_g-1 )# Obs! Detta gäller för ideala gaser
+
 
     T_045 = T_04 - (cp_a*(T_03-T_026))/(cp_g*(1+FAR))#HPC is driven by the HPT
     P_045 = P_04*(T_045/T_04)**((gamma_g)/((gamma_g-1)*HPTEpol))
 
     Cp_a = cp_a # Behövs dessa???
     Cp_g = cp_g
+    # För ideala gaser gäller det att Cp=gamma*n*R/(gamma-1) där n är molsubstans. På så vis får vi att cp=Cp/n
+    # I sin tur får vi att Cp_a/Cp_g = cp_a/cp_g! Kanske endast själva förhålllandet som är av intresse?
+
 
     T_05 = T_045 - CP_a/(Cp_g*(1+FAR))*((1+BPR)*(T_021-T_02)+(T_026-T_021))# fläkt och IPC drivs av LPT
     P_05 = P_045*(T_05/T_045)**((gamma_g)/((gamma_g-1)*LPTEpol))
