@@ -157,10 +157,6 @@ def F(overall_PR, fan_PR, bypass_PR,
 
     #Detta borde vara rätt / Filip
     """
-    c_8 = np.sqrt(((p_05/P_0)**((gamma_g-1)/gamma_g)-1)*(2/(gamma_g-1))) # Berkäknas ifall flödet ej stryps, taget från introkompendie sida 16
-    c_18 = np.sqrt(((p_021/P_0)**((gamma_a-1)/gamma_a)-1)*(2/(gamma_a-1))) # samma som ovan
-    core_Thrust_choked = 0
-
     if (p_021 / p_0) > p_018_p_18_PR: # Detta kollar om bypass flödet stryps
         M_18 = 1
         p_018 = p_021  # approx
