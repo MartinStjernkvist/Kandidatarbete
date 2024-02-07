@@ -155,5 +155,68 @@ def F(overall_PR, fan_PR, bypass_PR,
         choked = False
         print(f'choked: {choked}')
 
+    #Detta borde vara rätt / Filip
+    """
+    c_8 = np.sqrt(((p_05/P_0)**((gamma_g-1)/gamma_g)-1)*(2/(gamma_g-1))) # Berkäknas ifall flödet ej stryps, taget från introkompendie sida 16
+    c_18 = np.sqrt(((p_021/P_0)**((gamma_a-1)/gamma_a)-1)*(2/(gamma_a-1))) # samma som ovan
+    core_Thrust_choked = 0
+
+    if (p_021 / p_0) > p_018_p_18_PR: # Detta kollar om bypass flödet stryps
+        M_18 = 1
+        p_018 = p_021  # approx
+        p_18 = p_018 / p_018_p_18_PR
+        T_18 = Ex().T(T_021, gamma_a, M_18)
+        a_18 = Ex().a(gamma_a, R, T_18)
+        c_18 = M_18 * a_18
+        rho_18 = Ex().rho(p_18, R, T_18)
+        A_18 = mdot_bypass / (c_18 * rho_18)
+        bypass_Thrust_choked = A_18*(p_18-p_0)
+
+    else:
+        p_18 = p_0
+        M_18 = np.sqrt(((p_021/p_0)**((gamma_a-1)/gamma_a)-1)*(2/(gamma_a-1))) # Introkompendie sida 16
+        T_18 = Ex().T(T_021, gamma_a, M_18)
+        a_18 = Ex().a(gamma_a, R, T_18)
+        c_18 = M_18 * a_18
+        rho_18 = Ex().rho(p_18, R, T_18)
+        A_18 = mdot_bypass / (c_18 * rho_18)
+        bypass_Thrust_choked = 0
+
+    if (p_05 / p_0) > p_08_p8_PR: # Detta kollar om core flödet stryps
+        M_8 = 1
+        p_08 = p_05  # approx
+        T_08 = T_05  # approx
+        p_8 = Ex().p(p_08, gamma_g, M_8)
+        T_8 = Ex().T(T_08, gamma_g, M_8)
+        a_8 = Ex().a(gamma_g, R, T_8)
+        c_8 = M_8 * a_8
+        rho_8 = Ex().rho(p_8, R, T_8)
+        A_8 = (mdot_core + mdot_fuel) / (c_8 * rho_8)
+        core_Thrust_choked = A_8*(P_8-P_0)
+    
+    else:
+        p_8 = p_0
+        M_8 = np.sqrt(((p_05/p_0)**((gamma_g-1)/gamma_g)-1)*(2/(gamma_g-1))) # Introkompendie sida 16
+        T_8 = Ex().T(T_05, gamma_g, M_8)
+        a_8 = Ex().a(gamma_g, R, T_8)
+        c_8 = M_8 * a_8
+        rho_8 = Ex().rho(p_8, R, T_8)
+        A_8 = mdot_bypass / (c_8 * rho_8)
+        bypass_Thrust_choked = 0
+
+    F = (mdot_core + mdot_fuel) * c_8 + core_Thrust_choked + mdot_bypass * c_18 + bypass_Thrust_choked - mdot * c_0
+    SFC = mdot_fuel / F
+
+    my_list = [p_0, T_0, a_0, rho_0, c_0, A_0, p_02, T_02, p_021, T_021, IPC_PR, p_026, T_026, p_03, T_03, p_04, T_04, mdot, mdot_bypass, mdot_core, mdot_fuel, T_045, p_045, T_05, p_05, p_018_p_18_PR, p_08_p8_PR, p_18, T_18, a_18, c_18, rho_18, A_18, p_8, T_8, a_8, c_8, rho_8, A_8]
+    my_names_list = ['p_0', 'T_0', 'a_0', 'rho_0', 'c_0', 'A_0', 'p_02', 'T_02', 'p_021', 'T_021', 'IPC_PR', 'p_026', 'T_026', 'p_03', 'T_03', 'p_04', 'T_04', 'mdot', 'mdot_bypass', 'mdot_core', 'mdot_fuel', 'T_045', 'p_045', 'T_05', 'p_05', 'p_018_p_18_PR', 'p_08_p8_PR', 'p_18', 'T_18', 'a_18', 'c_18', 'rho_18', 'A_18', 'p_8', 'T_8', 'a_8', 'c_8', 'rho_8', 'A_8']
+    values = [(my_names_list[item], my_list[item]) for item in range(len(my_list))]
+
+    for i in range(len(values)):
+        print('\n')
+        print(values[i])
+
+    return F, SFC
+    """
+
 F, SFC = F(overall_PR, fan_PR, bypass_PR, HPC_PR, turbine_INT, fan_IPC_HPC_poly, HPT_poly, LPT_poly, combustor_PL, tot_AMF, M_0, h)
 print(f'\nF (N): {F}\nSFC (mg/Ns): {SFC * 10 ** 6}')

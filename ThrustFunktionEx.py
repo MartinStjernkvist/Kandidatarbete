@@ -81,7 +81,10 @@ def thrust(H=10668, M0=0.78, OPR=45, FPR=1.48, BPR=12.5, HPCPR=10, TtInlet=1650,
 
     bypass_choked = False
     core_choked = False
-    c_8 = 200 # TEMPORTÄR MÅSTE BERÄKNAS IFALL CORE EJ CHOKED
+
+    # beräknas med introkompendie sida 16 vilket ger P_08 aprox = P_05 och P_8 = P_0
+    c_8 = np.sqrt(((P_05/P_0)**((gamma_g-1)/gamma_g)-1)*(2/(gamma_g-1))) # TEMPORTÄR MÅSTE BERÄKNAS IFALL CORE EJ CHOKED
+    c_18 = np.sqrt(((P_021/P_0)**((gamma_a-1)/gamma_a)-1)*(2/(gamma_a-1))) # TEMPORTÄR MÅSTE BERÄKNAS IFALL CORE EJ CHOKED
     bypass_Thrust = 0
     core_Thrust = 0
     if P_021/P_0 > cpr_cold:
@@ -102,5 +105,5 @@ def thrust(H=10668, M0=0.78, OPR=45, FPR=1.48, BPR=12.5, HPCPR=10, TtInlet=1650,
         rho_8 = P_8/(R*T_8)
         A_8 = (mflow_core+mflow_fuel)/(c_8*rho_8)
         core_Thrust = A_8*(P_8-P_0)
-    F = (mflow_core+mflow_fuel)*c_8-TotAirMassFlow*v_0+core_Thrust+bypass_Thrust #c_8 måste beräknas
+    F = (mflow_core+mflow_fuel)*c_8+mflow_bypass*c_18-TotAirMassFlow*v_0+core_Thrust+bypass_Thrust #c_8 och c_18 måste beräknas ifall ej choked
     return F
