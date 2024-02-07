@@ -26,7 +26,8 @@ HPT_poly = 0.85
 LPT_poly = 0.9
 combustor_PL = 0.04
 tot_AMF = 185  # kg/s
-A_0 = 2.1081269749763853  # from M_0 = 0.78, mass flow = 185 kg/s, h = 10668
+
+A_0_exempel = 2.1081269749763853  # from M_0 = 0.78, mass flow = 185 kg/s, h = 10668
 
 
 # temporärt
@@ -47,7 +48,7 @@ plt.figure(figsize=(10, 10))
 parameter_range_M_0 = np.linspace(0, 2, 100)
 parameter_range_h = np.linspace(0, 11000, 100)
 
-h_ref = 10668
+h_exempel = 10668
 for h in parameter_range_h:
 
     M_ref = 0.78
@@ -55,9 +56,9 @@ for h in parameter_range_h:
     F_h_list = []
     for M in parameter_range_M_0:
         F_ref = F_V2(overall_PR, fan_PR, bypass_PR, HPC_PR, turbine_INT, fan_IPC_HPC_poly, HPT_poly, LPT_poly, combustor_PL,
-                 A_0, M_ref, h=h_ref)
+                 A_0_exempel, M_ref, h=h_exempel)
         F_h = F_V2(overall_PR, fan_PR, bypass_PR, HPC_PR, turbine_INT, fan_IPC_HPC_poly, HPT_poly, LPT_poly, combustor_PL,
-                A_0, M, h)
+                A_0_exempel, M, h)
         F_h_list.append(F_h)
         alpha = F_h / F_ref
         alpha_list.append(alpha)

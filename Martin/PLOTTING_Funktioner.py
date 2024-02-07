@@ -38,4 +38,3 @@ class Plot_functions:
             thrust_loading.append(thrust_to_weight)
 
         plt.plot(wing_loading, thrust_loading)
-

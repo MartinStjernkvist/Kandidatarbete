@@ -151,7 +151,7 @@ def F(overall_PR, fan_PR, bypass_PR,
         p_8 = p_0
 
         M_8_squared = ((p_05 / p_0) ** ((gamma_g - 1) / gamma_g) - 1) * (2 / (gamma_g - 1))  # Introkompendie sida 16
-        print(f'M_8_squared: {M_8_squared}')
+        print(f'\nM_8_squared: {M_8_squared}')
         M_8 = np.sqrt(M_8_squared)
 
         p_08 = Ex().p_0(p_8, gamma_g, M_8)
@@ -173,6 +173,9 @@ def F(overall_PR, fan_PR, bypass_PR,
                      'A_18', 'p_8', 'T_8', 'a_8', 'c_8', 'rho_8', 'A_8']
     values = [(my_names_list[item], my_list[item]) for item in range(len(my_list))]
 
+    """
+    print statements
+    """
     print(f'\nM_0: {M_0}, h: {h}')
 
     for i in range(len(values)):
@@ -183,19 +186,10 @@ def F(overall_PR, fan_PR, bypass_PR,
     print(f'how choked: {bypass_Thrust_choked}')
     print(f'core choked: {core_choked}')
     print(f'how choked: {core_Thrust_choked}')
-
     return F
 
 
-def SFC(F, tot_AMF):
-    mdot = tot_AMF
-    mdot_bypass = mdot / (1 + (1 / bypass_PR))
-    mdot_core = mdot - mdot_bypass
-    mdot_fuel = mdot_core * FAR
-    return mdot_fuel / F
-
-
-A_0 = 2.1081269749763853  # from M_0 = 0.78, mass flow = 185 kg/s, h = 10668
+A_0_exempel = 2.1081269749763853  # from M_0 = 0.78, mass flow = 185 kg/s, h = 10668
 
 
 def F_V2(overall_PR, fan_PR, bypass_PR,
@@ -331,6 +325,9 @@ def F_V2(overall_PR, fan_PR, bypass_PR,
                      'A_18', 'p_8', 'T_8', 'a_8', 'c_8', 'rho_8', 'A_8']
     values = [(my_names_list[item], my_list[item]) for item in range(len(my_list))]
 
+    """
+    print statements
+    """
     print(f'\nM_0: {M_0}, h: {h}')
 
     for i in range(len(values)):
@@ -341,7 +338,6 @@ def F_V2(overall_PR, fan_PR, bypass_PR,
     print(f'how choked: {bypass_Thrust_choked}')
     print(f'core choked: {core_choked}')
     print(f'how choked: {core_Thrust_choked}')
-
     return F
 
 
@@ -359,7 +355,11 @@ SFC = SFC(thrust, tot_AMF)
 print(f'\nF (N): {thrust}')
 print(f'SFC (mg/Ns): {SFC * 10 ** 6}')
 
-M = 1
+M_test = 1
 F_SL = F(overall_PR, fan_PR, bypass_PR, HPC_PR, turbine_INT, fan_IPC_HPC_poly, HPT_poly, LPT_poly, combustor_PL,
-         tot_AMF, M, h=0)
-print(F_SL)
+         tot_AMF, M_test, h=0)
+print(f'F_SL: {F_SL}')
+
+F_V2_SL = F_V2(overall_PR, fan_PR, bypass_PR, HPC_PR, turbine_INT, fan_IPC_HPC_poly, HPT_poly, LPT_poly, combustor_PL,
+               A_0_exempel, M, h=0)
+print(f'F_V2_SL: {F_V2_SL}')
