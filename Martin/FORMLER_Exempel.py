@@ -1,5 +1,5 @@
 import numpy as np
-from Formler_Kap2_V2 import CommonFunctionality
+from FORMLER_Kap2_V2 import CommonFunctionality
 
 """
 Constants (keep track)

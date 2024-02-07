@@ -1,10 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from Plotting_Funktioner import Plot_functions
-from Formler_Kap2_V2 import MasterEqn, Case1, Case2, Case3, Case4, Case5, Case6, Case7, Case8, Case9
-from Formler_Kap2_V2 import Mach_vs_ThrustLapse
-from Formler_AppD_V2 import AppendixD
+from Kandidatarbete.Martin.PLOTTING_Funktioner import Plot_functions
 
 # Example
 # Case1_in1 = Case1(...in1 parameters...) - "in" for instance
@@ -38,12 +35,12 @@ parameter_range = np.linspace(0, 2, 100)
 TR = [1, 1.05, 1.08]
 h = 12192
 symbol = ['-', '--', ':']
-Plot_functions.plot_Mach_vs_ThrustLapse(parameter_range, h, TR, symbol)
+Plot_functions.plot_Mach_vs_ThrustLapse(parameter_range, h, gamma, TR, symbol)
 
 TR = [1, 1.05, 1.08]
 h = 0
 symbol = ['-', '--', ':']
-Plot_functions.plot_Mach_vs_ThrustLapse(parameter_range, h, TR, symbol)
+Plot_functions.plot_Mach_vs_ThrustLapse(parameter_range, h, gamma, TR, symbol)
 
 plt.xlabel('Mach Number')
 plt.ylabel('Thrust Lapse')
@@ -82,4 +79,8 @@ plt.xlabel('Wing loading')
 plt.ylabel('Thrust loading')
 
 plt.show()
+
+
+
+
 

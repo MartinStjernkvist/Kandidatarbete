@@ -416,19 +416,20 @@ class Mach_vs_ThrustLapse(CommonFunctionality):
     Functionality to create plot on page 42
     """
 
-    def __init__(self, h, M_0, TR):
+    def __init__(self, h, gamma, M_0, TR):
         """
-        :param h:   altitude
-        :param M_0: mach number
-        :param TR:  throttle ratio
+        :param h:       altitude
+        :param M_0:     mach number
+        :param TR:      throttle ratio
         """
         self.h = h
+        self.gamma = gamma
         self.T = self.temperature(h)
         self.P = self.pressure(h)
         self.M_0 = M_0
         self.TR = TR
-        self.theta_0 = self.theta_0(self.T, self.M_0)
-        self.delta_0 = self.delta_0(self.P, self.M_0)
+        self.theta_0 = self.theta_0(self.T, self.gamma, self.M_0)
+        self.delta_0 = self.delta_0(self.P, self.gamma, self.M_0)
 
     def alpha_max(self):
         """

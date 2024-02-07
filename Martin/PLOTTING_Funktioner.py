@@ -1,19 +1,18 @@
-import numpy as np
 import matplotlib.pyplot as plt
 
-from Formler_Kap2_V2 import MasterEqn, Case1, Case2, Case3, Case4, Case5, Case6, Case7, Case8, Case9
-from Formler_Kap2_V2 import Mach_vs_ThrustLapse
+from Kandidatarbete.Martin.FORMLER_Kap2_V2 import Case1, Case5
+from Kandidatarbete.Martin.FORMLER_Kap2_V2 import Mach_vs_ThrustLapse
 
 
 class Plot_functions:
 
-    def plot_Mach_vs_ThrustLapse(parameter_range, h, TR, symbol):
+    def plot_Mach_vs_ThrustLapse(parameter_range, h, gamma, TR, symbol):
 
         for i in range(3):
             ThrustLapse_max = []
             ThrustLapse_military = []
             for param_value in parameter_range:
-                instance = Mach_vs_ThrustLapse(h=h, M_0=param_value, TR=TR[i])
+                instance = Mach_vs_ThrustLapse(h=h, gamma=gamma, M_0=param_value, TR=TR[i])
                 maximum_alpha = instance.alpha_max()
                 military_alpha = instance.alpha_military()
                 ThrustLapse_max.append(maximum_alpha)
@@ -39,3 +38,4 @@ class Plot_functions:
             thrust_loading.append(thrust_to_weight)
 
         plt.plot(wing_loading, thrust_loading)
+
