@@ -361,5 +361,5 @@ F_SL = F(overall_PR, fan_PR, bypass_PR, HPC_PR, turbine_INT, fan_IPC_HPC_poly, H
 print(f'F_SL: {F_SL}')
 
 F_V2_SL = F_V2(overall_PR, fan_PR, bypass_PR, HPC_PR, turbine_INT, fan_IPC_HPC_poly, HPT_poly, LPT_poly, combustor_PL,
-               A_0_exempel, M, h=0)
+               A_0_exempel, M_test, h=0)
 print(f'F_V2_SL: {F_V2_SL}')
