@@ -30,18 +30,17 @@ tot_AMF = 185  # kg/s
 
 A_0_exempel = 2.1081269749763853  # from M_0 = 0.78, mass flow = 185 kg/s, h = 10668
 
-
 # temporärt
 gamma_g = 1.333  # Detta är temporärt, måste fixas så den är korrekt.
 cp_a = gamma_a * R / (gamma_a - 1)  # Obs! Detta gäller för ideala gaser
 # cp_f = 0 # specifik värmekapacitet för bränslet
 cp_g = gamma_g * R / (gamma_g - 1)  # Obs! Detta gäller för ideala gaser
 
-#FAR = 0.025  # fuel air ratio Denna finns nu med i våran funktion, behövs nog ej längre
+# FAR = 0.025  # fuel air ratio Denna finns nu med i våran funktion, behövs nog ej längre
 cp_a_sls = 10_035  # [J/kgK] värmekapacitet för luft sea level standard
 # cp_f = 1  # specifik värmekapacitet för bränslet
 
-plt.figure(figsize=(5, 5))
+plt.figure(figsize=(10, 10))
 
 parameter_range_M_0 = np.linspace(0, 2, 100)
 parameter_range_h = np.linspace(0, 11000, 5)
@@ -53,12 +52,12 @@ for h in parameter_range_h:
     alpha_list = []
     F_h_list = []
     for M in parameter_range_M_0:
-        F_ref = F_V2(overall_PR, fan_PR, bypass_PR, HPC_PR, turbine_INT, fan_IPC_HPC_poly, HPT_poly, LPT_poly, combustor_PL,
-                 A_0_exempel, M_ref, h=h_exempel)
-        F_h = F_V2(overall_PR, fan_PR, bypass_PR, HPC_PR, turbine_INT, fan_IPC_HPC_poly, HPT_poly, LPT_poly, combustor_PL,
-                A_0_exempel, M, h)
+        F_SL = F_V2(overall_PR, fan_PR, bypass_PR, HPC_PR, turbine_INT, fan_IPC_HPC_poly, HPT_poly, LPT_poly,
+                    combustor_PL, A_0_exempel, M, h=0)
+        F_h = F_V2(overall_PR, fan_PR, bypass_PR, HPC_PR, turbine_INT, fan_IPC_HPC_poly, HPT_poly, LPT_poly,
+                   combustor_PL, A_0_exempel, M, h)
         F_h_list.append(F_h)
-        alpha = F_h / F_ref
+        alpha = F_h / F_SL
         alpha_list.append(alpha)
     # print(f'alpha: {alpha_list}')
     plt.plot(parameter_range_M_0, alpha_list, label=f'{str(h)} km')
