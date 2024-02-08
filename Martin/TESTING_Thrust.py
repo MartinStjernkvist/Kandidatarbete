@@ -63,7 +63,7 @@ for h in parameter_range_h:
     # print(f'alpha: {alpha_list}')
     plt.plot(parameter_range_M_0, alpha_list, label=f'{str(h)} km')
 
-plt.title('Installed Thrust Lapse', weight='bold')
+plt.title('Installed Full Throttle Thrust Lapse', weight='bold')
 plt.xlabel('Mach number')
 plt.ylabel('Thrust Lapse (\u03B1)')
 plt.legend()
