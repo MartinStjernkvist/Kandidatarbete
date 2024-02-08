@@ -164,7 +164,7 @@ def F(overall_PR, fan_PR, bypass_PR,
         A_8 = mdot_bypass / (c_8 * rho_8)
         core_Thrust_choked = 0
 
-    F = (mdot_core + mdot_fuel) * c_8 + A_8 * (p_8 - p_08) + mdot_bypass * c_18 + A_18 * (p_18 - p_0) - mdot * c_0
+    F = (mdot_core + mdot_fuel) * c_8 + core_Thrust_choked + mdot_bypass * c_18 + bypass_Thrust_choked - mdot * c_0
 
     my_list = [p_0, T_0, a_0, rho_0, c_0, A_0, p_02, T_02, p_021, T_021, IPC_PR, p_026, T_026, p_03, T_03, p_04, T_04,
                mdot, mdot_bypass, mdot_core, mdot_fuel, T_045, p_045, T_05, p_05, p_018_p_18_PR, p_08_p8_PR, p_18, T_18,
@@ -320,7 +320,7 @@ def F_V2(overall_PR, fan_PR, bypass_PR,
         A_8 = mdot_bypass / (c_8 * rho_8)
         core_Thrust_choked = 0
 
-    F = (mdot_core + mdot_fuel) * c_8 + A_8 * (p_8 - p_08) + mdot_bypass * c_18 + A_18 * (p_18 - p_0) - mdot * c_0
+    F = (mdot_core + mdot_fuel) * c_8 + core_Thrust_choked + mdot_bypass * c_18 + bypass_Thrust_choked - mdot * c_0
 
     my_list = [p_0, T_0, a_0, rho_0, c_0, A_0, p_02, T_02, p_021, T_021, IPC_PR, p_026, T_026, p_03, T_03, p_04, T_04,
                mdot, mdot_bypass, mdot_core, mdot_fuel, T_045, p_045, T_05, p_05, p_018_p_18_PR, p_08_p8_PR, p_18, T_18,
