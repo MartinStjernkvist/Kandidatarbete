@@ -44,7 +44,7 @@ cp_a_sls = 10_035  # [J/kgK] värmekapacitet för luft sea level standard
 plt.figure(figsize=(5, 5))
 
 parameter_range_M_0 = np.linspace(0, 2, 100)
-parameter_range_h = np.linspace(0, 5000, 5)
+parameter_range_h = np.linspace(0, 11000, 5)
 
 h_exempel = 10668
 for h in parameter_range_h:
