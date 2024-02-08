@@ -249,7 +249,7 @@ def F_V2(overall_PR, fan_PR, bypass_PR,
     p_04 = p_03 * (1 - combustor_PL)
     T_04 = turbine_INT
 
-    FAR = 0.5325 - 2207.5/(8200-T_03) # Detta är från ett flertal linjära approximeringar för FAR för turbine_int = 1650K. Är säkert en del fel men är bättre än fast 0.025
+    FAR = 0.5325 - 2207.5/(8200-T_03) # -2.77785275e-05*T_03+4.76716674e-02 #Detta är från ett flertal linjära approximeringar för FAR för turbine_int = 1650K. Är säkert en del fel men är bättre än fast 0.025
     # mdot = tot_AMF
     mdot = c_0 * rho_0 * A_0
     mdot_bypass = mdot / (1 + (1 / bypass_PR))
