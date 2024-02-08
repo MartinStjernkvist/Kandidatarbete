@@ -5,6 +5,7 @@ from Thrust import F_V2
 """
 Constants (keep track)
 """
+
 g_0 = 9.81  #
 rho_SL = 1.225  #
 t_R = 3  # runtime on takeoff
@@ -40,10 +41,10 @@ cp_g = gamma_g * R / (gamma_g - 1)  # Obs! Detta gäller för ideala gaser
 cp_a_sls = 10_035  # [J/kgK] värmekapacitet för luft sea level standard
 # cp_f = 1  # specifik värmekapacitet för bränslet
 
-plt.figure(figsize=(10, 10))
+plt.figure(figsize=(5, 5))
 
 parameter_range_M_0 = np.linspace(0, 2, 100)
-parameter_range_h = np.linspace(0, 11000, 5)
+parameter_range_h = np.linspace(0, 5000, 5)
 
 h_exempel = 10668
 for h in parameter_range_h:
@@ -60,7 +61,10 @@ for h in parameter_range_h:
         alpha = F_h / F_ref
         alpha_list.append(alpha)
     # print(f'alpha: {alpha_list}')
-    plt.plot(parameter_range_M_0, alpha_list,label=str(h))
+    plt.plot(parameter_range_M_0, alpha_list, label=f'{str(h)} km')
 
+plt.title('Installed Thrust Lapse', weight='bold')
+plt.xlabel('Mach number')
+plt.ylabel('Thrust Lapse (\u03B1)')
 plt.legend()
 plt.show()
