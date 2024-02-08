@@ -1,6 +1,7 @@
 import numpy as np
-from Kandidatarbete.Martin.FORMLER_Exempel import Ex
-
+#from Kandidatarbete.Martin.FORMLER_Exempel import Ex
+from FORMLER_Exempel import Ex
+#denna används för att jag ska kunna köra filerna lokalt/ Filip
 """
 Constants (keep track)
 """
@@ -29,18 +30,14 @@ M_0 = 0.78
 h = 10_668  # m
 
 # temporärt
-gamma_g = gamma_a  # Detta är temporärt, måste fixas så den är korrekt.
+gamma_g = 1.333  # Detta är temporärt, måste fixas så den är korrekt.
 cp_a = gamma_a * R / (gamma_a - 1)  # Obs! Detta gäller för ideala gaser
 # cp_f = 0 # specifik värmekapacitet för bränslet
 cp_g = gamma_g * R / (gamma_g - 1)  # Obs! Detta gäller för ideala gaser
 
-FAR = 0.025  # fuel air ratio
+FAR = 0.025  # fuel air ratio DENNA HAR VI EN BÄTTRE APROXIMATIV FORMEL FÖR NU SOM FINNS I F FUNKTIONEN
 cp_a_sls = 10_035  # [J/kgK] värmekapacitet för luft sea level standard
 # cp_f = 1  # specifik värmekapacitet för bränslet
-c_8 = 200
-Cp_a = cp_a
-Cp_g = cp_g
-
 
 def F(overall_PR, fan_PR, bypass_PR,
       HPC_PR, turbine_INT, fan_IPC_HPC_poly,
@@ -96,6 +93,8 @@ def F(overall_PR, fan_PR, bypass_PR,
     p_04 = p_03 * (1 - combustor_PL)
     T_04 = turbine_INT
 
+    FAR = 0.5325 - 2207.5/(8200-T_03) # Detta är från ett flertal linjära approximeringar för FAR för turbine_int = 1650K. Är säkert en del fel men är bättre än fast 0.025
+
     mdot = tot_AMF
     mdot_bypass = mdot / (1 + (1 / bypass_PR))
     mdot_core = mdot - mdot_bypass
@@ -103,6 +102,9 @@ def F(overall_PR, fan_PR, bypass_PR,
 
     T_045 = T_04 - (cp_a * (T_03 - T_026)) / ((1 + FAR) * cp_g)
     p_045 = p_04 * (T_045 / T_04) ** (gamma_g / ((gamma_g - 1) * eta_p_HPT))
+
+    Cp_a = cp_a*mdot_core
+    Cp_g = cp_g*mdot_core
 
     T_05 = T_045 - (Cp_a / (Cp_g * (1 + FAR))) * ((1 + bypass_PR) * (T_021 - T_02) + (T_026 - T_021))
     p_05 = p_045 * (T_05 / T_045) ** (gamma_g / ((gamma_g - 1) * eta_p_LPT))
@@ -247,6 +249,7 @@ def F_V2(overall_PR, fan_PR, bypass_PR,
     p_04 = p_03 * (1 - combustor_PL)
     T_04 = turbine_INT
 
+    FAR = 0.5325 - 2207.5/(8200-T_03) # Detta är från ett flertal linjära approximeringar för FAR för turbine_int = 1650K. Är säkert en del fel men är bättre än fast 0.025
     # mdot = tot_AMF
     mdot = c_0 * rho_0 * A_0
     mdot_bypass = mdot / (1 + (1 / bypass_PR))
@@ -255,6 +258,9 @@ def F_V2(overall_PR, fan_PR, bypass_PR,
 
     T_045 = T_04 - (cp_a * (T_03 - T_026)) / ((1 + FAR) * cp_g)
     p_045 = p_04 * (T_045 / T_04) ** (gamma_g / ((gamma_g - 1) * eta_p_HPT))
+
+    Cp_a = cp_a*mdot_core
+    Cp_g = cp_g*mdot_core
 
     T_05 = T_045 - (Cp_a / (Cp_g * (1 + FAR))) * ((1 + bypass_PR) * (T_021 - T_02) + (T_026 - T_021))
     p_05 = p_045 * (T_05 / T_045) ** (gamma_g / ((gamma_g - 1) * eta_p_LPT))
@@ -318,11 +324,11 @@ def F_V2(overall_PR, fan_PR, bypass_PR,
 
     my_list = [p_0, T_0, a_0, rho_0, c_0, A_0, p_02, T_02, p_021, T_021, IPC_PR, p_026, T_026, p_03, T_03, p_04, T_04,
                mdot, mdot_bypass, mdot_core, mdot_fuel, T_045, p_045, T_05, p_05, p_018_p_18_PR, p_08_p8_PR, p_18, T_18,
-               a_18, c_18, rho_18, A_18, p_8, T_8, a_8, c_8, rho_8, A_8]
+               a_18, c_18, rho_18, A_18, p_8, T_8, a_8, c_8, rho_8, A_8, FAR]
     my_names_list = ['p_0', 'T_0', 'a_0', 'rho_0', 'c_0', 'A_0', 'p_02', 'T_02', 'p_021', 'T_021', 'IPC_PR', 'p_026',
                      'T_026', 'p_03', 'T_03', 'p_04', 'T_04', 'mdot', 'mdot_bypass', 'mdot_core', 'mdot_fuel', 'T_045',
                      'p_045', 'T_05', 'p_05', 'p_018_p_18_PR', 'p_08_p8_PR', 'p_18', 'T_18', 'a_18', 'c_18', 'rho_18',
-                     'A_18', 'p_8', 'T_8', 'a_8', 'c_8', 'rho_8', 'A_8']
+                     'A_18', 'p_8', 'T_8', 'a_8', 'c_8', 'rho_8', 'A_8', 'FAR']
     values = [(my_names_list[item], my_list[item]) for item in range(len(my_list))]
 
     """
@@ -341,7 +347,7 @@ def F_V2(overall_PR, fan_PR, bypass_PR,
     return F
 
 
-def SFC(F, tot_AMF):
+def SFC(F, tot_AMF): # detta använder det felaktiga globala FAR variabeln
     mdot = tot_AMF
     mdot_bypass = mdot / (1 + (1 / bypass_PR))
     mdot_core = mdot - mdot_bypass
