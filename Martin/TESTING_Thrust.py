@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from Thrust import F_V2
+from FORMLER_AppD_V2 import AppD
+from FORMLER_Exempel import Ex
 
 """
 Constants (keep track)
@@ -49,6 +51,7 @@ h_exempel = 10668
 for h in parameter_range_h:
 
     M_ref = 0.78
+    T_t_4_max = 1830
     alpha_list = []
     F_h_list = []
     for M in parameter_range_M_0:
@@ -58,8 +61,10 @@ for h in parameter_range_h:
                    combustor_PL, A_0_exempel, M, h)
         F_h_list.append(F_h)
         alpha = F_h / F_SL
+        theta_0 = AppD().theta_0(Ex().temperature(h), gamma_a, M)
+        # TR = T_t_4_max * theta_0 / turbine_INT  # Equation (D.5) Appendix D
+        # print(f'throttle ratio: {TR}')
         alpha_list.append(alpha)
-    # print(f'alpha: {alpha_list}')
     plt.plot(parameter_range_M_0, alpha_list, label=f'{str(h)} km')
 
 plt.title('Installed Full Throttle Thrust Lapse', weight='bold')
