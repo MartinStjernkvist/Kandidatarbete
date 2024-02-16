@@ -30,7 +30,7 @@ LPT_poly = 0.9
 combustor_PL = 0.04
 tot_AMF = 185  # kg/s
 
-A_0_exempel = 2.1081269749763853  # from M_0 = 0.78, mass flow = 185 kg/s, h = 10668
+A_0_exempel = np.pi*(2.06/2)**2*(1-(2.2/9.4)**2)  # estimerad från bild
 
 # temporärt
 gamma_g = 1.333  # Detta är temporärt, måste fixas så den är korrekt.

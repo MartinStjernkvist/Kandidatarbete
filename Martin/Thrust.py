@@ -191,7 +191,7 @@ def F(overall_PR, fan_PR, bypass_PR,
     return F
 
 
-A_0_exempel = 2.1081269749763853  # from M_0 = 0.78, mass flow = 185 kg/s, h = 10668
+A_0_exempel = np.pi*(2.06/2)**2*(1-(2.2/9.4)**2)  # estimerad från bild
 
 
 def F_V2(overall_PR, fan_PR, bypass_PR,
@@ -249,9 +249,11 @@ def F_V2(overall_PR, fan_PR, bypass_PR,
     p_04 = p_03 * (1 - combustor_PL)
     T_04 = turbine_INT
 
-    FAR = 0.5325 - 2207.5/(8200-T_03) # -2.77785275e-05*T_03+4.76716674e-02 #Detta är från ett flertal linjära approximeringar för FAR för turbine_int = 1650K. Är säkert en del fel men är bättre än fast 0.025
+    FAR = -2.77785275e-05*T_03+4.76716674e-02 #0.5325 - 2207.5/(8200-T_03) #Detta är från ett flertal linjära approximeringar för FAR för turbine_int = 1650K. Är säkert en del fel men är bättre än fast 0.025
     # mdot = tot_AMF
-    mdot = c_0 * rho_0 * A_0
+    M_2 = M_0 *0.28+0.2 #helt påhittat, konstig linjär aprox av M2 givet M0 för ex upgiften
+    MFP = M_2*np.sqrt(gamma_a/R)*(1+(gamma_a-1)/2*M_2**2)**((gamma_a+1)/(2*(1-gamma_a))) # 1.3 mattingly
+    mdot = A_0*(p_02*MFP)/np.sqrt(T_02) # 1.3 mattingly
     mdot_bypass = mdot / (1 + (1 / bypass_PR))
     mdot_core = mdot - mdot_bypass
     mdot_fuel = mdot_core * FAR
