@@ -21,6 +21,18 @@ R = 287.05  # J/kg*K
 # s_TO = ? # takeoff distance
 
 
+def MFP(M, g_c=1, gamma=gamma):
+    """
+    mass flow parameter
+
+    Equation (1.3)
+    :param M:       mach number
+    :param g_c:     gas constant?
+    :param gamma:
+    """
+    return M * np.sqrt((gamma * g_c / R)) * (1 + ((gamma - 1) / 2) * M ** 2) ** ((gamma + 1) / (2 * (1 - gamma)))
+
+
 class CommonFunctionality:
     """
     Common functionality for MasterEqn and other classes
@@ -341,7 +353,6 @@ class Case6(Case5):
 
     # self.R = q * C_DR * S + mu_TO * (beta * W_TO - q * C_L * S)
     # self.ksi_TO = C_D + C_DR - mu_TO * C_L
-
 
     def thrust_to_weight(self):
         return

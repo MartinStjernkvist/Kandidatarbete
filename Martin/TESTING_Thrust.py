@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from Thrust import F_V2
-from FORMLER_AppD_V2 import AppD
+from FORMLER_Mattingly_AppD import AppD
 from FORMLER_Exempel import Ex
 
 """

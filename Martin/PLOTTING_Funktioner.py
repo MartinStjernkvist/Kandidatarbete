@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
-from Kandidatarbete.Martin.FORMLER_Kap2_V2 import Case1, Case5
-from Kandidatarbete.Martin.FORMLER_Kap2_V2 import Mach_vs_ThrustLapse
+from Kandidatarbete.Martin.FORMLER_Mattingly import Case1, Case5
+from Kandidatarbete.Martin.FORMLER_Mattingly import Mach_vs_ThrustLapse
 
 
 class Plot_functions:
