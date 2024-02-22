@@ -1,8 +1,9 @@
 import numpy as np
 #from Kandidatarbete.Martin.FORMLER_Exempel import Ex
 from FORMLER_Exempel import Ex
-#denna används för att jag ska kunna köra filerna lokalt/ Filip
 from KONSTANTER import *
+#denna används för att jag ska kunna köra filerna lokalt/ Filip
+
 
 # exempelupg
 overall_PR = 45
