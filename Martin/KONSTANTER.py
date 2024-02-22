@@ -8,7 +8,6 @@ from FORMLER_8Performance import Perf
 from KONSTANTER import *
 """
 
-"""in m"""
 r_tip_fan = 0.9
 r_hub_fan = r_tip_fan - 0.62
 r_splitter = r_tip_fan - 0.316
@@ -19,7 +18,7 @@ h_cruise = 18288
 
 gamma_a = 1.4
 gamma_c = 1.33
-gamma_t = 1.3 # placeholder
+gamma_t = 1.3  # placeholder
 
 g_0 = 9.81  # gravitation
 rho_SL = 1.225  # kg / m^3 air sealevel
@@ -36,6 +35,18 @@ A_fan = 2.296  # m^2
 F_symphony = 160_000  # N
 
 P_effektivitet = 0.99  # Pt2 Verklig / Pt2 teoretisk
+
+"""
+DesignTask2
+"""
+hade_angle_alpha = 15
+r_tip_splitter = 0.98 * r_tip_fan
+
+"""
+från handledning
+"""
+M_ax_fan = 0.8
+M_rel = 1.5
 
 """
 värden från 8Performance
@@ -66,7 +77,7 @@ eta_LPT = 0.933
 https://core.ac.uk/reader/70614400
 """
 
-epsilon_IC = 1 # placeholder
+epsilon_IC = 1  # placeholder
 pi_IC = 0.96
 
 """

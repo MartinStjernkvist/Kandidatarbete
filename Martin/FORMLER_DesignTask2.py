@@ -1,6 +1,7 @@
 import numpy as np
 from KONSTANTER import *
 
+
 class DT2():
     def M_ax(self, M, theta):
         """
@@ -29,3 +30,9 @@ class DT2():
 
     def A_duct_entry(self, A_2, BPR):
         return A_2 / (BPR + 1)
+
+    def U_mid(self, r_tip, r_hub):
+        return (r_tip + r_hub) / 2
+
+    def stage_loading(self, Delta_H, U_mid_list):
+        return 2 * Delta_H / np.sum([U_mid_list[i] ** 2 for i in range(U_mid_list)])
