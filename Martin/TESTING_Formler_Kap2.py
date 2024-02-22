@@ -1,31 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
 from Kandidatarbete.Martin.PLOTTING_Funktioner import Plot_functions
+from KONSTANTER import *
 
-# Example
-# Case1_in1 = Case1(...in1 parameters...) - "in" for instance
-# result_in1 = Case1_in1.thrust_to_weight() - call thrust_to_weight from Case1 onto Case1_in1
-# Case1_in2 = Case1(...in2 parameters...)
-# result_i2 = Case1_in2.thrust_to_weight()
-# then plot result_in1 vs result_in2
-
-
-"""
-Constants (keep track)
-"""
-g_0 = 9.81  #
-rho_SL = 1.225  #
-t_R = 3  # runtime on takeoff
-s_TO = 1500  # takeoff distance in ft
-T_std = 288.15  #
-P_std = 101325  #
-gamma = 1.4  #
-R = 287.05  # J/kg*K
-# s_G = ? # ground roll distance
-# s_B = ? # breaking distance
-# s_TO = ? # takeoff distance
-
+gamma = gamma_a
 
 plt.figure(figsize=(10, 8))
 

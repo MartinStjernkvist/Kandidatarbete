@@ -1,25 +1,9 @@
 import numpy as np
 from scipy import integrate
+from KONSTANTER import *
 
 # alpha, beta, q, n, K1, K2, C_D0, C_DR, V, dV_dt, dh_dt, C_D, C_L, C_Lmax, rho, s_G, s_B, k_TO, k_TD, mu_TO, V_STALL, sigma, theta, T_SL, W_TO, S, wing_loading
-
-"""
-Constants (keep track)
-"""
-g_0 = 9.81  #
-rho_SL = 1.225  #
-t_R = 3  # runtime on takeoff
-s_TO = 1500  # takeoff distance in ft
-T_std = 288.15  #
-P_std = 101325  #
-gamma = 1.4  #
-R = 287.05  # J/kg*K
-
-
-# s_G = ? # ground roll distance
-# s_B = ? # breaking distance
-# s_TO = ? # takeoff distance
-
+gamma = gamma_a
 
 def MFP(M, g_c=1, gamma=gamma):
     """

@@ -1,16 +1,16 @@
 # temp
 import numpy as np
 from FORMLER_Mattingly import MFP
+from KONSTANTER import *
 
 """
-Konstanter
+Exempelupg
 """
 P0 = 23860
 M0 = 0.78
 M2 = 0.42  # mach tal precis innan motorn
 gamma = 1.4
 T0 = 218.81
-R = 287
 mdot_ex = 185  # inflöde fån exempeluppgiften
 P_effektivitet = 0.99  # Pt2 Verklig / Pt2 teoretisk
 

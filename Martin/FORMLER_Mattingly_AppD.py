@@ -1,16 +1,5 @@
 import numpy as np
-
-"""
-Constants (keep track)
-"""
-g_0 = 9.81  #
-rho_SL = 1.225  #
-t_R = 3  # runtime on takeoff
-s_TO = 1500  # takeoff distance in ft
-T_std = 288.15  #
-P_std = 101325  #
-gamma = 1.4  #
-R = 287.05  # J/kg*K
+from KONSTANTER import *
 
 
 # s_G = ? # ground roll distance
