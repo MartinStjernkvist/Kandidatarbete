@@ -18,4 +18,3 @@ plt.legend()
 plt.title('FAR as a function of T_03 for an inlet temperature of 1650[K]')
 plt.show()
 
-
