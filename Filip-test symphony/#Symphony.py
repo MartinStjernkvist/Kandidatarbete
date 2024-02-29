@@ -1,4 +1,4 @@
-#Symphony
+#%% Symphony 
 #-----------------------------------Almänna värden-------------------------------------------------------
 import numpy as np
 
@@ -23,12 +23,12 @@ r_hub_fläkt = 0.29625 #approximerat, [m]
 #%%-------------------------------------Beräkningar---------------------------
 T_0, P_0, a_0 = Ambient_air(18288) #Beräknar luftegenskaper för omgivningen
 
-T_t2, Pt_2, T_2, P_2 ,mdot, a_2 = Station_2(T_0, P_0)
+T_t2, P_t2, T_2, P_2 ,mdot, a_2 = Station_2(T_0, P_0)
 
 T_t2i, P_t2i, FPR = Station_2i(T_t2, P_t2, a_2)
 
 
-#---------------------------------Funktioner--------------------------------------
+#%%---------------------------------Funktioner--------------------------------------
 def Ambient_air(h, T_std = T_SLS, P_std = P_SLS, gamma = gamma_a, R = R):
     """
     Ger tillbaka T_0 och P_0 från T och P vid havsnivå
@@ -50,14 +50,15 @@ def Station_2(T_0, P_0, A_2 = A_2, M_0 = M_0, M_2 = M_2, gamma = gamma_a, n = n_
     MFP = M_2 * np.sqrt(gamma / R) * temp2 ** ((gamma + 1) / (2 * (1 - gamma)))  # 1.3 mattingly
     mdot = A_2 * (P_t2 * MFP) / np.sqrt(T_t2)
     T_2 = T_t2 / temp2
+    P_2 = P_t2 / temp2 #osäker ifall detta är rätt
     a_2 = np.sqrt(gamma * R * T_2)
-    return [T_t2, Pt_2, T_2, P_2, mdot, a_2]
+    return [T_t2, P_t2, T_2, P_2, mdot, a_2]
 
-def Station_2i(T_t2, Pt_2, a_2, cp = cp_a, M_2 = M_2, M_rel = M_rel_fläkt, r_tipp = r_tipp_fläkt, r_hub = r_hub_fläkt, psi = psi_fläkt, n = n_fläkt): # Efter fläkten 
+def Station_2i(T_t2, Pt_2, a_2, cp = cp_a, M_2 = M_2, gamma = gamma_a, M_rel = M_rel_fläkt, r_tipp = r_tipp_fläkt, r_hub = r_hub_fläkt, psi = psi_fläkt, n = n_fläkt): # Efter fläkten 
     c_2 = M_2 * a_2 
     u_tipp = np.sqrt((M_rel*a_2) ** 2 - (c_2 ** 2)) #bladhastighet vid tippen
     omega = u_tipp / r_tipp; #vinkelhastighet för fläkt
-    rpm = ((omega * 60) / (2 * pi)) #rpm för fläkt
+    rpm = ((omega * 60) / (2 * np.pi)) #rpm för fläkt
     r_mitt = (r_tipp + r_hub) / 2 #radie till berkäning av hastighet u_mitt
     u_mitt = r_mitt * omega #medel av hastighet utöver fläkten 
     delta_h = (psi * (u_mitt ** 2)) / 2 #designtask2
@@ -72,3 +73,5 @@ def Station_2i(T_t2, Pt_2, a_2, cp = cp_a, M_2 = M_2, M_rel = M_rel_fläkt, r_ti
 
 
 
+
+# %%
