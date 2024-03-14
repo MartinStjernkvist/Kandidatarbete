@@ -53,10 +53,24 @@ class Perf:
         return W_net / (f_1C + f_2C)
 
     def Cp_air(self, T):
-        return A_0_air + A_1_air * T + A_2_air * T ** 2 + A_3_air * T ** 3 + A_4_air * T ** 4 + A_5_air * T ** 5 + A_6_air * T ** 6 + A_7_air * T ** 7
+        return (A_0_air +
+                A_1_air * T +
+                A_2_air * T ** 2 +
+                A_3_air * T ** 3 +
+                A_4_air * T ** 4 +
+                A_5_air * T ** 5 +
+                A_6_air * T ** 6 +
+                A_7_air * T ** 7)
 
     def Cp_prod(self, T):
-        return A_0_prod + A_1_prod * T + A_2_prod * T ** 2 + A_3_prod * T ** 3 + A_4_prod * T ** 4 + A_5_prod * T ** 5 + A_6_prod * T ** 6 + A_7_prod * T ** 7
+        return (A_0_prod +
+                A_1_prod * T +
+                A_2_prod * T ** 2 +
+                A_3_prod * T ** 3 +
+                A_4_prod * T ** 4 +
+                A_5_prod * T ** 5 +
+                A_6_prod * T ** 6 +
+                A_7_prod * T ** 7)
 
     def Cp_mix(self, T, f):
         return (self.Cp_air(T) + f * self.Cp_prod(T)) / (1 + f)

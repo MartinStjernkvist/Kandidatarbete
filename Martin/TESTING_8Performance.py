@@ -8,8 +8,6 @@ from FORMLER_Mattingly import CommonFunctionality
 from FORMLER_Exempel import Ex
 from KONSTANTER import *
 
-
-
 P_1 = Ex().p_0(CommonFunctionality().pressure(h_cruise), gamma_a, M_cruise)
 T_1 = Ex().T_0(CommonFunctionality().temperature(h_cruise), gamma_a, M_cruise)
 C_P1 = Perf().Cp_air(T_1)
@@ -68,8 +66,8 @@ f_2C = Perf().f_2(m_C, T_7C, T_8, C_P7, C_P8, Q_r, eta_burner, f_1C)
 
 W_LPT = Perf().W_LPT(eta_mech, m_C, f_1C, f_2, C_P8, T_8, C_P9, T_9C)
 W_HPT = Perf().W_HPT(eta_mech, m_C, f_1C, C_P6, T_6, C_P7, T_7C)
-
 W_t = W_HPT + W_LPT
+
 W_net = Perf().W_net(W_HPT, W_LPT, W_HPC, W_LPC)
 SFC = Perf().SFC(W_net, f_1C, f_2C)
 eta = Perf().eta(W_net, f_1C, f_2C)

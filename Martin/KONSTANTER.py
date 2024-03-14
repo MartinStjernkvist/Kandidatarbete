@@ -77,7 +77,8 @@ eta_LPT = 0.933
 https://core.ac.uk/reader/70614400
 """
 
-epsilon_IC = 1  # placeholder
+
+epsilon_IC = 1  # placeholder, effectiveness
 pi_IC = 0.96
 
 """
