@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from Thrust import F_V2
-from FORMLER_Mattingly_AppD import AppD
-from FORMLER_Exempel import Ex
+from FORM_Mattingly_AppD import AppD
+from FORM_Exempel import Ex
 from KONSTANTER import *
 
 # exempelupg
@@ -21,7 +21,7 @@ A_0_exempel = np.pi*(2.06/2)**2*(1-(2.2/9.4)**2)  # estimerad från bild
 
 # temporärt
 gamma_g = 1.333  # Detta är temporärt, måste fixas så den är korrekt.
-cp_a = gamma_a * R / (gamma_a - 1)  # Obs! Detta gäller för ideala gaser
+cp_a = gamma_air * R / (gamma_air - 1)  # Obs! Detta gäller för ideala gaser
 # cp_f = 0 # specifik värmekapacitet för bränslet
 cp_g = gamma_g * R / (gamma_g - 1)  # Obs! Detta gäller för ideala gaser
 
@@ -48,7 +48,7 @@ for h in parameter_range_h:
                    combustor_PL, A_0_exempel, M, h)
         F_h_list.append(F_h)
         alpha = F_h / F_SL
-        theta_0 = AppD().theta_0(Ex().temperature(h), gamma_a, M)
+        theta_0 = AppD().theta_0(Ex().temperature(h), gamma_air, M)
         # TR = T_t_4_max * theta_0 / turbine_INT  # Equation (D.5) Appendix D
         # print(f'throttle ratio: {TR}')
         alpha_list.append(alpha)

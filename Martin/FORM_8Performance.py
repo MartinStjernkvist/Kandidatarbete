@@ -4,7 +4,7 @@ from KONSTANTER import *
 
 class Perf:
 
-    def tau(self, pi, eta_C, gamma=gamma_a):
+    def tau(self, pi, eta_C, gamma=gamma_air):
         return 1 + (pi ** ((gamma - 1) / gamma) - 1) / eta_C
 
     def W(self, C_P_start, C_P_end, T_start, T_end):
@@ -16,7 +16,7 @@ class Perf:
     def pi_HPT(self, P_9, P_6, pi_b):
         return np.sqrt(P_9 / (P_6 * pi_b))
 
-    def tau_HPC(self, pi_HPC, eta_C, gamma=gamma_a):
+    def tau_HPC(self, pi_HPC, eta_C, gamma=gamma_air):
         return self.tau(pi_HPC, eta_C, gamma=gamma)
 
     def tau_HPT(self, pi_LPT, eta_t, gamma_t=gamma_t):
@@ -74,3 +74,6 @@ class Perf:
 
     def Cp_mix(self, T, f):
         return (self.Cp_air(T) + f * self.Cp_prod(T)) / (1 + f)
+
+    def gamma(self, Cp, R):
+        return Cp / (Cp - R)

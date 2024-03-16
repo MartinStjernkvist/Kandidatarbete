@@ -31,8 +31,17 @@ class DT2():
     def A_duct_entry(self, A_2, BPR):
         return A_2 / (BPR + 1)
 
-    def U_mid(self, r_tip, r_hub):
-        return (r_tip + r_hub) / 2
+    def U(self, M_rel, a, c_air):
+        return np.sqrt((M_rel * a)**2 - c_air**2)
 
-    def stage_loading(self, Delta_H, U_mid_list):
-        return 2 * Delta_H / np.sum([U_mid_list[i] ** 2 for i in range(U_mid_list)])
+    def U_mid(self, r_tip, r_hub, omega):
+        return ((r_tip + r_hub) / 2) * omega
+
+    def stage_loading(self, Delta_H, U_mid_sum):
+        return 2 * Delta_H / U_mid_sum
+
+    def delta_H(self, psi, U_mid_sum):
+        return psi * U_mid_sum ** 2 / 2
+
+    def RPM(self, omega):
+        return omega * 60 / (2 * np.pi)

@@ -1,6 +1,6 @@
 # temp
 import numpy as np
-from FORMLER_Mattingly import MFP
+from FORM_Mattingly import MFP
 from KONSTANTER import *
 
 """

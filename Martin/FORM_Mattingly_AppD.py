@@ -102,22 +102,6 @@ class AppD:
         C2 = pi_b * P_std * A_4 * MFP_M_4 / ((1 - beta) * (1 + f))
         return C2 * pi_c * np.sqrt(theta_0 / T_t_4)
 
-"""
-T_t_4_max = 
-T_t_SLS = 
-gamma_c = 
-eta_c = 
-eta_m = 
-beta = 
-c_pt = 
-c_pc = 
-T_0 = 
-M_0 = 
-T_t_4 = 
-f = 
-tau_c = 
-M_0_break = 
-"""
 
 theta_0_break = AppD().theta_0_break(1, 1)
 print(theta_0_break)

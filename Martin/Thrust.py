@@ -1,6 +1,6 @@
 import numpy as np
 #from Kandidatarbete.Martin.FORMLER_Exempel import Ex
-from FORMLER_Exempel import Ex
+from FORM_Exempel import Ex
 from KONSTANTER import *
 #denna används för att jag ska kunna köra filerna lokalt/ Filip
 
@@ -21,7 +21,7 @@ h = 10_668  # m
 
 # temporärt
 gamma_g = 1.333  # Detta är temporärt, måste fixas så den är korrekt.
-cp_a = gamma_a * R / (gamma_a - 1)  # Obs! Detta gäller för ideala gaser
+cp_a = gamma_air * R / (gamma_air - 1)  # Obs! Detta gäller för ideala gaser
 # cp_f = 0 # specifik värmekapacitet för bränslet
 cp_g = gamma_g * R / (gamma_g - 1)  # Obs! Detta gäller för ideala gaser
 
@@ -60,25 +60,25 @@ def F(overall_PR, fan_PR, bypass_PR,
 
     p_0 = Ex().pressure(h)
     T_0 = Ex().temperature(h)
-    a_0 = Ex().a(gamma_a, R, T_0)
+    a_0 = Ex().a(gamma_air, R, T_0)
     rho_0 = Ex().rho(p_0, R, T_0)
     c_0 = M_0 * a_0
     A_0 = tot_AMF / (c_0 * rho_0)
 
-    p_02 = Ex().p_0(p_0, gamma_a, M_0)
-    T_02 = Ex().T_0(T_0, gamma_a, M_0)
+    p_02 = Ex().p_0(p_0, gamma_air, M_0)
+    T_02 = Ex().T_0(T_0, gamma_air, M_0)
 
     p_021 = p_02 * fan_PR
-    T_021 = T_02 * (p_021 / p_02) ** ((1 / eta_p_fan) * ((gamma_a - 1) / gamma_a))
+    T_021 = T_02 * (p_021 / p_02) ** ((1 / eta_p_fan) * ((gamma_air - 1) / gamma_air))
 
     # intermediate pressure compressor
     IPC_PR = overall_PR / (fan_PR * HPC_PR)
 
     p_026 = p_021 * IPC_PR
-    T_026 = T_021 * (p_026 / p_021) ** ((1 / eta_p_IPC) * ((gamma_a - 1) / gamma_a))
+    T_026 = T_021 * (p_026 / p_021) ** ((1 / eta_p_IPC) * ((gamma_air - 1) / gamma_air))
 
     p_03 = p_026 * HPC_PR
-    T_03 = T_026 * (p_03 / p_026) ** ((1 / eta_p_HPC) * ((gamma_a - 1) / gamma_a))
+    T_03 = T_026 * (p_03 / p_026) ** ((1 / eta_p_HPC) * ((gamma_air - 1) / gamma_air))
 
     p_04 = p_03 * (1 - combustor_PL)
     T_04 = turbine_INT
@@ -99,7 +99,7 @@ def F(overall_PR, fan_PR, bypass_PR,
     T_05 = T_045 - (Cp_a / (Cp_g * (1 + FAR))) * ((1 + bypass_PR) * (T_021 - T_02) + (T_026 - T_021))
     p_05 = p_045 * (T_05 / T_045) ** (gamma_g / ((gamma_g - 1) * eta_p_LPT))
 
-    p_018_p_18_PR = ((1 + gamma_a) / 2) ** (gamma_a / (gamma_a - 1))
+    p_018_p_18_PR = ((1 + gamma_air) / 2) ** (gamma_air / (gamma_air - 1))
     p_08_p8_PR = ((1 + gamma_g) / 2) ** (gamma_g / (gamma_g - 1))
 
     if (p_021 / p_0) > p_018_p_18_PR:
@@ -107,8 +107,8 @@ def F(overall_PR, fan_PR, bypass_PR,
         M_18 = 1
         p_018 = p_021  # approx
         p_18 = p_018 / p_018_p_18_PR
-        T_18 = Ex().T(T_021, gamma_a, M_18)
-        a_18 = Ex().a(gamma_a, R, T_18)
+        T_18 = Ex().T(T_021, gamma_air, M_18)
+        a_18 = Ex().a(gamma_air, R, T_18)
         c_18 = M_18 * a_18
         rho_18 = Ex().rho(p_18, R, T_18)
         A_18 = mdot_bypass / (c_18 * rho_18)
@@ -117,9 +117,9 @@ def F(overall_PR, fan_PR, bypass_PR,
     else:
         bypass_choked = False
         p_18 = p_0
-        M_18 = np.sqrt(((p_021 / p_0) ** ((gamma_a - 1) / gamma_a) - 1) * (2 / (gamma_a - 1)))  # Introkompendie sida 16
-        T_18 = Ex().T(T_021, gamma_a, M_18)
-        a_18 = Ex().a(gamma_a, R, T_18)
+        M_18 = np.sqrt(((p_021 / p_0) ** ((gamma_air - 1) / gamma_air) - 1) * (2 / (gamma_air - 1)))  # Introkompendie sida 16
+        T_18 = Ex().T(T_021, gamma_air, M_18)
+        a_18 = Ex().a(gamma_air, R, T_18)
         c_18 = M_18 * a_18
         rho_18 = Ex().rho(p_18, R, T_18)
         A_18 = mdot_bypass / (c_18 * rho_18)
@@ -215,26 +215,26 @@ def F_V2(overall_PR, fan_PR, bypass_PR,
 
     p_0 = Ex().pressure(h)
     T_0 = Ex().temperature(h)
-    a_0 = Ex().a(gamma_a, R, T_0)
+    a_0 = Ex().a(gamma_air, R, T_0)
     rho_0 = Ex().rho(p_0, R, T_0)
     c_0 = M_0 * a_0
     # A_0 = tot_AMF / (c_0 * rho_0)
     A_0 = A_0
 
-    p_02 = Ex().p_0(p_0, gamma_a, M_0)
-    T_02 = Ex().T_0(T_0, gamma_a, M_0)
+    p_02 = Ex().p_0(p_0, gamma_air, M_0)
+    T_02 = Ex().T_0(T_0, gamma_air, M_0)
 
     p_021 = p_02 * fan_PR
-    T_021 = T_02 * (p_021 / p_02) ** ((1 / eta_p_fan) * ((gamma_a - 1) / gamma_a))
+    T_021 = T_02 * (p_021 / p_02) ** ((1 / eta_p_fan) * ((gamma_air - 1) / gamma_air))
 
     # intermediate pressure compressor
     IPC_PR = overall_PR / (fan_PR * HPC_PR)
 
     p_026 = p_021 * IPC_PR
-    T_026 = T_021 * (p_026 / p_021) ** ((1 / eta_p_IPC) * ((gamma_a - 1) / gamma_a))
+    T_026 = T_021 * (p_026 / p_021) ** ((1 / eta_p_IPC) * ((gamma_air - 1) / gamma_air))
 
     p_03 = p_026 * HPC_PR
-    T_03 = T_026 * (p_03 / p_026) ** ((1 / eta_p_HPC) * ((gamma_a - 1) / gamma_a))
+    T_03 = T_026 * (p_03 / p_026) ** ((1 / eta_p_HPC) * ((gamma_air - 1) / gamma_air))
 
     p_04 = p_03 * (1 - combustor_PL)
     T_04 = turbine_INT
@@ -242,7 +242,7 @@ def F_V2(overall_PR, fan_PR, bypass_PR,
     FAR = -2.77785275e-05*T_03+4.76716674e-02 #0.5325 - 2207.5/(8200-T_03) #Detta är från ett flertal linjära approximeringar för FAR för turbine_int = 1650K. Är säkert en del fel men är bättre än fast 0.025
     # mdot = tot_AMF
     M_2 = M_0 *0.28+0.2 #helt påhittat, konstig linjär aprox av M2 givet M0 för ex upgiften
-    MFP = M_2*np.sqrt(gamma_a/R)*(1+(gamma_a-1)/2*M_2**2)**((gamma_a+1)/(2*(1-gamma_a))) # 1.3 mattingly
+    MFP = M_2 * np.sqrt(gamma_air / R) * (1 + (gamma_air - 1) / 2 * M_2 ** 2) ** ((gamma_air + 1) / (2 * (1 - gamma_air))) # 1.3 mattingly
     mdot = A_0*(p_02*MFP)/np.sqrt(T_02) # 1.3 mattingly
     mdot_bypass = mdot / (1 + (1 / bypass_PR))
     mdot_core = mdot - mdot_bypass
@@ -257,7 +257,7 @@ def F_V2(overall_PR, fan_PR, bypass_PR,
     T_05 = T_045 - (Cp_a / (Cp_g * (1 + FAR))) * ((1 + bypass_PR) * (T_021 - T_02) + (T_026 - T_021))
     p_05 = p_045 * (T_05 / T_045) ** (gamma_g / ((gamma_g - 1) * eta_p_LPT))
 
-    p_018_p_18_PR = ((1 + gamma_a) / 2) ** (gamma_a / (gamma_a - 1))
+    p_018_p_18_PR = ((1 + gamma_air) / 2) ** (gamma_air / (gamma_air - 1))
     p_08_p8_PR = ((1 + gamma_g) / 2) ** (gamma_g / (gamma_g - 1))
 
     if (p_021 / p_0) > p_018_p_18_PR:
@@ -265,8 +265,8 @@ def F_V2(overall_PR, fan_PR, bypass_PR,
         M_18 = 1
         p_018 = p_021  # approx
         p_18 = p_018 / p_018_p_18_PR
-        T_18 = Ex().T(T_021, gamma_a, M_18)
-        a_18 = Ex().a(gamma_a, R, T_18)
+        T_18 = Ex().T(T_021, gamma_air, M_18)
+        a_18 = Ex().a(gamma_air, R, T_18)
         c_18 = M_18 * a_18
         rho_18 = Ex().rho(p_18, R, T_18)
         A_18 = mdot_bypass / (c_18 * rho_18)
@@ -275,9 +275,9 @@ def F_V2(overall_PR, fan_PR, bypass_PR,
     else:
         bypass_choked = False
         p_18 = p_0
-        M_18 = np.sqrt(((p_021 / p_0) ** ((gamma_a - 1) / gamma_a) - 1) * (2 / (gamma_a - 1)))  # Introkompendie sida 16
-        T_18 = Ex().T(T_021, gamma_a, M_18)
-        a_18 = Ex().a(gamma_a, R, T_18)
+        M_18 = np.sqrt(((p_021 / p_0) ** ((gamma_air - 1) / gamma_air) - 1) * (2 / (gamma_air - 1)))  # Introkompendie sida 16
+        T_18 = Ex().T(T_021, gamma_air, M_18)
+        a_18 = Ex().a(gamma_air, R, T_18)
         c_18 = M_18 * a_18
         rho_18 = Ex().rho(p_18, R, T_18)
         A_18 = mdot_bypass / (c_18 * rho_18)

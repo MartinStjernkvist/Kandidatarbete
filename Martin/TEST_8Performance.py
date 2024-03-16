@@ -1,15 +1,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import integrate
-from PLOTTING_Funktioner import Plot_functions
-from FORMLER_Exempel import Ex
-from FORMLER_8Performance import Perf
-from FORMLER_Mattingly import CommonFunctionality
-from FORMLER_Exempel import Ex
+from PLOT_Funktioner import Plot_functions
+from FORM_Exempel import Ex
+from FORM_8Performance import Perf
+from FORM_Mattingly import Gen
+from FORM_Exempel import Ex
 from KONSTANTER import *
 
-P_1 = Ex().p_0(CommonFunctionality().pressure(h_cruise), gamma_a, M_cruise)
-T_1 = Ex().T_0(CommonFunctionality().temperature(h_cruise), gamma_a, M_cruise)
+P_1 = Ex().p_0(Gen().pressure(h_cruise), gamma_air, M_cruise)
+T_1 = Ex().T_0(Gen().temperature(h_cruise), gamma_air, M_cruise)
 C_P1 = Perf().Cp_air(T_1)
 
 pi_LPC = np.sqrt(pi_C)

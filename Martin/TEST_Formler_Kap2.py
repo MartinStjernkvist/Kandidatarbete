@@ -1,9 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from Kandidatarbete.Martin.PLOTTING_Funktioner import Plot_functions
+from Kandidatarbete.Martin.PLOT_Funktioner import Plot_functions
 from KONSTANTER import *
 
-gamma = gamma_a
+gamma = gamma_air
 
 plt.figure(figsize=(10, 8))
 
