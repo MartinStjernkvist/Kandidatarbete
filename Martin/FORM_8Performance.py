@@ -52,7 +52,7 @@ class Perf:
     def eta(self, W_net, f_1C, f_2C):
         return W_net / (f_1C + f_2C)
 
-    def Cp_air(self, T):
+    def C_p_air(self, T):
         return (A_0_air +
                 A_1_air * T +
                 A_2_air * T ** 2 +
@@ -62,7 +62,7 @@ class Perf:
                 A_6_air * T ** 6 +
                 A_7_air * T ** 7)
 
-    def Cp_prod(self, T):
+    def C_p_prod(self, T):
         return (A_0_prod +
                 A_1_prod * T +
                 A_2_prod * T ** 2 +
@@ -72,8 +72,8 @@ class Perf:
                 A_6_prod * T ** 6 +
                 A_7_prod * T ** 7)
 
-    def Cp_mix(self, T, f):
-        return (self.Cp_air(T) + f * self.Cp_prod(T)) / (1 + f)
+    def C_p_mix(self, T, f):
+        return (self.C_p_air(T) + f * self.C_p_prod(T)) / (1 + f)
 
     def gamma(self, Cp, R):
         return Cp / (Cp - R)

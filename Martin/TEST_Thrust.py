@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from Thrust import F_V2
 from FORM_Mattingly_AppD import AppD
-from FORM_Exempel import Ex
+from FORM_Exempelupg import Ex
 from KONSTANTER import *
 
 # exempelupg

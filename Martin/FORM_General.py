@@ -131,10 +131,13 @@ class Gen:
         """
         return M * np.sqrt((gamma * g_c / R)) * (1 + ((gamma - 1) / 2) * M ** 2) ** ((gamma + 1) / (2 * (1 - gamma)))
 
-    def mdot(self, MFP, P, T, A):
+    def mass_flow(self, MFP, P, T, A):
         """
-        massflow
+        mdot
 
         Mattingly (1.3)
         """
         return MFP * P * A / np.sqrt(T)
+
+    def RPM(self, omega):
+        return omega * 60 / (2 * np.pi)

@@ -1,6 +1,6 @@
 import numpy as np
 #from Kandidatarbete.Martin.FORMLER_Exempel import Ex
-from FORM_Exempel import Ex
+from FORM_Exempelupg import Ex
 from KONSTANTER import *
 #denna används för att jag ska kunna köra filerna lokalt/ Filip
 

@@ -10,7 +10,7 @@ class DT2():
         """
         return M * np.cos(theta)
 
-    def nu(self, r_hub, r_tip):
+    def hub_tip_ratio(self, r_hub, r_tip):
         """
         hub tip ratio
         """
@@ -32,16 +32,16 @@ class DT2():
         return A_2 / (BPR + 1)
 
     def U(self, M_rel, a, c_air):
+        """
+        blade speed
+        """
         return np.sqrt((M_rel * a)**2 - c_air**2)
 
     def U_mid(self, r_tip, r_hub, omega):
         return ((r_tip + r_hub) / 2) * omega
 
-    def stage_loading(self, Delta_H, U_mid_sum):
-        return 2 * Delta_H / U_mid_sum
+    # def stage_loading(self, Delta_H, U_mid_sum):
+    #     return 2 * Delta_H / U_mid_sum
 
-    def delta_H(self, psi, U_mid_sum):
-        return psi * U_mid_sum ** 2 / 2
-
-    def RPM(self, omega):
-        return omega * 60 / (2 * np.pi)
+    def delta_H(self, psi, sum_U_mid_squared):
+        return psi * sum_U_mid_squared / 2

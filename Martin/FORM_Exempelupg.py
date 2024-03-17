@@ -5,9 +5,9 @@ from KONSTANTER import *
 
 class Ex:
 
-    def F(self, mdot_0, mdot_f, p_0, p_8, c_0, c_8, A_8):
+    def thrust(self, mdot_0, mdot_f, p_0, p_8, c_0, c_8, A_8):
         """
-        thrust
+        F
 
         Equation (1.5)
         """
@@ -48,8 +48,7 @@ class Ex:
         stagnation pressure ratio
         Equation (1.28b)
         """
-        p_0_p = (1 + ((gamma - 1) / 2) * M ** 2) ** (gamma / (gamma - 1))
-        return p_0_p
+        return (1 + ((gamma - 1) / 2) * M ** 2) ** (gamma / (gamma - 1))
 
     def stagnation_PR_fcn_TR(self, T_final, T_initial, eta, gamma):
         temperature_ratio = T_final / T_initial
@@ -114,24 +113,25 @@ class Ex:
         """
         return mdot_f / F
 
-    def P_useful(self, F, c_0):
+    def useful_power(self, F, c_0):
         """
         useful power
         :param c_0:     speed
         """
-        return F * c_0
+        P = F * c_0
+        return P
 
     def eta_0(self, F, c_0, mdot_f, LHV):
         return F * c_0 / (mdot_f * LHV)
 
-    def eta_th(self, Wdot_kin, mdot_f, LHV):
+    def eta_thermal(self, Wdot_kin, mdot_f, LHV):
         """
         thermal efficiency
         :param LHV:     lower heating value
         """
         return Wdot_kin / (mdot_f * LHV)
 
-    def eta_p(self, Wdot_kin, F, c_0):
+    def eta_propulsive(self, Wdot_kin, F, c_0):
         """
         propulsive efficiency
         """
