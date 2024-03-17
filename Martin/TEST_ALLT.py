@@ -13,7 +13,8 @@ from KONSTANTER import *
 T_cruise = Gen().temperature(h_cruise)
 a = Ex().a(gamma_air, R, T_cruise)
 
-P_1 = Gen().pressure(h_cruise)
+# P_1 = Gen().pressure(h_cruise)
+P_1 = 7171
 T_1 = Gen().temperature(h_cruise)
 a_1 = a
 C_p_1 = C_p_air
@@ -107,8 +108,11 @@ lägg till eventuell kylning
 
 """---------------|Combustor|---------------"""
 
-gamma_air_5 = gamma_air
-C_p_5 = C_p_air
+# gamma_air_5 = gamma_air
+# C_p_5 = C_p_air
+T_6 = T_turbine
+
+m_c = 0.05 + 0.00015 * (T_6 - 1200) # eqn (19) 8Performance
 
 # NYTT GAMMA OCH CP FÖR GAS OCH AIR
 C_p_mix_5 = Perf().C_p_prod(T_5)
@@ -121,7 +125,6 @@ P_6 = P_5 * combustor_PR  # KOLLA SÅ RÄTT RATIO, tror rätt att trycket minska
 # massflow_mixed = massflow_ny + massflow_fuel
 
 """---------------|HPT - 1 stage|---------------"""
-T_6 = T_turbine
 
 gamma_mixed_6 = gamma_mix_5
 C_p_mix_6 = Perf().C_p_prod(T_6)
@@ -208,8 +211,8 @@ parameter_list = [
     T_5,
     HPC_PR,
     P_5,
-    gamma_air_5,
-    C_p_5,
+    gamma_mix_5,
+    C_p_mix_5,
     C_p_mix_5,
     gamma_mix_5,
     Delta_H_combustion,

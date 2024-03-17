@@ -35,8 +35,11 @@ class Gen:
         # else:
         #     P_0 = P_std * ((T_std - 6.5 * 10 ** (-3) * 11000) / T_std) ** (g_0 / (6.5 * 10 ** (-3) * R))
         #     return P_0
-        P_0 = P_std * ((T_std - 6.5 * 10 ** (-3) * h) / T_std) ** (g_0 / (6.5 * 10 ** (-3) * R))
-        return P_0
+        if h <= 11000:
+            P_0 = P_std * ((T_std - 6.5 * 10 ** (-3) * h) / T_std) ** (g_0 / (6.5 * 10 ** (-3) * R))
+            return P_0
+        else:
+            return f'altitude exceeds 11km'
 
     def theta_0(self, T, gamma, M_0):
         """
