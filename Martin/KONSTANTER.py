@@ -75,7 +75,7 @@ h_cruise = 18288
 M_rel = 1.5  # hitta nytt värde
 kappa = 0.8
 
-T_turbine = 1650  # K
+T_turbine = 1700  # trodde det var 1650 K
 T_out_compressor = 1000  # turbofan
 
 F_symphony = 160_000  # N

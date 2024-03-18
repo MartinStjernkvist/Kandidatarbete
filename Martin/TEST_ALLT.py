@@ -7,6 +7,7 @@ from FORM_General import Gen
 from FORM_DesignTask2 import DT2
 from FORM_Exempelupg import Ex
 from KONSTANTER import *
+from scipy.optimize import fsolve
 
 """---------------|Innan motor|---------------"""
 
@@ -14,18 +15,20 @@ T_cruise = Gen().temperature(h_cruise)
 a = Ex().a(gamma_air, R, T_cruise)
 
 # P_1 = Gen().pressure(h_cruise)
-P_1 = 7171
-T_1 = Gen().temperature(h_cruise)
+P_0 = 7171
+T_0 = Gen().temperature(h_cruise)
 a_1 = a
 C_p_1 = C_p_air
 
 """---------------|Fan|---------------"""
 
-P_2 = Ex().p_0(P_1, gamma_air, M_cruise)
-T_2 = Ex().T_0(T_1, gamma_air, M_cruise)
+P_t_2 = Ex().p_0(P_0, gamma_air, M_cruise)
+
+T_t_2 = Ex().T_0(T_0, gamma_air, M_cruise)
+T_2 = T_t_2 / Ex().stagnation_TR(gamma_air, M_2)
 
 gamma_air_2 = gamma_air
-C_p_2 = C_p_1
+C_p_2 = C_p_air
 
 # Jämförelse av hubben genom hub tip ratio och mätta värden
 r_hub_fan_nu = nu_fan * r_tip_fan[1]
@@ -46,17 +49,22 @@ sum_U_squared_fan = U_mid_fan ** 2
 Delta_H_fan = DT2().delta_H(psi_fan, sum_U_squared_fan)
 Delta_T_fan = Delta_H_fan / C_p_2
 
-T_3 = T_2 + Delta_T_fan  # temperaturen efter fläkten
-FPR = Ex().stagnation_PR_fcn_TR(T_3, T_2, eta_fan, gamma_air_2)
-P_3 = P_2 * FPR
+'''Beräkning av FPR'''
+# T_3 = T_2 + Delta_T_fan  # temperaturen efter fläkten
+# FPR = Ex().stagnation_PR_fcn_TR(T_3, T_2, eta_fan, gamma_air_2)
+# P_3 = P_t_2 * FPR
+
+T_t_21 = T_t_2 + Delta_T_fan  # temperaturen efter fläkten
+FPR = Ex().stagnation_PR_fcn_TR(T_t_21, T_t_2, eta_fan, gamma_air_2)
+P_t_21 = P_t_2 * FPR
 
 MFP = Gen().MFP(M_2, gamma_air_2)
-mass_flow = Gen().mass_flow(MFP, P_2, T_2, A_2)
+mass_flow = Gen().mass_flow(MFP, P_t_2, T_2, A_2)
 
 """---------------|LPC - 3 stage|---------------"""
 
-gamma_air_3 = gamma_air
-C_p_3 = C_p_air
+gamma_air_21 = gamma_air
+C_p_21 = C_p_air
 
 omega_LPC = omega_fan  # pga samma axel, alltså samma vinkelhastighet
 
@@ -67,22 +75,25 @@ for i in range(1, len(r_tip_LPC)):
 sum_U_squared_LPC = sum(u ** 2 for u in U_mid_LPC)
 
 Delta_H_LPC = DT2().delta_H(psi_LPC, sum_U_squared_LPC)  # designtask2, gånger 3 pga three stage LPC
-Delta_T_LPC = Delta_H_LPC / C_p_3
+Delta_T_LPC = Delta_H_LPC / C_p_21
 
-T_4 = T_3 + Delta_T_LPC
-LPC_PR = Ex().stagnation_PR_fcn_TR(T_4, T_3, eta_LPC, gamma_air_3)
-P_4 = P_3 * LPC_PR
+T_t_25 = T_t_21 + Delta_T_LPC
+LPC_PR = Ex().stagnation_PR_fcn_TR(T_t_25, T_t_21, eta_LPC, gamma_air_21)
+P_t_25 = P_t_21 * LPC_PR
+
+M_25 = 0.4  # beräkna detta på något sätt xdddddddddddddddddddddddddddddddddddd
+T_25 = T_t_25 / Ex().stagnation_TR(gamma_air, M_2)
 
 """---------------|HPC - 4 stage|---------------"""
 
-gamma_air_4 = gamma_air
-C_p_4 = C_p_air
+gamma_air_25 = gamma_air
+C_p_25 = C_p_air
 
-a_4 = Ex().a(gamma_air_4, R, T_4)
-c_air_HPC = M_ax_HPC * a_4
+a_25 = Ex().a(gamma_air_25, R, T_25)
+c_air_HPC = M_ax_HPC * a_25
 
-U_HPC = DT2().U(M_rel_HPC, a_4, c_air_HPC)
-omega_HPC = U_HPC / r_tip_HPC
+U_HPC = DT2().U(M_rel_HPC, a_25, c_air_HPC)
+omega_HPC = U_HPC / r_tip_HPC[1]
 RPM_HPC = Gen().RPM(omega_HPC)
 
 U_mid_HPC = []
@@ -92,42 +103,44 @@ for i in range(1, len(r_tip_HPC)):
 sum_U_squared_HPC = sum(u ** 2 for u in U_mid_HPC)
 
 Delta_H_HPC = DT2().delta_H(psi_HPC, sum_U_squared_HPC)
-Delta_T_HPC = Delta_H_HPC / C_p_4
+Delta_T_HPC = Delta_H_HPC / C_p_25
 
-T_5 = T_4 + Delta_T_HPC
-HPC_PR = Ex().stagnation_PR_fcn_TR(T_5, T_4, eta_HPC, gamma_air_4)
+T_t_3 = T_t_25 + Delta_T_HPC
+HPC_PR = Ex().stagnation_PR_fcn_TR(T_t_3, T_t_25, eta_HPC, gamma_air_25)
 
-cooling = 0.8
-P_5 = P_4 * HPC_PR * cooling
+cooling = 1 - 0.2
+P_t_3 = P_t_25 * HPC_PR * cooling
 
 # Tillägg kylning, ca 20% Ta enbart ut kylning efter HPC, sida 104-105 Mattingly.
 
-'''
-lägg till eventuell kylning
-'''
-
 """---------------|Combustor|---------------"""
 
-# gamma_air_5 = gamma_air
-# C_p_5 = C_p_air
-T_6 = T_turbine
+gamma_air_3 = gamma_air
+C_p_3 = C_p_air
 
-m_c = 0.05 + 0.00015 * (T_6 - 1200) # eqn (19) 8Performance
+'''NYTT GAMMA OCH CP FÖR GAS OCH AIR'''
 
-# NYTT GAMMA OCH CP FÖR GAS OCH AIR
-C_p_mix_5 = Perf().C_p_prod(T_5)
-gamma_mix_5 = Perf().gamma(C_p_mix_5, R)
+# m_c = 0.05 + 0.00015 * (T_6 - 1200)  # eqn (19) 8Performance
 
-Delta_H_combustion = C_p_mix_5  # hur mkt bränsle
+# T_3 = T_t_3 / Ex().stagnation_TR(gamma_air, M_3)
+# C_p_mix = Perf().C_p_prod(T_3)
+# gamma_mix_5 = Perf().gamma(C_p_mix_5, R)
 
-P_6 = P_5 * combustor_PR  # KOLLA SÅ RÄTT RATIO, tror rätt att trycket minskar?
+'''ÄNDRA DETTA'''
+gamma_mix = (gamma_air_3+gamma_gas)/2
+C_p_mix = C_p_air
+
+Delta_H_combustion = C_p_mix  # hur mkt bränsle
+
+P_t_4 = P_t_3 * combustor_PR  # KOLLA SÅ RÄTT RATIO, tror rätt att trycket minskar?
 
 # massflow_mixed = massflow_ny + massflow_fuel
 
 """---------------|HPT - 1 stage|---------------"""
 
-gamma_mixed_6 = gamma_mix_5
-C_p_mix_6 = Perf().C_p_prod(T_6)
+gamma_mix_2 = gamma_mix
+C_p_mix_4 = C_p_air
+#C_p_mix_6 = Perf().C_p_prod(T_6)
 
 omega_HPT = omega_HPC
 
@@ -136,17 +149,22 @@ U_HPT = r_tip_HPT * omega_LPC
 sum_U_squared_HPT = U_HPT ** 2
 
 Delta_H_HPT = DT2().delta_H(psi_HPT, sum_U_squared_HPT)
-Delta_T_HPT = Delta_H_HPT / C_p_mix_6
+Delta_T_HPT = Delta_H_HPT / C_p_mix_4
 
-T_7 = T_6 + Delta_T_HPT
+T_t_4 = T_turbine
+T_t_45 = T_t_4 + Delta_T_HPT
 
-HPT_PR = Ex().stagnation_PR_fcn_TR(T_7, T_6, eta_HPT, gamma_mixed_6)
-P_7 = P_6 * HPT_PR
+HPT_PR = Ex().stagnation_PR_fcn_TR(T_t_45, T_t_4, eta_HPT, gamma_mix_2)
+P_t_45 = P_t_4 * HPT_PR
 
 """---------------|LPT - 3 stage|---------------"""
 
-C_p_mix_7 = Perf().C_p_prod(T_7)
-gamma_mix_7 = Perf().gamma(C_p_mix_7, R)
+# C_p_mix_7 = Perf().C_p_prod(T_7)
+# gamma_mix_7 = Perf().gamma(C_p_mix_7, R)
+
+gamma_mix_3 = gamma_mix
+R_mix = R # detta är fel
+C_p_mix_45 = C_p_air
 
 omega_LPT = omega_fan  # samma axel
 
@@ -157,163 +175,45 @@ for i in range(1, len(r_tip_LPT)):
 sum_U_squared_LPT = sum(u ** 2 for u in U_mid_LPT)
 
 Delta_H_LPT = DT2().delta_H(psi_LPT, sum_U_squared_LPT)
-Delta_T_LPT = Delta_H_LPT / C_p_mix_7
+Delta_T_LPT = Delta_H_LPT / C_p_mix_45
 
-T_8 = T_7 + Delta_T_LPT
+T_t_5 = T_t_45 + Delta_T_LPT
 
-LPT_PR = Ex().stagnation_PR_fcn_TR(T_8, T_7, eta_LPT, gamma_mix_7)
-P_8 = P_7 * LPT_PR
+LPT_PR = Ex().stagnation_PR_fcn_TR(T_t_5, T_t_45, eta_LPT, gamma_mix_3)
+P_t_5 = P_t_4 * LPT_PR
 
 r_ratio_BPR = r_tip_fan[1] / r_tip_LPT[3]
 BPR = ((np.log(1.9176 - (r_ratio_BPR * 1.25))) / (-0.2503)) - 0.6410
 
 # print(f'BPR = {BPR}\nMassflow = {mass_flow}')
 
-parameter_list = [
-    P_2,
-    T_2,
-    r_hub_fan_nu,
-    ratio_hub_fan,
-    a_2,
-    c_air_fan,
-    U_fan,
-    omega_fan,
-    RPM_fan,
-    U_mid_fan,
-    sum_U_squared_fan,
-    Delta_H_fan,
-    Delta_T_fan,
-    T_3,
-    FPR,
-    P_3,
-    MFP,
-    mass_flow,
-    C_p_3,
-    omega_LPC,
-    U_mid_LPC,
-    sum_U_squared_LPC,
-    Delta_H_LPC,
-    Delta_T_LPC,
-    T_4,
-    LPC_PR,
-    P_4,
-    gamma_air_4,
-    C_p_4,
-    a_4,
-    c_air_HPC,
-    U_HPC,
-    omega_HPC,
-    RPM_HPC,
-    U_mid_HPC,
-    sum_U_squared_HPC,
-    Delta_H_HPC,
-    Delta_T_HPC,
-    T_5,
-    HPC_PR,
-    P_5,
-    gamma_mix_5,
-    C_p_mix_5,
-    C_p_mix_5,
-    gamma_mix_5,
-    Delta_H_combustion,
-    P_6,
-    omega_HPT,
-    gamma_mixed_6,
-    C_p_mix_6,
-    U_HPT,
-    sum_U_squared_HPT,
-    Delta_H_HPT,
-    Delta_T_HPT,
-    T_6,
-    T_7,
-    HPT_PR,
-    P_7,
-    C_p_mix_7,
-    gamma_mix_7,
-    omega_LPT,
-    U_mid_LPT,
-    sum_U_squared_LPT,
-    Delta_H_LPT,
-    Delta_T_LPT,
-    T_8,
-    LPT_PR,
-    P_8,
-    r_ratio_BPR,
-    BPR
-]
+"""---------------|Lobed mixer|---------------"""
+FAR = 0.025 #Detta måste definieras bättre någonstans, förmodligen i combustor-------------------------------------
+mass_flow_bypass = mass_flow * BPR/(1+BPR)
+mass_flow_core =  mass_flow - mass_flow_bypass
+mass_flow_hot = mass_flow_core * (1+FAR)
+A_16 = 0.9367 # [m^2] manuellt beräknat från bild
+A_core = 0.686 # [m^2] manuellt beräknat från bild, DETTA ÄR A_6 egentligen Ska också kunna variera med att spiken flyttas ut och in
+n_bypass = 1 # Term som beskriver friktionsförluster
+# A_21 = np.pi*r_tip_fan(2)^2*(1-r_tip_LPC(1)/r_tip_fan(2));
+# MFP_21 = massflow_bypass*sqrt(T_3)/(P_3*A_21);
+MFP_16 = mass_flow_bypass*np.sqrt(T_t_21)/(P_t_21*n_bypass*A_16) # T_3 och P_3 används ty antas isentropiskt.
+M_16 = fsolve(Gen().MFP(M, gamma_air, R) - MFP_16, 0)
+MFP_8 = mass_flow_hot*np.sqrt(T_t_5)/(P_t_5*A_core) # Detta borde nog ej vara A_core--------------------------
+M_8 = fsolve(Gen().MFP(M, gamma_mix_3, R_mix) - MFP_16, 0)
+# mixern är lobbad
+T_t6A = (C_p_21 * T_t_21 * mass_flow_bypass + C_p_mix_45 * T_t_5 * mass_flow_hot) / (mass_flow_bypass + mass_flow_hot)
 
-name_list = [
-    'OK: P_2',
-    'OK: T_2',
-    'r_hub_fan_nu',
-    '*** NOT OK ***: ratio_hub_fan',
-    'a_2',
-    'c_air_fan',
-    'U_fan',
-    'omega_fan',
-    'RPM_fan',
-    'U_mid_fan',
-    'sum_U_squared_fan',
-    'Delta_H_fan',
-    'Delta_T_fan',
-    'T_3',
-    'FPR',
-    'P_3',
-    'MFP',
-    'mass_flow',
-    'C_p_3',
-    'omega_LPC',
-    'U_mid_LPC',
-    'sum_U_squared_LPC',
-    'Delta_H_LPC',
-    'Delta_T_LPC',
-    'T_4',
-    'LPC_PR',
-    'P_4',
-    'gamma_air_4',
-    'C_p_4',
-    'a_4',
-    'c_air_HPC',
-    'U_HPC',
-    'omega_HPC',
-    'RPM_HPC',
-    'U_mid_HPC',
-    'sum_U_squared_HPC',
-    'Delta_h_HPC',
-    'Delta_T_HPC',
-    'OK: T_5',
-    'HPC_PR',
-    'P_5',
-    'gamma_air_5',
-    'C_p_5',
-    'C_p_mixed_5',
-    'gamma_mixed_5',
-    'Delta_H_combustion',
-    'P_6',
-    'omega_HPT',
-    'gamma_mixed_6',
-    'C_p_6',
-    'U_HPT',
-    'sum_U_squared_HPT',
-    'Delta_H_HPT',
-    'Delta_T_HPT',
-    'T_6',
-    'T_7',
-    'HPT_PR',
-    'P_7',
-    'C_p_7',
-    'gamma_mixed_7',
-    'omega_LPT',
-    'U_mid_LPT',
-    'sum_U_squared_LPT',
-    'Delta_H_LPT',
-    'Delta_T_LPT',
-    'T_8',
-    'LPT_PR',
-    'P_8',
-    'r_ratio_BPR',
-    'BPR'
-]
-values = [(name_list[item], parameter_list[item]) for item in range(len(parameter_list))]
-for i in range(len(values)):
-    print(values[i])
+
+
+
+# parameter_list = [
+#
+# ]
+#
+# name_list = [
+#
+# ]
+# values = [(name_list[item], parameter_list[item]) for item in range(len(parameter_list))]
+# for i in range(len(values)):
+#     print(values[i])
