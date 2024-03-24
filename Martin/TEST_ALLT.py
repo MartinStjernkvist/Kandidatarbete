@@ -8,6 +8,24 @@ from FORM_DesignTask2 import DT2
 from FORM_Exempelupg import Ex
 from KONSTANTER import *
 from scipy.optimize import fsolve
+"""
+Lite syntax
+
+P = tryck
+T = temperatur
+a = ljudhastighet
+C_p = värmekapacitet (konstant tryck)
+C_v = värmekapacitet (konstant temperatur)
+gamma = specifik värme ratio
+omega = vinkelhastighet
+U = bladhastighet
+c = lufthastighet
+MFP = mass flow parameter
+psi = steglast
+Delta_H = entalpiändring
+Delta_T = temperaturändring
+"""
+
 
 """---------------|Innan motor|---------------"""
 
@@ -27,46 +45,42 @@ P_t_2 = Ex().p_0(P_0, gamma_air, M_cruise)
 T_t_2 = Ex().T_0(T_0, gamma_air, M_cruise)
 T_2 = T_t_2 / Ex().stagnation_TR(gamma_air, M_2)
 
-gamma_air_2 = gamma_air
-C_p_2 = C_p_air
+C_p_2 = Perf().C_p_air(T_t_2)  # Stagnations temperatur används för att man kan tänka sig att gasen bromsas till c = 0, värms upp och sedan höjs hastigheten igen
+gamma_air_2 = Perf().gamma(C_p_2, R)
+
+MFP = Gen().MFP(M_2, gamma_air_2)
+mass_flow = Gen().mass_flow(MFP, P_t_2, T_2, A_2)
 
 # Jämförelse av hubben genom hub tip ratio och mätta värden
 r_hub_fan_nu = nu_fan * r_tip_fan[1]
 ratio_hub_fan = (1 - (r_hub_fan_nu / r_hub_fan[1])) * 100  # procentuell skillnad
 
 a_2 = Ex().a(gamma_air_2, R, T_2)
-c_air_fan = M_ax_fan * a_2  # speed of air
+c_air_fan = M_ax_fan * a_2
 
-U_fan = DT2().U(M_rel, a, c_air_fan)  # blade speed
-omega_fan = U_fan / r_tip_fan[1]  # vinkelhastighet för fläkt
+U_fan = DT2().U(M_rel_fan, a, c_air_fan)
+omega_fan = U_fan / r_tip_fan[1]
 RPM_fan = Gen().RPM(omega_fan)
 
 # Tar inte hänsyn till konisk form på hubben
-U_mid_fan = DT2().U_mid(r_tip_fan[1], r_hub_fan[1], omega_fan)  # medelhastighet över fläkt
+U_mid_fan = DT2().U_mid(r_tip_fan[1], r_hub_fan[1], omega_fan)
 sum_U_squared_fan = U_mid_fan ** 2
 
-# Steglast och flödesfaktor
 Delta_H_fan = DT2().delta_H(psi_fan, sum_U_squared_fan)
 Delta_T_fan = Delta_H_fan / C_p_2
-
-'''Beräkning av FPR'''
-# T_3 = T_2 + Delta_T_fan  # temperaturen efter fläkten
-# FPR = Ex().stagnation_PR_fcn_TR(T_3, T_2, eta_fan, gamma_air_2)
-# P_3 = P_t_2 * FPR
 
 T_t_21 = T_t_2 + Delta_T_fan  # temperaturen efter fläkten
 FPR = Ex().stagnation_PR_fcn_TR(T_t_21, T_t_2, eta_fan, gamma_air_2)
 P_t_21 = P_t_2 * FPR
 
-MFP = Gen().MFP(M_2, gamma_air_2)
-mass_flow = Gen().mass_flow(MFP, P_t_2, T_2, A_2)
-
 """---------------|LPC - 3 stage|---------------"""
 
-gamma_air_21 = gamma_air
-C_p_21 = C_p_air
+C_p_21 = Perf().C_p_air(T_t_21)
+gamma_air_21 = Perf().gamma(C_p_21, R)
 
-omega_LPC = omega_fan  # pga samma axel, alltså samma vinkelhastighet
+A_21 = Gen().A(r_tip_LPC[1], r_hub_LPC[1])
+
+omega_LPC = omega_fan  # pga samma axel
 
 U_mid_LPC = []
 for i in range(1, len(r_tip_LPC)):
@@ -74,20 +88,25 @@ for i in range(1, len(r_tip_LPC)):
 
 sum_U_squared_LPC = sum(u ** 2 for u in U_mid_LPC)
 
-Delta_H_LPC = DT2().delta_H(psi_LPC, sum_U_squared_LPC)  # designtask2, gånger 3 pga three stage LPC
+Delta_H_LPC = DT2().delta_H(psi_LPC, sum_U_squared_LPC)  # gånger 3 pga three stage LPC
 Delta_T_LPC = Delta_H_LPC / C_p_21
 
 T_t_25 = T_t_21 + Delta_T_LPC
 LPC_PR = Ex().stagnation_PR_fcn_TR(T_t_25, T_t_21, eta_LPC, gamma_air_21)
 P_t_25 = P_t_21 * LPC_PR
 
-M_25 = 0.4  # beräkna detta på något sätt xdddddddddddddddddddddddddddddddddddd
-T_25 = T_t_25 / Ex().stagnation_TR(gamma_air, M_2)
+
 
 """---------------|HPC - 4 stage|---------------"""
 
-gamma_air_25 = gamma_air
-C_p_25 = C_p_air
+C_p_25 = Perf().C_p_air(T_t_25)
+gamma_air_25 = Perf().gamma(C_p_25, R)
+
+A_25 = Gen().A(r_tip_HPC[1], r_hub_HPC[1])
+mass_flow_bypass = Gen().mass_flow_bypass(mass_flow, BPR)
+MFP_25 = mass_flow_bypass * np.sqrt(T_t_25) / (P_t_25 * A_25)
+M_25 = Gen().M_solve(gamma_air_25, MFP_25)
+T_25 = T_t_25 / Ex().stagnation_TR(gamma_air, M_2)
 
 a_25 = Ex().a(gamma_air_25, R, T_25)
 c_air_HPC = M_ax_HPC * a_25

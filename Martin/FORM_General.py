@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.optimize import fsolve
 from KONSTANTER import *
 
 
@@ -142,5 +143,22 @@ class Gen:
         """
         return MFP * P * A / np.sqrt(T)
 
+    def M_solve(self, gamma, MFP):
+        def equation_to_solve(M):
+            return self.MFP(M, gamma, R) - MFP
+
+        initial_guess = 0
+        solution = fsolve(equation_to_solve, initial_guess)
+        return solution
+
     def RPM(self, omega):
         return omega * 60 / (2 * np.pi)
+
+    def mass_flow_bypass(self, mass_flow, BPR):
+        return mass_flow * BPR / (1 + BPR)
+
+    def mass_flow_core(self, mass_flow, mass_flow_bypass):
+        return mass_flow - mass_flow_bypass
+
+    def A(self, r_tip, r_hub):
+        return np.pi * r_tip ** 2 * (1 - r_hub / r_tip)

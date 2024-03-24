@@ -72,7 +72,7 @@ handledning
 M_cruise = 1.7
 h_cruise = 18288
 
-M_rel = 1.5  # hitta nytt värde
+M_rel_fan = 1.5  # hitta nytt värde
 kappa = 0.8
 
 T_turbine = 1700  # trodde det var 1650 K
@@ -173,6 +173,8 @@ r_hub_fan[1] = 0.309
 r_tip_fan[2] = 0.9525
 r_hub_fan[2] = 0.516
 
+
+
 """---------------|LPC - 3 steg|---------------"""
 
 # Three Stage Low Pressure Compressor (LPC) Input Values
@@ -196,6 +198,8 @@ r_hub_LPC[3] = 0.545
 # För att jämföra med uppmätta värden
 nu_LPC_entry = 0.630  # hub-tip ratio steg 1 för LPC
 nu_LPC_exit = 0.819  # hub-tip ratio steg 3 för LPC
+
+A_21 = np.pi * r_tip_LPC[1]**2 * (1 - r_hub_LPC[1] / r_tip_LPC[1])
 
 """---------------|MFP|---------------"""
 
@@ -265,4 +269,12 @@ r_tip_LPT[2] = 0.768
 # Stage 3, approximate [m]
 r_tip_LPT[3] = 0.814
 
-"""---------------|Mixer|---------------"""
+"""---------------|Lobed Mixer|---------------"""
+A_8 = 1.18  # m^2 beräknat från bild
+eta_nozzle = 0.98 # Beräknat mha integration????
+
+
+"""---------------|Bypass and massflow|---------------"""
+
+r_ratio_BPR = r_tip_fan[1]/r_tip_LPT[3]
+BPR = ((np.log(1.9176-(r_ratio_BPR*1.25)))/(-0.2503))-0.6410
