@@ -518,3 +518,5 @@ function entalpi_mix = Entalpi_mix(f, T_t4, T_t3, LHV, BPR, Combust_massflow_rat
     c_p_g = (c_p_3_mixed+c_p_4)/2; %linjär interpolering för genomsnittlig cp för mixen?
     entalpi_mix = c_p_g*(T_t4-T_t3)*10^3*(1/(1+BPR) + f) - LHV*f; % ----- Borde vara gånger 10^3 ty c_p är per g och ej per kg
 end
+
+%testing
