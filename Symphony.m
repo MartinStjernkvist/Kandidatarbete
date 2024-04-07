@@ -53,15 +53,15 @@ EIS = 2012; %entry into service
 R = 287.05; %[J/kgK]
 
 %%
-tspace = linspace(0, 1700, 1700);
+%tspace = linspace(0, 1700, 1700);
 %plot(tspace, c_p_air(tspace))
 %%
-gammalist = zeros(1700);
-for i = 1:1700
-    gammalist(i) = gamma(c_p_air(tspace(i)), R);
-end
-plot(tspace, gammalist)
-ylim([1.25 1.45])
+%gammalist = zeros(1700);
+%for i = 1:1700
+%    gammalist(i) = gamma(c_p_air(tspace(i)), R);
+%end
+%plot(tspace, gammalist)
+%ylim([1.25 1.45])
 %-----------------------------FAN INPUT VALUES----------------------------%
 
 M_ax_fan = 0.603; %Sida 6 designtask2
@@ -145,7 +145,7 @@ r_hub_HPC(6) = 0.369; %0.436;
 
 
 %------------------------COMBUSTION INPUT VALUES--------------------------%
-T_t4 = 1700; %Kelvin
+T_t4 = 1800; %Kelvin
 n_Combustor = 0.86;
 gamma_gas = 1.333; %Introduktionskompendium sida 16
 
@@ -203,8 +203,9 @@ massflow = (MFP*P_t2*A_2)/(sqrt(T_t2)); %Mattingly (1.3)
 
 
 %-------------------------BYPASS AND MASSFLOW-----------------------------%
-r_ratio_BPR = r_tip_fan(1)/r_tip_LPT(3);
-BPR = ((log(1.9176-(r_ratio_BPR*1.25)))/(-0.2503))-0.6410;
+%r_ratio_BPR = r_tip_fan(1)/r_tip_LPT(3);
+%BPR = ((log(1.9176-(r_ratio_BPR*1.25)))/(-0.2503))-0.6410;
+BPR = 3;
 massflow_bypass = massflow * BPR/(1+BPR);
 massflow_core =  massflow - massflow_bypass;
 
@@ -345,7 +346,7 @@ LHV = 43.5*10^6; %Heat value: Joule/kg för bränslet, detta är lite över den 
 FAR_guess = 0.02; % 1/(1+BPR) kommer att minska ty endas
 FAR = fsolve(@(f) Entalpi_mix(f, T_t4, T_t3, LHV, BPR, Combust_massflow_ratio) - T_t3*c_p_3*10^3*1/(1+BPR)*Combust_massflow_ratio, FAR_guess); %borde vara gåner 10^3 ty cp är per g och ej per kg
 
-c_p_4 = (c_p_air(T_t4)*1/(1+BPR)*Combust_massflow_ratio+c_p_fuel(T_t4)*FAR)/(1/(1+BPR)*Combust_massflow_ratio+FAR);
+c_p_4 = c_p_mixed(T_t4, 1/(1+BPR)*Combust_massflow_ratio, FAR);
 %entalpi
 massflow_hot = massflow_core + massflow*FAR;
 
@@ -365,9 +366,11 @@ omega_HPT = omega_HPC; %samma vinkelhastighet
 %r_mid_HPT = (r_tip_HPT + r_hub_HPT)/2; %radie till berkäning av hastighet u_mid
 
 % mixning som är lite fel antar jag
-c_p_4m = ( c_p_4*Combust_massflow_ratio+c_p_3*Cooling_pre_HPT ) / (Combust_massflow_ratio + Cooling_pre_HPT);
+%c_p_4m = ( c_p_4*Combust_massflow_ratio+c_p_3*Cooling_pre_HPT ) / (Combust_massflow_ratio + Cooling_pre_HPT);
+%T_t4m = (c_p_4*T_t4 * (1/(1+BPR)*Combust_massflow_ratio +FAR) + c_p_3*T_t3*(1/(1+BPR))*Cooling_pre_HPT ) / ((1/(1+BPR)*(1-Cooling_post_HPT) + FAR)*c_p_4m);
+T_t4m = fsolve(@(T_t) Mixer(T_t, T_t4, c_p_4, 1/(1+BPR)*(Combust_massflow_ratio), FAR, T_t3, c_p_3, Cooling_pre_HPT), T_t4); %Detta är efter kylning inblandat
+c_p_4m = c_p_mixed(T_t4m, 1/(1+BPR)*(1-Cooling_post_HPT), FAR);
 gamma_4m = gamma(c_p_4m, R_mixed);
-T_t4m = (c_p_4*T_t4 * (1/(1+BPR)*Combust_massflow_ratio +FAR) + c_p_3*T_t3*(1/(1+BPR))*Cooling_pre_HPT ) / (1/(1+BPR)*(1-Cooling_post_HPT) + FAR);
 
 u_HPT = r_tip_HPT*omega_LPC; %medel av hastighet utöver fläkten 
 
@@ -384,11 +387,13 @@ temp_ratio_HPT = T_t4/T_t45;
 HPT_ratio = (temp_ratio_HPT)^(gamma_4m/((gamma_4m-1)*n_HPT)); %1.17 med verkningsgrad, 1.35
 
 P_t45 = P_t4/HPT_ratio;
-c_p_45 = (c_p_air(T_t45)*1/(1+BPR)*(1-Cooling_post_HPT)+c_p_fuel(T_t45)*FAR)/(1/(1+BPR*(1-Cooling_post_HPT))+FAR);
+c_p_45 = c_p_mixed(T_t45, 1/(1+BPR)*(1-Cooling_post_HPT), FAR);
 gamma_45 = gamma(c_p_45, R_mixed);
 
-c_p_45m = c_p_45*(1-Cooling_post_HPT)+c_p_3*Cooling_post_HPT; %fel, inkluderar ej far, se andra mixed cp
-T_t45m = (c_p_45*T_t45 * (1/(1+BPR)*(1-Cooling_post_HPT) +FAR) + c_p_3*T_t3*(1/(1+BPR))*Cooling_post_HPT ) / (1/(1+BPR) + FAR);
+%c_p_45m = c_p_45*(1-Cooling_post_HPT)+c_p_3*Cooling_post_HPT; %fel, inkluderar ej far, se andra mixed cp
+%T_t45m = (c_p_45*T_t45 * (1/(1+BPR)*(1-Cooling_post_HPT) +FAR) + c_p_3*T_t3*(1/(1+BPR))*Cooling_post_HPT ) / ((1/(1+BPR) + FAR)*c_p_45m);
+T_t45m = fsolve(@(T_t) Mixer(T_t, T_t45, c_p_45, 1/(1+BPR)*(1-Cooling_post_HPT), FAR, T_t3, c_p_3, Cooling_post_HPT), T_t45); %Detta är efter kylning inblandat
+c_p_45m = c_p_mixed(T_t45m, 1/(1+BPR), FAR);
 gamma_45m = gamma(c_p_45m, R_mixed);
 
 %% THREE STAGE LOW-PRESSURE TURBINE (LPT)
@@ -419,7 +424,7 @@ LPT_ratio = (temp_ratio_LPT)^(gamma_45m/((gamma_45m-1)*n_LPT)); %1.17 med verkni
 
 P_t5 = P_t45/LPT_ratio;
 
-c_p_5 = (c_p_air(T_t5)*1/(1+BPR)+c_p_fuel(T_t5)*FAR)/(1/(1+BPR)+FAR); %--------------------------Temporärt-----------------------------------------
+c_p_5 = c_p_mixed(T_t5, 1/(1+BPR), FAR);
 gamma_5 = gamma(c_p_5, R_mixed);
 
 %% Lobbade mixern
@@ -435,10 +440,12 @@ M_6 = fsolve(@(M) real(Mach_MFP(M, gamma_5, R_mixed)) - MFP_6, 0.5);
 massflow_exhaust = massflow_hot + massflow_bypass;
 
 % mixern är lobbad 
-R_6A = R; % mindre bränsle så mer likt luft?
-c_p_6A = (c_p_5*massflow_hot + c_p_21*massflow_bypass) / (massflow_hot+massflow_bypass); %------Dessa kanske löses som ett optimeringsproblem????
+R_6A = R; % mindre bränsle så mer likt luft? Denna ska beräknas analytiskt
+%c_p_6A = (c_p_5*massflow_hot + c_p_21*massflow_bypass) / (massflow_hot+massflow_bypass); %------Dessa kanske löses som ett optimeringsproblem????
+%T_t6A = (c_p_21 * T_t21 * massflow_bypass + c_p_5 * T_t5 * massflow_hot) / ((massflow_exhaust)*c_p_6A);
+T_t6A = fsolve(@(T_t) Mixer(T_t, T_t5, c_p_5, 1/(1+BPR), FAR, T_t21, c_p_21, BPR/(1+BPR)), (T_t5+T_t21)/2);
+c_p_6A = c_p_mixed(T_t6A,1,FAR);
 gamma_6A = gamma(c_p_6A, R_6A);
-T_t6A = (c_p_21 * T_t21 * massflow_bypass + c_p_5 * T_t5 * massflow_hot) / ((massflow_exhaust)*c_p_6A);
 
 P_6 = P_t5 / ((1+((gamma_5-1)/2)*M_6^2)^(gamma_5/(gamma_5-1)));
 P_16 = P_t16 / ((1+((gamma_21-1)/2)*M_16^2)^(gamma_21/(gamma_21-1)));
@@ -448,12 +455,12 @@ P_t6A = (P_t5*massflow_hot+P_t16*massflow_bypass) / (massflow_exhaust); % Detta 
 
 M_6A = fsolve(@(M) Impuls_ut(M, P_t6A, A_6A, gamma_6A) - I_in, 0.6); % fixa P_t_6A eller någonting!
 %%
-Mspace = linspace(0, 3, 100);
-Impuls = zeros(100);
-for i = 1:100
-    Impuls(i) = Impuls_ut(Mspace(i), P_t6A, A_6A, gamma_6A) - I_in;
-end
-plot(Mspace,Impuls)
+%Mspace = linspace(0, 3, 100);
+%Impuls = zeros(100);
+%for i = 1:100
+%    Impuls(i) = Impuls_ut(Mspace(i), P_t6A, A_6A, gamma_6A) - I_in;
+%end
+%plot(Mspace,Impuls)
 %% Exhaust nozzle
 %Detta är extremt primitivt och fel!
 T_t8 = T_t6A;
@@ -467,10 +474,11 @@ T_8 = T_t8 / ((1+(((gamma_8-1)/2)*M_8^2)));
 a_8 = sqrt(gamma_8*R_8*T_8);
 c_8 = M_8*a_8;
 Thrust = massflow_exhaust*c_8-massflow*c_0;
-
+%% alternativ till exhausten
+%användet dVdx och ode45
 %%
-Mspace = linspace(0,3, 100);
-plot (Mspace,real(Mach_MFP(Mspace, gamma_8, R_8)) - MFP_8)
+%Mspace = linspace(0,3, 100);
+%plot (Mspace,real(Mach_MFP(Mspace, gamma_8, R_8)) - MFP_8)
 %% OUTPUT
 
 fprintf('BPR = %0.2f\nMassflow = %0.2f kg/s\n',BPR,massflow)
@@ -513,8 +521,48 @@ function I = Impuls_ut(M, Pt, A, gamma)
 end
 
 function entalpi_mix = Entalpi_mix(f, T_t4, T_t3, LHV, BPR, Combust_massflow_ratio)
-    c_p_3_mixed = (c_p_air(T_t3)*1/(1+BPR) + c_p_fuel(T_t3)*f) / (1/(1+BPR) + f);
-    c_p_4 = (c_p_air(T_t4)*1/(1+BPR) + c_p_fuel(T_t4)*f) / (1/(1+BPR) + f); %FÖR TILLFÄLLET 
+    c_p_3_mixed = c_p_mixed(T_t3,1/(1+BPR)*Combust_massflow_ratio,f);
+    %c_p_3_mixed = (c_p_air(T_t3)*1/(1+BPR)*Combust_massflow_ratio + c_p_fuel(T_t3)*f) / (1/(1+BPR)*Combust_massflow_ratio + f);
+    c_p_4 = c_p_mixed(T_t4,1/(1+BPR)*Combust_massflow_ratio,f);
+    %c_p_4 = (c_p_air(T_t4)*1/(1+BPR)*Combust_massflow_ratio + c_p_fuel(T_t4)*f) / (1/(1+BPR)*Combust_massflow_ratio + f); %FÖR TILLFÄLLET 
     c_p_g = (c_p_3_mixed+c_p_4)/2; %linjär interpolering för genomsnittlig cp för mixen?
-    entalpi_mix = c_p_g*(T_t4-T_t3)*10^3*(1/(1+BPR) + f) - LHV*f; % ----- Borde vara gånger 10^3 ty c_p är per g och ej per kg
+    entalpi_mix = c_p_g*(T_t4-T_t3)*10^3*(1/(1+BPR)*Combust_massflow_ratio + f) - LHV*f; % ----- Borde vara gånger 10^3 ty c_p är per g och ej per kg
+end
+
+function c_p = c_p_mixed(T_t, m, mf)
+    c_p = (c_p_air(T_t)*m + c_p_fuel(T_t)*mf)/(m+mf);
+end
+
+function enthalpy_difference = Mixer(T_t, T_t1, c_p1, m1, f1, T_t2, c_p2, m2)
+    %f1 mängden bränsle, så m1+f1 är totalt massflöde för varmt
+    m = m1 + m2;
+    enthalpy_before = c_p1*T_t1*(m1+f1)+c_p2*T_t2*m2;
+    enthalpy_after = c_p_mixed(T_t,m,f1)*T_t*(m+f1);
+    enthalpy_difference = enthalpy_after - enthalpy_before;
+end
+
+function dvdx = dVdx(x,V)
+    %ska innehålla hur c, a och A utvecklas
+end
+
+function area = Area_inner(x,translation)
+    %translation är förflyttning av center spiken högerut, variabler är i
+    %cm antar jag?
+    x = x - translation;
+    if x < 2 %temporärt
+        radie = x;
+    elseif x < 3
+        radie = x;
+    end
+    area = pi*radie^2;
+end
+
+function area = Area_outer(x)
+    %x är noll vid något ställe xdd
+    if x < 2 %temporärt
+        radie = x;
+    elseif x < 3
+        radie = x;
+    end
+    area = pi*radie^2;
 end
