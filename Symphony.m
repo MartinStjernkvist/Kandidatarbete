@@ -287,7 +287,7 @@ LPC_ratio = (temp_ratio_LPC)^(gamma_21*n_LPC/(gamma_21-1)); %1.17 med verkningsg
 
 P_t25 = P_t21*LPC_ratio;
 
-c_p_25 = c_p_air(25);
+c_p_25 = c_p_air(T_t25);
 gamma_25 = gamma(c_p_25,R);
 
 A_25 = r_tip_HPC(1)^2*pi*(1-(r_hub_HPC(1)/r_tip_HPC(1))^2); % Detta är helt fel eller något xdddd
@@ -519,4 +519,5 @@ function entalpi_mix = Entalpi_mix(f, T_t4, T_t3, LHV, BPR, Combust_massflow_rat
     entalpi_mix = c_p_g*(T_t4-T_t3)*10^3*(1/(1+BPR) + f) - LHV*f; % ----- Borde vara gånger 10^3 ty c_p är per g och ej per kg
 end
 
-%testing
+
+
