@@ -3,6 +3,7 @@
 clear all
 close all
 clc
+%options = optimset('Display','off');
 %------------------FEL VI VET ÄR FEL/KANSKE ÄR FEL------------------------%
 % a hastigheterna kanske är fel ty de använda gamma baserat på
 % stagnationstemperatur och ej temperatur Detta påverkar Mach_MFP
@@ -107,7 +108,7 @@ nu_LPC_exit = 0.819; %hub-tip ratio steg 3 för LPC
 
 
 %----------------------------------MFP------------------------------------%
-M_2 = 0.6; %0.6-0.8
+M_2 = 0.7; %0.6-0.8
 A_2 = 2.296; %[m2] estimerat från bild
 
 %--------------HIGH PRESSURE COMPRESSOR (HPC) INPUT VALUES----------------%
@@ -145,7 +146,7 @@ r_hub_HPC(6) = 0.382; %0.436;
 
 
 %------------------------COMBUSTION INPUT VALUES--------------------------%
-T_t4 = 1800; %Kelvin
+T_t4 = 1700; %Kelvin
 n_Combustor = 0.86;
 gamma_gas = 1.333; %Introduktionskompendium sida 16
 
@@ -205,7 +206,7 @@ massflow = (MFP*P_t2*A_2)/(sqrt(T_t2)); %Mattingly (1.3)
 %-------------------------BYPASS AND MASSFLOW-----------------------------%
 %r_ratio_BPR = r_tip_fan(1)/r_tip_LPT(3);
 %BPR = ((log(1.9176-(r_ratio_BPR*1.25)))/(-0.2503))-0.6410;
-BPR = 3.5;
+BPR = 4;
 massflow_bypass = massflow * BPR/(1+BPR);
 massflow_core =  massflow - massflow_bypass;
 
@@ -346,13 +347,19 @@ M_3 = fsolve(@(M) Mach_MFP(M, gamma_3, R) - MFP_3, 0);
 %NYTT GAMMA OCH CP FÖR GAS OCH AIR
 R_mixed = 380; %Fixa detta ordentligt ööööööööööööööööööööööö---------------------------------------------------
 LHV = 43.5*10^6; %Heat value: Joule/kg för bränslet, detta är lite över den undre gränsen för SAF, borde vara ett rimligt värde, kan behöva dubbelkollas
-
-FAR_guess = 0.02; % 1/(1+BPR) kommer att minska ty endas
-FAR = fsolve(@(f) Entalpi_mix(f, T_t4, T_t3, LHV, BPR, Combust_massflow_ratio) - T_t3*c_p_3*1/(1+BPR)*Combust_massflow_ratio, FAR_guess); %borde vara gåner 10^3 ty cp är per g och ej per kg
-
-c_p_4 = c_p_mixed(T_t4, 1/(1+BPR)*Combust_massflow_ratio, FAR);
+FAR_guess = 0.02; % 1/(1+BPR) kommer att minska ty endas:              - (T_t3)*c_p_3*Combust_massflow_ratio
+FAR = fsolve(@(f) Entalpi_mix(f, T_t4, T_0, LHV, Combust_massflow_ratio) - delta_h_HPC - delta_h_LPC - delta_h_fan, FAR_guess); %borde vara gåner 10^3 ty cp är per g och ej per kg
+%% Allting är helt fuckat, jag hatar livet
+%flist = linspace(0,0.1,2000);
+%entalpilist = zeros(2000);
+%for i = 1:2000
+%    entalpilist(i) = Entalpi_mix(flist(i), T_t4, T_t3, LHV, BPR, Combust_massflow_ratio) - T_t3*c_p_3*1/(1+BPR)*Combust_massflow_ratio;
+%end
+%plot(flist, entalpilist)
+%%
+c_p_4 = c_p_mixed(T_t4,Combust_massflow_ratio, FAR);
 %entalpi
-massflow_hot = massflow_core + massflow*FAR;
+massflow_hot = massflow_core*(1+FAR);
 
 gamma_4 = gamma(c_p_4, R_mixed);
 P_t4 = P_t3*Combustor_ratio; %KOLLA SÅ RÄTT RATIO, tror rätt att trycket minskar?
@@ -372,8 +379,8 @@ omega_HPT = omega_HPC; %samma vinkelhastighet
 % mixning som är lite fel antar jag
 %c_p_4m = ( c_p_4*Combust_massflow_ratio+c_p_3*Cooling_pre_HPT ) / (Combust_massflow_ratio + Cooling_pre_HPT);
 %T_t4m = (c_p_4*T_t4 * (1/(1+BPR)*Combust_massflow_ratio +FAR) + c_p_3*T_t3*(1/(1+BPR))*Cooling_pre_HPT ) / ((1/(1+BPR)*(1-Cooling_post_HPT) + FAR)*c_p_4m);
-T_t4m = fsolve(@(T_t) Mixer(T_t, T_t4, c_p_4, 1/(1+BPR)*(Combust_massflow_ratio), FAR, T_t3, c_p_3, Cooling_pre_HPT), T_t4); %Detta är efter kylning inblandat
-c_p_4m = c_p_mixed(T_t4m, 1/(1+BPR)*(1-Cooling_post_HPT), FAR);
+T_t4m = fsolve(@(T_t) Mixer(T_t, T_t4, c_p_4,Combust_massflow_ratio, FAR, T_t3, c_p_3, Cooling_pre_HPT), T_t4); %Detta är efter kylning inblandat
+c_p_4m = c_p_mixed(T_t4m, 1-Cooling_post_HPT, FAR);
 gamma_4m = gamma(c_p_4m, R_mixed);
 
 u_HPT = r_tip_HPT*omega_LPC; %medel av hastighet utöver fläkten 
@@ -391,13 +398,13 @@ temp_ratio_HPT = T_t4/T_t45;
 HPT_ratio = (temp_ratio_HPT)^(gamma_4m/((gamma_4m-1)*n_HPT)); %1.17 med verkningsgrad, 1.35
 
 P_t45 = P_t4/HPT_ratio;
-c_p_45 = c_p_mixed(T_t45, 1/(1+BPR)*(1-Cooling_post_HPT), FAR);
+c_p_45 = c_p_mixed(T_t45,1-Cooling_post_HPT, FAR);
 gamma_45 = gamma(c_p_45, R_mixed);
 
 %c_p_45m = c_p_45*(1-Cooling_post_HPT)+c_p_3*Cooling_post_HPT; %fel, inkluderar ej far, se andra mixed cp
 %T_t45m = (c_p_45*T_t45 * (1/(1+BPR)*(1-Cooling_post_HPT) +FAR) + c_p_3*T_t3*(1/(1+BPR))*Cooling_post_HPT ) / ((1/(1+BPR) + FAR)*c_p_45m);
-T_t45m = fsolve(@(T_t) Mixer(T_t, T_t45, c_p_45, 1/(1+BPR)*(1-Cooling_post_HPT), FAR, T_t3, c_p_3, Cooling_post_HPT), T_t45); %Detta är efter kylning inblandat
-c_p_45m = c_p_mixed(T_t45m, 1/(1+BPR), FAR);
+T_t45m = fsolve(@(T_t) Mixer(T_t, T_t45, c_p_45,1-Cooling_post_HPT, FAR, T_t3, c_p_3, Cooling_post_HPT), T_t45); %Detta är efter kylning inblandat
+c_p_45m = c_p_mixed(T_t45m, 1, FAR);
 gamma_45m = gamma(c_p_45m, R_mixed);
 
 %% THREE STAGE LOW-PRESSURE TURBINE (LPT)
@@ -427,7 +434,7 @@ LPT_ratio = (temp_ratio_LPT)^(gamma_45m/((gamma_45m-1)*n_LPT)); %1.17 med verkni
 
 P_t5 = P_t45/LPT_ratio;
 
-c_p_5 = c_p_mixed(T_t5, 1/(1+BPR), FAR);
+c_p_5 = c_p_mixed(T_t5, 1, FAR);
 gamma_5 = gamma(c_p_5, R_mixed);
 
 %% Lobbade mixern
@@ -446,8 +453,8 @@ massflow_exhaust = massflow_hot + massflow_bypass;
 R_6A = 330; % mindre bränsle så mer likt luft? Denna ska beräknas analytiskt
 %c_p_6A = (c_p_5*massflow_hot + c_p_21*massflow_bypass) / (massflow_hot+massflow_bypass); %------Dessa kanske löses som ett optimeringsproblem????
 %T_t6A = (c_p_21 * T_t21 * massflow_bypass + c_p_5 * T_t5 * massflow_hot) / ((massflow_exhaust)*c_p_6A);
-T_t6A = fsolve(@(T_t) Mixer(T_t, T_t5, c_p_5, 1/(1+BPR), FAR, T_t21, c_p_21, BPR/(1+BPR)), (T_t5+T_t21)/2);
-c_p_6A = c_p_mixed(T_t6A,1,FAR);
+T_t6A = fsolve(@(T_t) Mixer(T_t, T_t5, c_p_5, 1, FAR, T_t21, c_p_21, BPR), (T_t5+T_t21)/2);
+c_p_6A = c_p_mixed(T_t6A,1+BPR,FAR);
 gamma_6A = gamma(c_p_6A, R_6A);
 
 P_6 = P_t5 / ((1+((gamma_5-1)/2)*M_6^2)^(gamma_5/(gamma_5-1)));
@@ -504,6 +511,7 @@ end
 %plot (Mspace,real(Mach_MFP(Mspace, gamma_8, R_8)) - MFP_8)
 %% OUTPUT
 
+OPR = FPR * LPC_ratio * HPC_ratio;
 fprintf('BPR = %0.2f\nMassflow = %0.2f kg/s\n',BPR,massflow)
 
 %%
@@ -543,13 +551,13 @@ function I = Impuls_ut(M, Pt, A, gamma)
     I = Pt*A*(1+gamma*M^2) / ((1+((gamma-1)/2)*M^2)^(gamma/(gamma-1))); %Pt/P och impuls bevaring
 end
 
-function entalpi_mix = Entalpi_mix(f, T_t4, T_t3, LHV, BPR, Combust_massflow_ratio)
-    c_p_3_mixed = c_p_mixed(T_t3,1/(1+BPR)*Combust_massflow_ratio,f);
+function entalpi_mix = Entalpi_mix(f, T_t4, T_t3, LHV, Combust_massflow_ratio)
+    c_p_3_mixed = c_p_mixed(T_t3,Combust_massflow_ratio,f);
     %c_p_3_mixed = (c_p_air(T_t3)*1/(1+BPR)*Combust_massflow_ratio + c_p_fuel(T_t3)*f) / (1/(1+BPR)*Combust_massflow_ratio + f);
-    c_p_4 = c_p_mixed(T_t4,1/(1+BPR)*Combust_massflow_ratio,f);
+    c_p_4 = c_p_mixed(T_t4,Combust_massflow_ratio,f);
     %c_p_4 = (c_p_air(T_t4)*1/(1+BPR)*Combust_massflow_ratio + c_p_fuel(T_t4)*f) / (1/(1+BPR)*Combust_massflow_ratio + f); %FÖR TILLFÄLLET 
     c_p_g = (c_p_3_mixed+c_p_4)/2; %linjär interpolering för genomsnittlig cp för mixen?
-    entalpi_mix = c_p_g*(T_t4-T_t3)*(1/(1+BPR)*Combust_massflow_ratio + f) - LHV*f; % ----- Borde vara gånger 10^3 ty c_p är per g och ej per kg
+    entalpi_mix = c_p_g*(T_t4-T_t3)*(Combust_massflow_ratio + f) - LHV*f; % ----- Borde vara gånger 10^3 ty c_p är per g och ej per kg
 end
 
 function c_p = c_p_mixed(T_t, m, mf)
