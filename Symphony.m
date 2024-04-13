@@ -49,6 +49,7 @@ T_0 = -56.6+273.15; %kelvin at 60,000ft
 gamma_air = 1.4; 
 P_0 = 7171.64;
 M_0 = 1.7;
+P_t0 = P_0 * ((1+((gamma_air-1)/2)*M_0^2)^(gamma_air/(gamma_air-1)));
 c_0 = a_0 * M_0;
 EIS = 2030; %entry into service
 R = 287.05; %[J/kgK]
@@ -65,8 +66,8 @@ R = 287.05; %[J/kgK]
 %ylim([1.25 1.45])
 %-----------------------------FAN INPUT VALUES----------------------------%
 
-M_ax_fan = 0.603; %Sida 6 designtask2
-psi_fan = 1.4;%** %Mellan 0.43 och 0.65 sida 10 designtask2
+M_ax_fan = 0.603; %Sida 6 designtask2 Detta borde ej användas
+psi_fan = 1.6;%** %Mellan 0.43 och 0.65 sida 10 designtask2
 M_rel_fan = 1.5; %från handledning, HITTA NYTT VÄRDE
 n_fan = 0.89; %Level 4 tech table 4.4 s. 107 Mattingly 
 
@@ -86,7 +87,7 @@ nu_fan = 44.29/(98.94+exp((0.01850*EIS)-33.31)); %hub-tip ratio för fläkt
 
 
 n_LPC = 0.901; %**Hitt värde för trestegs kompressor
-psi_LPC = -8.968 + 0.004877*EIS; %sida 11 designtask2
+psi_LPC = 1.0;%-8.968 + 0.004877*EIS; %sida 11 designtask2
 
 
 %Stage 1, approximerat [m]
@@ -108,13 +109,13 @@ nu_LPC_exit = 0.819; %hub-tip ratio steg 3 för LPC
 
 
 %----------------------------------MFP------------------------------------%
-M_2 = 0.7; %0.6-0.8
+M_2 = 0.65; %0.6-0.8
 A_2 = 2.296; %[m2] estimerat från bild
 
 %--------------HIGH PRESSURE COMPRESSOR (HPC) INPUT VALUES----------------%
 
-M_rel_HPC = 1.3; %designtask2
-M_ax_HPC = 0.482; %designtask2 sida 13
+M_rel_HPC = 1.3; %designtask2 1.3 från design task 2
+M_ax_HPC = 0.482; %designtask2 sida 13 Detta borde en användas
 %r_tip_HPC = 0.444; %0.4575; %approximerat [m]
 psi_HPC = -5.716+0.00323*EIS; %sida 13 designtask
 n_HPC = 0.941;
@@ -146,7 +147,7 @@ r_hub_HPC(6) = 0.382; %0.436;
 
 
 %------------------------COMBUSTION INPUT VALUES--------------------------%
-T_t4 = 1700; %Kelvin
+T_t4 = 1750; %Kelvin
 n_Combustor = 0.86;
 gamma_gas = 1.333; %Introduktionskompendium sida 16
 
@@ -177,7 +178,7 @@ r_tip_LPT(2) = 0.768;
 r_tip_LPT(3) = 0.814;
 
 %--------------------------LOBED MIXER INPUT VALUES-----------------------%
-A_16 = 0.9367; %[m^2] manuellt beräknat från bild
+A_16 = Area_outer(0) - 1.096;%0.9367; %[m^2] manuellt beräknat från bild
 translation = 1; %[m] förskjutning åt höger av spiken
 A_6 = 1.096-Area_inner(0,translation); %[m^2] manuellt beräknat från bild, Ska också kunna variera med att spiken flyttas ut och in
 n_bypass = 0.98; %Term som beskriver friktionsförluster
@@ -206,7 +207,7 @@ massflow = (MFP*P_t2*A_2)/(sqrt(T_t2)); %Mattingly (1.3)
 %-------------------------BYPASS AND MASSFLOW-----------------------------%
 %r_ratio_BPR = r_tip_fan(1)/r_tip_LPT(3);
 %BPR = ((log(1.9176-(r_ratio_BPR*1.25)))/(-0.2503))-0.6410;
-BPR = 4;
+BPR = 3;
 massflow_bypass = massflow * BPR/(1+BPR);
 massflow_core =  massflow - massflow_bypass;
 
@@ -219,6 +220,7 @@ ratio_hub_fan = (1-(r_hub_fan_nu/r_hub_fan(1)))*100; %Procentuell skillnad
 %Axial hastighet + speed of sound innan fläkt
 a2 = sqrt(gamma_2*R*T_2); %speed of sound
 
+M_ax_fan = M_2; %-------------------------------------Kom ihåg denna ändringen
 Ca_fan = M_ax_fan*a2; 
 
 %Bladhastigheter
@@ -236,7 +238,7 @@ u_mid_fan = r_mid_fan*omega_fan; %medel av hastighet utöver fläkten
 
 %Steglast och flödesfaktor
 delta_h_fan = (psi_fan*(u_mid_fan^2))/2; %designtask2
-delta_T_fan = delta_h_fan/c_p_2; %temperatur ratio
+delta_T_fan = Temp_change(T_t2, delta_h_fan, 1, 0);%delta_T_fan = delta_h_fan/c_p_2; %temperatur ratio
 
 
 %Beräkning av FPR
@@ -277,7 +279,7 @@ u_mid_LPC = r_mid_LPC.*omega_LPC; %medel av hastighet utöver fläkten
 u_sum_LPC = (u_mid_LPC(1))^2+(u_mid_LPC(2))^2+(u_mid_LPC(3))^2; %Three stage LPC
 
 delta_h_LPC = (psi_LPC*((u_sum_LPC)))/2; %designtask2
-delta_T_LPC = delta_h_LPC/c_p_21; %temperatur ratio
+delta_T_LPC = Temp_change(T_t21, delta_h_LPC, 1, 0);%delta_T_LPC = delta_h_LPC/c_p_21; %temperatur ratio
 
 %beräkning av LPC ratio
 T_t25 = delta_T_LPC + T_t21; %temperaturen efter LPC
@@ -293,7 +295,7 @@ gamma_25 = gamma(c_p_25,R);
 
 A_25 = r_tip_HPC(1)^2*pi*(1-(r_hub_HPC(1)/r_tip_HPC(1))^2); % Detta är helt fel eller något xdddd
 
-MFP_25 = massflow_bypass*sqrt(T_t25)/(P_t25*A_25);
+MFP_25 = massflow_core*sqrt(T_t25)/(P_t25*A_25);
 M_25 = fsolve(@(M) Mach_MFP(M, gamma_25, R) - MFP_25, 0);
 
 T_25 = T_t25/((1+(((gamma_25-1)/2)*M_25^2)));
@@ -302,7 +304,7 @@ T_25 = T_t25/((1+(((gamma_25-1)/2)*M_25^2)));
 
 %Axial hastighet + speed of sound innan fläk
 a25 = sqrt(gamma_25*R*T_25); %--------------
-
+M_ax_HPC = M_25; % --------------------------------------- Kom ihåg detta
 Ca_HPC = M_ax_HPC*a25; 
 
 %Bladhastigheter
@@ -321,7 +323,7 @@ u_sum_HPC = sum(u_mid_HPC.^2);
 
 %steglast och flödesfaktor
 delta_h_HPC = (psi_HPC*(u_sum_HPC))/2; %designtask2, 6 stage???
-delta_T_HPC = delta_h_HPC/c_p_25; %temperatur ratio
+delta_T_HPC = Temp_change(T_t25, delta_h_HPC, 1, 0); %delta_T_HPC = delta_h_HPC/c_p_25; %temperatur ratio
 
 %beräkning av HPC ratio
 T_t3 = delta_T_HPC + T_t25; %temperaturen efter HPC
@@ -336,7 +338,7 @@ gamma_3 = gamma(c_p_3,R);
 
 A_3 = r_tip_HPC(6)^2*pi*(1-(r_hub_HPC(6)/r_tip_HPC(6))^2); % Detta är helt fel eller något xdddd
 
-MFP_3 = massflow_bypass*sqrt(T_t3)/(P_t3*A_3);
+MFP_3 = massflow_core*sqrt(T_t3)/(P_t3*A_3);
 M_3 = fsolve(@(M) Mach_MFP(M, gamma_3, R) - MFP_3, 0);
 
 % Tillägg ev. kylning. ca 20% Ta enbart ut kylning efter HPC
@@ -353,7 +355,7 @@ FAR = fsolve(@(f) Entalpi_mix(f, T_t4, T_0, LHV, Combust_massflow_ratio) - delta
 %flist = linspace(0,0.1,2000);
 %entalpilist = zeros(2000);
 %for i = 1:2000
-%    entalpilist(i) = Entalpi_mix(flist(i), T_t4, T_t3, LHV, BPR, Combust_massflow_ratio) - T_t3*c_p_3*1/(1+BPR)*Combust_massflow_ratio;
+%    entalpilist(i) = Entalpi_mix(flist(i), T_t4, T_0, LHV, Combust_massflow_ratio) - delta_h_HPC - delta_h_LPC - delta_h_fan;
 %end
 %plot(flist, entalpilist)
 %%
@@ -386,9 +388,9 @@ gamma_4m = gamma(c_p_4m, R_mixed);
 u_HPT = r_tip_HPT*omega_LPC; %medel av hastighet utöver fläkten 
 
 %steglast och flödesfaktor
-delta_h_HPT = delta_h_HPC; %(psi_HPT*(u_HPT^2)); %designtask2, bara ett steg, annan formel för
+delta_h_HPT = delta_h_HPC / (1-Cooling_post_HPT + FAR);% division se ex uppgift ty iolika massflöden %(psi_HPT*(u_HPT^2)); %designtask2, bara ett steg, annan formel för
 %enligt stage loading på sida 16 i designtask 2.
-delta_T_HPT = delta_h_HPT/c_p_4m; %temperatur ratio
+delta_T_HPT = Temp_change(T_t4m, delta_h_HPT, 1-Cooling_post_HPT, FAR);%delta_T_HPT = delta_h_HPT/c_p_4m; %temperatur ratio
 
 %beräkning av HPT
 T_t45 = T_t4 - delta_T_HPT; %temperaturen över HPT
@@ -420,8 +422,8 @@ u_sum_LPT = sum(u_LPT.^2);
 
 %steglast och flödesfaktor
 
-delta_h_LPT = delta_h_LPC + delta_h_fan; %(psi_LPC*(u_sum_LPT)); %designtask2, gånger 3 pga three stage LPC
-delta_T_LPT = delta_h_LPT/c_p_45m; %temperatur ratio
+delta_h_LPT = (delta_h_LPC + delta_h_fan*(1+BPR))/(1+FAR); %(psi_LPC*(u_sum_LPT)); %designtask2, gånger 3 pga three stage LPC
+delta_T_LPT = Temp_change(T_t45m, delta_h_LPT, 1, FAR);%delta_T_LPT = delta_h_LPT/c_p_45m; %temperatur ratio
 % Samma för delta_h_LPT som för HPT kommentar
 % ------------------------------------------------------------------------------------------------------------------------------
 %beräkning av LPC ratio
@@ -468,12 +470,13 @@ T_6A = T_t6A/((1+(((gamma_6A-1)/2)*M_6A^2)));
 a_6A = sqrt(gamma_6A*R_6A*T_6A);
 c_6A = M_6A*a_6A;
 %%
-Mspace = linspace(0, 3, 100);
-Impuls = zeros(100);
-for i = 1:100
-    Impuls(i) = Impuls_ut(Mspace(i), P_t6A, A_6A, gamma_6A) - I_in;
-end
-plot(Mspace,Impuls)
+%Mspace = linspace(0, 3, 100);
+%Impuls = zeros(100);
+%for i = 1:100
+%    Impuls(i) = Impuls_ut(Mspace(i), P_t6A, A_6A, gamma_6A) - I_in;
+%end
+%plot(Mspace,Impuls)
+
 %% Exhaust nozzle
 %Detta är extremt primitivt och fel!
 T_t8 = T_t6A;
@@ -486,7 +489,8 @@ M_8 = fsolve(@(M) real(Mach_MFP(M, gamma_8, R_8)) - MFP_8, 2);
 T_8 = T_t8 / ((1+(((gamma_8-1)/2)*M_8^2)));
 a_8 = sqrt(gamma_8*R_8*T_8);
 c_8 = M_8*a_8;
-Thrust = massflow_exhaust*c_8-massflow*c_0;
+P_8 = P_t8 / ((1+((gamma_8-1)/2)*M_8^2)^(gamma_8/(gamma_8-1)));
+Thrust = massflow_exhaust*c_8-massflow*c_0+A_8*(P_8-P_0);
 %% alternativ till exhausten
 %användet dVdx och ode45
 T_t8 = T_t6A;
@@ -507,8 +511,8 @@ for i = 2:iterations
 end
 
 %%
-%Mspace = linspace(0,3, 100);
-%plot (Mspace,real(Mach_MFP(Mspace, gamma_8, R_8)) - MFP_8)
+Mspace = linspace(0,3, 100);
+plot (Mspace,real(Mach_MFP(Mspace, gamma_21, R)) - MFP_16)
 %% OUTPUT
 
 OPR = FPR * LPC_ratio * HPC_ratio;
@@ -640,4 +644,15 @@ end
 
 function area = Area_exhaust(x,translation)
     area = Area_outer(x) - Area_inner(x, translation);
+end
+
+function deltaT = Temp_change(T_t0, delta_H, m, f)
+    steps = 500;
+    h = delta_H/steps;
+    T_t = T_t0;
+    for i = 1:steps
+        c_p = c_p_mixed(T_t,m,f);
+        T_t = h/c_p + T_t;
+    end
+    deltaT = T_t-T_t0;
 end
