@@ -67,9 +67,9 @@ R = 287.05; %[J/kgK]
 %ylim([1.25 1.45])
 %-----------------------------FAN INPUT VALUES----------------------------%
 
-M_ax_fan = 0.603; %Sida 6 designtask2 Detta borde ej användas
+%M_ax_fan = 0.603; %Sida 6 designtask2 Detta borde ej användas
 psi_fan = 1.7;%** %Mellan 0.43 och 0.65 sida 10 designtask2
-M_rel_fan = 1.5; %från handledning, HITTA NYTT VÄRDE
+M_rel_fan = 1.5; %från handledning, HITTA NYTT VÄRDE 1.5 eller något 
 n_fan = 0.89; %Level 4 tech table 4.4 s. 107 Mattingly 
 
 
@@ -88,7 +88,7 @@ nu_fan = 44.29/(98.94+exp((0.01850*EIS)-33.31)); %hub-tip ratio för fläkt
 
 
 n_LPC = 0.901; %**Hitt värde för trestegs kompressor
-psi_LPC = 0.85;%-8.968 + 0.004877*EIS; %sida 11 designtask2
+psi_LPC = -8.968 + 0.004877*EIS; %sida 11 designtask2
 
 
 %Stage 1, approximerat [m]
@@ -115,10 +115,10 @@ A_2 = 2.296; %[m2] estimerat från bild
 
 %--------------HIGH PRESSURE COMPRESSOR (HPC) INPUT VALUES----------------%
 
-M_rel_HPC = 1.3; %designtask2 1.3 från design task 2
+M_rel_HPC = 1.2; %designtask2 1.3 från design task 2
 M_ax_HPC = 0.482; %designtask2 sida 13 Detta borde en användas
 %r_tip_HPC = 0.444; %0.4575; %approximerat [m]
-psi_HPC = 0.75;%-5.716+0.00323*EIS; %sida 13 designtask
+psi_HPC = -5.716+0.00323*EIS; %sida 13 designtask
 n_HPC = 0.941;
 
 %Stage 1, approximerat [m]
@@ -299,7 +299,7 @@ c_p_25 = c_p_air(T_t25);
 gamma_25 = gamma(c_p_25,R);
 
 A_25 = r_tip_HPC(1)^2*pi*(1-(r_hub_HPC(1)/r_tip_HPC(1))^2); % Detta är helt fel eller något xdddd
-
+%A_25 = 0.3; %---------------------------------------------------Mycket temporär---------------------------------------
 MFP_25 = massflow_core*sqrt(T_t25)/(P_t25*A_25);
 M_25 = fsolve(@(M) Mach_MFP(M, gamma_25, R) - MFP_25, 0);
 
