@@ -68,17 +68,17 @@ R = 287.05; %[J/kgK]
 %-----------------------------FAN INPUT VALUES----------------------------%
 
 %M_ax_fan = 0.603; %Sida 6 designtask2 Detta borde ej användas
-psi_fan = 1.7;%** %Mellan 0.43 och 0.65 sida 10 designtask2
+psi_fan = 1.6;%** %Mellan 0.43 och 0.65 sida 10 designtask2
 M_rel_fan = 1.5; %från handledning, HITTA NYTT VÄRDE 1.5 eller något 
-n_fan = 0.89; %Level 4 tech table 4.4 s. 107 Mattingly 
+n_fan = 0.87; % 0.87 from table designtask 2%0.89 from Level 4 tech table 4.4 s. 107 Mattingly 
 
 
 %Entry, approximerat [m]
-r_tip_fan(1) = 0.9525; 
+r_tip_fan(1) = 0.9144; 
 r_hub_fan(1) = 0.309;
 
 %Exit, approximerat [m]
-r_tip_fan(2) = 0.9525; 
+r_tip_fan(2) = 0.9144; 
 r_hub_fan(2) = 0.516;
 
 %För att jämföra med uppmätta värden
@@ -92,16 +92,16 @@ psi_LPC = -8.968 + 0.004877*EIS; %sida 11 designtask2
 
 
 %Stage 1, approximerat [m]
-r_tip_LPC(1) = 0.716;
-r_hub_LPC(1) = 0.545;
+r_tip_LPC(1) = 0.638; %0.716;
+r_hub_LPC(1) = 0.499; %0.545;
 
 %Stage 2, approximerat [m]
-r_tip_LPC(2) = 0.716;
-r_hub_LPC(2) = 0.545;
+r_tip_LPC(2) = 0.638; %0.716;
+r_hub_LPC(2) = 0.499; %0.545;
 
 %Stage 3, approximerat [m]
-r_tip_LPC(3) = 0.716;
-r_hub_LPC(3) = 0.545;
+r_tip_LPC(3) = 0.638; %0.716;
+r_hub_LPC(3) = 0.499; %0.545;
 
 
 %För att jämföra med uppmätta värden
@@ -112,7 +112,6 @@ nu_LPC_exit = 0.819; %hub-tip ratio steg 3 för LPC
 %----------------------------------MFP------------------------------------%
 M_2 = 0.60; %0.6-0.8
 A_2 = 2.296; %[m2] estimerat från bild
-
 %--------------HIGH PRESSURE COMPRESSOR (HPC) INPUT VALUES----------------%
 
 M_rel_HPC = 1.2; %designtask2 1.3 från design task 2
@@ -181,14 +180,15 @@ r_tip_LPT(3) = 0.814;
 
 %--------------------------LOBED MIXER INPUT VALUES-----------------------%
 A_16 = Area_outer(0) - 1.096;%0.9367; %[m^2] manuellt beräknat från bild
-translation = 1; %[m] förskjutning åt höger av spiken
-A_6 = 1.096-Area_inner(0,translation); %[m^2] manuellt beräknat från bild, Ska också kunna variera med att spiken flyttas ut och in
+translation = 1.2; %[m] förskjutning åt höger av senare delen av spiken
+translation2 = 0; %[m] förskjutning åt höger av hela spiken
+A_6 = 1.096-Area_inner(0,translation, translation2); %[m^2] manuellt beräknat från bild, Ska också kunna variera med att spiken flyttas ut och in
 n_bypass = 0.98; %Term som beskriver friktionsförluster
 A_6A = A_6 + A_16;
 %---------------------EXHAUST NOZZLE INPUTVALUES--------------------------%
 n_nozzle = 0.98; %Beräkna senare med hjälp av integration?
 Exhaust_length = 3.763;
-A_8 = Area_exhaust(Exhaust_length,translation);%1.18; %meter beräknat från bild
+A_8 = Area_exhaust(Exhaust_length,translation, translation2);%1.18; %meter beräknat från bild
 
 %% Pre calculations (inlet)
 
@@ -212,7 +212,8 @@ massflow = (MFP*P_t2*A_2)/(sqrt(T_t2)); %Mattingly (1.3)
 %-------------------------BYPASS AND MASSFLOW-----------------------------%
 %r_ratio_BPR = r_tip_fan(1)/r_tip_LPT(3);
 %BPR = ((log(1.9176-(r_ratio_BPR*1.25)))/(-0.2503))-0.6410;
-BPR = 4.5;
+%BPR = 2;
+BPR = (0.9144^2-0.499^2)/(0.638^2-0.499^2)-1; %se design task 2
 massflow_bypass = massflow * BPR/(1+BPR);
 massflow_core =  massflow - massflow_bypass;
 
@@ -298,8 +299,7 @@ P_t25 = P_t21*LPC_ratio;
 c_p_25 = c_p_air(T_t25);
 gamma_25 = gamma(c_p_25,R);
 
-A_25 = r_tip_HPC(1)^2*pi*(1-(r_hub_HPC(1)/r_tip_HPC(1))^2); % Detta är helt fel eller något xdddd
-%A_25 = 0.3; %---------------------------------------------------Mycket temporär---------------------------------------
+A_25 = r_tip_HPC(1)^2*pi*(1-(r_hub_HPC(1)/r_tip_HPC(1))^2); % 
 MFP_25 = massflow_core*sqrt(T_t25)/(P_t25*A_25);
 M_25 = fsolve(@(M) Mach_MFP(M, gamma_25, R) - MFP_25, 0);
 
@@ -352,7 +352,7 @@ M_3 = fsolve(@(M) Mach_MFP(M, gamma_3, R) - MFP_3, 0);
 %% Combustor 
 
 %NYTT GAMMA OCH CP FÖR GAS OCH AIR
-R_mixed = 380; %Fixa detta ordentligt ööööööööööööööööööööööö---------------------------------------------------
+R_mixed = R; %Fixa detta ordentligt ööööööööööööööööööööööö---------------------------------------------------
 LHV = 43.5*10^6; %Heat value: Joule/kg för bränslet, detta är lite över den undre gränsen för SAF, borde vara ett rimligt värde, kan behöva dubbelkollas
 FAR_guess = 0.02; % 1/(1+BPR) kommer att minska ty endas:              - (T_t3)*c_p_3*Combust_massflow_ratio
 FAR = fsolve(@(f) Entalpi_mix(f, T_t4, T_tref, LHV, Combust_massflow_ratio) - (delta_h_HPC - delta_h_LPC - delta_h_fan - Entalphy_above_T_tref)*Combust_massflow_ratio, FAR_guess); %borde vara gåner 10^3 ty cp är per g och ej per kg
@@ -457,7 +457,7 @@ M_6 = fsolve(@(M) real(Mach_MFP(M, gamma_5, R_mixed)) - MFP_6, 0.5);
 massflow_exhaust = massflow_hot + massflow_bypass;
 
 % mixern är lobbad 
-R_6A = 330; % mindre bränsle så mer likt luft? Denna ska beräknas analytiskt
+R_6A = R_mixed; % mindre bränsle så mer likt luft? Denna ska beräknas analytiskt
 %c_p_6A = (c_p_5*massflow_hot + c_p_21*massflow_bypass) / (massflow_hot+massflow_bypass); %------Dessa kanske löses som ett optimeringsproblem????
 %T_t6A = (c_p_21 * T_t21 * massflow_bypass + c_p_5 * T_t5 * massflow_hot) / ((massflow_exhaust)*c_p_6A);
 T_t6A = fsolve(@(T_t) Mixer(T_t, T_t5, c_p_5, 1, FAR, T_t21, c_p_21, BPR), (T_t5+T_t21)/2);
@@ -497,6 +497,17 @@ c_8 = M_8*a_8;
 P_8 = P_t8 / ((1+((gamma_8-1)/2)*M_8^2)^(gamma_8/(gamma_8-1)));
 Thrust = massflow_exhaust*c_8-massflow*c_0+A_8*(P_8-P_0);
 disp(Thrust)
+%%
+M_8_list = zeros(1,100);
+x_list = linspace(0,Exhaust_length,100);
+MFP_8_list = zeros(1,100);
+A_8_list = zeros(1,100);
+for i =1:100
+    A_8_list(i) = Area_exhaust(x_list(i),translation,translation2);
+    MFP_8_list(i) = massflow_exhaust * sqrt(T_t8)/(P_t8*A_8_list(i));
+    M_8_list(i) = fsolve(@(M) real(Mach_MFP(M, gamma_8, R_8)) - MFP_8_list(i), 0.5);
+end
+plot(x_list,M_8_list,'r',x_list,A_8_list,'b',x_list,MFP_8_list.*30,'g')
 %% alternativ till exhausten
 %användet dVdx och ode45
 % T_t8 = T_t6A;
@@ -518,7 +529,13 @@ disp(Thrust)
 % P_8 = P_t8 / ((1+((gamma_8-1)/2)*M_8(end)^2)^(gamma_8/(gamma_8-1)));
 % Thrust = massflow_exhaust*c_8(end)-massflow*c_0+A_8*(P_8-P_0);
 %%
-%plot (x_list,Area_exhaust(x_list,translation))
+iterations = Exhaust_length*1000+1;
+x_list = linspace(0,Exhaust_length,iterations);
+Area_exhaust_plot = zeros(1,iterations);
+for i = 1:iterations
+    Area_exhaust_plot(i) = Area_exhaust(x_list(i),translation,translation2);
+end
+plot (x_list,Area_exhaust_plot)
 %%
 %plot (x_list,c_8)
 %%
@@ -527,9 +544,16 @@ disp(Thrust)
 %Mspace = linspace(0,3, 100);
 %plot (Mspace,real(Mach_MFP(Mspace, gamma_21, R)) - MFP_16)
 %% OUTPUT
-
+SFC = massflow_core*FAR/Thrust;
 OPR = FPR * LPC_ratio * HPC_ratio;
 fprintf('BPR = %0.2f\nMassflow = %0.2f kg/s\n',BPR,massflow)
+T_16 = T_t21 /(1 + (gamma_21-1)/2*M_16^2);
+a_16 = sqrt(gamma_21*R*T_16);
+c_16 = M_16*a_16;
+T_6 = T_t5 /(1 + (gamma_5-1)/2*M_6^2);
+a_6 = sqrt(gamma_5*R_mixed*T_6);
+c_6 = M_6*a_6;
+Thrust_without_mixing = massflow_hot*c_6+massflow_bypass*c_16-massflow*c_0;
 
 %%
 function MFP = Mach_MFP(M, gamma, R)
@@ -588,28 +612,28 @@ end
 function enthalpy_difference = Mixer(T_t, T_t1, c_p1, m1, f1, T_t2, c_p2, m2)
     %f1 mängden bränsle, så m1+f1 är totalt massflöde för varmt
     m = m1 + m2;
-    enthalpy_before = c_p1*T_t1*(m1+f1)+c_p2*T_t2*m2;
-    enthalpy_after = c_p_mixed(T_t,m,f1)*T_t*(m+f1);
+    enthalpy_before = c_p1*(T_t1)*(m1+f1) + c_p2*T_t2*m2;
+    enthalpy_after = c_p_mixed(T_t,m,f1)*(T_t)*(m+f1);
     enthalpy_difference = enthalpy_after - enthalpy_before;
 end
 
 function V1 = dVdx(x1,x0,V)
-    %V = [x0,c0,M0,Tt,R,g,translation]
+    %V = [x0,c0,M0,Tt,R,g,translation,translation2]
     c0 = V(1);
     M0 = V(2);
     Tt = V(3);
     R = V(4);
     g = V(5);
     t = V(6);
-    A1 = Area_exhaust(x1,t);
-    A0 = Area_exhaust(x0,t);
+    A1 = Area_exhaust(x1,t,t2);
+    A0 = Area_exhaust(x0,t,t2);
     a0 = c0/M0;
     dA = A1-A0;
     dc = dA/A0*c0/(M0^2-1);
     c1 = c0 + dc;
     M1 = c1/a0;
     T1 = Tt / (1+(g-1)/2*M1^2);
-    %a1 = sqrt(g*R*T1);
+    a1 = sqrt(g*R*T1);
     V1(1) = c1;
     V1(2) = M1;
     %Lös detta ekv systemet, detta ska egentligen göras men öööööö
@@ -620,20 +644,23 @@ function V1 = dVdx(x1,x0,V)
     
 end
 
-function area = Area_inner(x,translation)
+function area = Area_inner(x,translation, translation2)
     %translation är förflyttning av center spiken högerut, variabler är i
     %cm antar jag?
-    x = x - translation;
-    if x <=0
-        radie = 0.361;
+    x = x - translation2;
+    t = translation + translation2;
+    if x <= -0.3
+        radie = 0;
+    elseif x <= 0
+        radie = 0.361 * (x+0.3)/0.3; %blind chansning i hur spiken ser ut inuti
     elseif x <= 1.04 %temporärt
-        radie = 0.361 - 0.122 * x/1.04;
-    elseif x <= 1.91
-        radie = 0.239;
-    elseif x <= 3.76
-        radie = 0.239 + 0.087*(x-1.91)/1.85;
-    elseif x <= 5.61  % slutlängd är x = 5.61 meter
-        radie = 0.326-0.326*(x-3.76)/1.85;
+        radie = 0.361 - 0.241 * x/1.04;
+    elseif x <= 1.91+t
+        radie = 0.120;
+    elseif x <= 3.76+t
+        radie = 0.120 + 0.293*(x-(1.91+t))/1.85;
+    elseif x <= 5.61+t  % slutlängd är x = 5.61 meter
+        radie = 0.413-0.413*(x-(3.76+t))/1.85;
     else
         radie = 0;
     end
@@ -645,8 +672,8 @@ function area = Area_outer(x)
    %cm antar jag?
     if x <=0
         radie = 0.805;
-    elseif x <= 0.652 %temporärt
-        radie = 0.805 - 0.153 * x/0.652;
+    elseif x <= 0.870 %temporärt
+        radie = 0.805 - 0.153 * x/0.870;
     elseif x <= 2.502
         radie = 0.652;
     elseif x <= 3.263
@@ -659,8 +686,8 @@ function area = Area_outer(x)
     area = pi.*radie.^2;
 end
 
-function area = Area_exhaust(x,translation)
-    area = Area_outer(x) - Area_inner(x, translation);
+function area = Area_exhaust(x,translation, translation2)
+    area = Area_outer(x) - Area_inner(x, translation, translation2);
 end
 
 function deltaT = Temp_change(T_t0, delta_H, m, f)
