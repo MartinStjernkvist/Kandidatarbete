@@ -181,7 +181,7 @@ r_tip_LPT(3) = 0.814;
 %--------------------------LOBED MIXER INPUT VALUES-----------------------%
 A_16 = Area_outer(0) - 1.096;%0.9367; %[m^2] manuellt beräknat från bild
 translation = 1.2; %[m] förskjutning åt höger av senare delen av spiken
-translation2 = 0; %[m] förskjutning åt höger av hela spiken
+translation2 = 0.0; %[m] förskjutning åt höger av hela spiken
 A_6 = 1.096-Area_inner(0,translation, translation2); %[m^2] manuellt beräknat från bild, Ska också kunna variera med att spiken flyttas ut och in
 n_bypass = 0.98; %Term som beskriver friktionsförluster
 A_6A = A_6 + A_16;
@@ -497,6 +497,19 @@ c_8 = M_8*a_8;
 P_8 = P_t8 / ((1+((gamma_8-1)/2)*M_8^2)^(gamma_8/(gamma_8-1)));
 Thrust = massflow_exhaust*c_8-massflow*c_0+A_8*(P_8-P_0);
 disp(Thrust)
+%% #lösning som ansätter att P_9 = P_0, hittar M utifrån det
+M_9 = fsolve(@(M) P_t8 / ((1+((gamma_8-1)/2)*M^2)^(gamma_8/(gamma_8-1))) - P_0, 2);
+T_9 = T_t8 / ((1+(((gamma_8-1)/2)*M_9^2)));
+c_p_9 = c_p_mixed(T_9,1+BPR,FAR);
+R_9 = R_6A;
+P_9 = P_t8/ ((1+((gamma_8-1)/2)*M_9^2)^(gamma_8/(gamma_8-1)));
+gamma_9 = gamma(c_p_9,R_9);
+MFP_9 = Mach_MFP(M_9, gamma_9,R_9);
+a_9 = sqrt(gamma_9*R_9*T_9);
+c_9 = M_9*a_9;
+A_9 = massflow_exhaust*sqrt(T_t8)/(P_t8*MFP_9);
+ThrustFull = massflow_exhaust*c_9-massflow*c_0+A_9*(P_9-P_0);
+disp(ThrustFull)
 %%
 M_8_list = zeros(1,100);
 x_list = linspace(0,Exhaust_length,100);
@@ -556,6 +569,7 @@ c_6 = M_6*a_6;
 Thrust_without_mixing = massflow_hot*c_6+massflow_bypass*c_16-massflow*c_0;
 
 %%
+
 function MFP = Mach_MFP(M, gamma, R)
     MFP = (1+(gamma-1)/2*M.^2).^((gamma+1)/(2*(1-gamma))).*M.*sqrt(gamma/R);
 end
