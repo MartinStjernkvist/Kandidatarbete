@@ -571,6 +571,7 @@ plot (x_list,Area_exhaust_plot)
 %plot (Mspace,real(Mach_MFP(Mspace, gamma_21, R)) - MFP_16)
 %% OUTPUT
 SFC = massflow_core*FAR/Thrust;
+SR = c_0/(4*SFC*56.16); %km/kg, 56,16 från flygplansgruppen
 OPR = FPR * LPC_ratio * HPC_ratio;
 fprintf('BPR = %0.2f\nMassflow = %0.2f kg/s\n',BPR,massflow)
 T_16 = T_t21 /(1 + (gamma_21-1)/2*M_16^2);
