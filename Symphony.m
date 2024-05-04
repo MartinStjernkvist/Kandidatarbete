@@ -510,6 +510,9 @@ c_9 = M_9*a_9;
 A_9 = massflow_exhaust*sqrt(T_t8)/(P_t8*MFP_9);
 ThrustFull = massflow_exhaust*c_9-massflow*c_0+A_9*(P_9-P_0);
 disp(ThrustFull)
+%M_9_2 = fsolve(@(M) P_t8 / ((1+((gamma_9-1)/2)*M^2)^(gamma_9/(gamma_9-1)))
+%- P_0, 2); % c9 blir inte ens 1 meter per sekund annorlunda i detta fall
+%så, vi har "konvergerat"
 %%
 M_8_list = zeros(1,100);
 x_list = linspace(0,Exhaust_length,100);
