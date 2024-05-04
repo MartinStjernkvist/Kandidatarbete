@@ -454,6 +454,13 @@ M_16 = fsolve(@(M) Mach_MFP(M, gamma_21, R) - MFP_16, 0);
 MFP_6 = massflow_hot*sqrt(T_t5)/(P_t5*A_6); %T_t5 och P_t5 används ty antags isentropisk
 M_6 = fsolve(@(M) real(Mach_MFP(M, gamma_5, R_mixed)) - MFP_6, 0.5);
 
+T_16 = T_t21 /(1 + (gamma_21-1)/2*M_16^2);
+a_16 = sqrt(gamma_21*R*T_16);
+c_16 = M_16*a_16;
+T_6 = T_t5 /(1 + (gamma_5-1)/2*M_6^2);
+a_6 = sqrt(gamma_5*R_mixed*T_6);
+c_6 = M_6*a_6;
+
 massflow_exhaust = massflow_hot + massflow_bypass;
 
 % mixern är lobbad 
@@ -468,9 +475,12 @@ P_6 = P_t5 / ((1+((gamma_5-1)/2)*M_6^2)^(gamma_5/(gamma_5-1)));
 P_16 = P_t16 / ((1+((gamma_21-1)/2)*M_16^2)^(gamma_21/(gamma_21-1)));
 
 I_in = P_6*A_6*(1+gamma_5*M_6^2) + P_16*A_16*(1+gamma_21*M_16^2);
-P_t6A = (P_t5*massflow_hot+P_t16*massflow_bypass) / (massflow_exhaust); % Detta kanske är fel
-
-M_6A = fsolve(@(M) Impuls_ut(M, P_t6A, A_6A, gamma_6A) - I_in, 0.6); % fixa P_t_6A eller någonting!
+%P_t6A = (P_t5*massflow_hot+P_t16*massflow_bypass) / (massflow_exhaust); % Detta kanske är fel
+P_6A = (P_6*massflow_hot*c_6+P_16*massflow_bypass*c_16)/(massflow_hot*c_6+massflow_bypass*c_16);
+%M_6A = fsolve(@(M) Impuls_ut(M, P_t6A, A_6A, gamma_6A) - I_in, 0.6); % fixa P_t_6A eller någonting!
+M_6A = fsolve(@(M) Impuls_ut_2(M, P_6A, A_6A, gamma_6A) - I_in, 0.3);
+%P_6A = P_t6A / ( (1+(((gamma_6A-1)/2)*M_6A^2))^(gamma_6A/(gamma_6A-1)) );
+P_t6A = P_6A * ( (1+(((gamma_6A-1)/2)*M_6A^2))^(gamma_6A/(gamma_6A-1)) );
 T_6A = T_t6A/((1+(((gamma_6A-1)/2)*M_6A^2)));
 a_6A = sqrt(gamma_6A*R_6A*T_6A);
 c_6A = M_6A*a_6A;
@@ -607,6 +617,11 @@ end
 
 function I = Impuls_ut(M, Pt, A, gamma)
     I = Pt*A*(1+gamma*M^2) / ((1+((gamma-1)/2)*M^2)^(gamma/(gamma-1))); %Pt/P och impuls bevaring
+end
+
+
+function I = Impuls_ut_2(M, P, A, gamma)
+    I = P*A*(1+gamma*M^2); %Pt/P och impuls bevaring
 end
 
 function entalpi_mix = Entalpi_mix(f, T_t4, T_t3, LHV, Combust_massflow_ratio)
